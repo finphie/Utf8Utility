@@ -9,6 +9,14 @@ namespace Utf8Utility
     /// </summary>
     public readonly struct Utf8String : IEquatable<Utf8String>
     {
+        /// <summary>
+        /// 空文字列を表す<see cref="Utf8String"/>インスタンスを取得します。
+        /// </summary>
+        /// <value>
+        /// 空文字列を表す<see cref="Utf8String"/>インスタンス
+        /// </value>
+        public static readonly Utf8String Empty;
+
         readonly byte[] _value;
 
         /// <summary>
