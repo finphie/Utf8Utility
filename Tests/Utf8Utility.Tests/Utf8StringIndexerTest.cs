@@ -1,7 +1,10 @@
 ﻿using System;
-using System.Text;
 using FluentAssertions;
 using Xunit;
+
+#if NET5_0_OR_GREATER
+using System.Text;
+#endif
 
 namespace Utf8Utility.Tests
 {
