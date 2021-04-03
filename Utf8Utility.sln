@@ -5,6 +5,12 @@ VisualStudioVersion = 16.0.31025.218
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Utf8Utility", "Source\Utf8Utility\Utf8Utility.csproj", "{F03E6492-F6CB-4DC8-B308-CF93E7B4730E}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Source", "Source", "{3FFAAC6A-F722-4F57-ADC0-FDF115887493}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{DB83EC23-20C4-44EB-A46D-4FC3F0B5A276}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Utf8Utility.Tests", "Tests\Utf8Utility.Tests\Utf8Utility.Tests.csproj", "{8992E62E-BA22-4721-95EC-E2E5A6167283}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,9 +21,17 @@ Global
 		{F03E6492-F6CB-4DC8-B308-CF93E7B4730E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F03E6492-F6CB-4DC8-B308-CF93E7B4730E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F03E6492-F6CB-4DC8-B308-CF93E7B4730E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8992E62E-BA22-4721-95EC-E2E5A6167283}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8992E62E-BA22-4721-95EC-E2E5A6167283}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8992E62E-BA22-4721-95EC-E2E5A6167283}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8992E62E-BA22-4721-95EC-E2E5A6167283}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{F03E6492-F6CB-4DC8-B308-CF93E7B4730E} = {3FFAAC6A-F722-4F57-ADC0-FDF115887493}
+		{8992E62E-BA22-4721-95EC-E2E5A6167283} = {DB83EC23-20C4-44EB-A46D-4FC3F0B5A276}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {0EB158F1-FA62-4BDF-9B1A-5A691086C4EF}
