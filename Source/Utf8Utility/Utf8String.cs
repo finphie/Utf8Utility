@@ -43,7 +43,7 @@ namespace Utf8Utility
         /// 指定されたインデックスの値を取得します。
         /// </summary>
         /// <param name="index">インデックス</param>
-        /// <returns>i byte目の<see cref="byte"/></returns>
+        /// <returns>指定されたインデックスの値</returns>
         public byte this[int index] => _value[index];
 
 #if NET5_0_OR_GREATER
@@ -51,7 +51,7 @@ namespace Utf8Utility
         /// 指定されたインデックスの値を取得します。
         /// </summary>
         /// <param name="index">インデックス</param>
-        /// <returns>i byte目の<see cref="byte"/></returns>
+        /// <returns>指定されたインデックスの値</returns>
         public ReadOnlySpan<byte> this[Index index] => _value.AsSpan(index);
 
         /// <summary>
@@ -106,7 +106,7 @@ namespace Utf8Utility
         /// このメソッドは、境界チェックを行いません。
         /// </summary>
         /// <param name="index">インデックス</param>
-        /// <returns>i byte目の<see cref="byte"/></returns>
+        /// <returns>指定されたインデックスの値</returns>
         public byte DangerousGetByte(int index) => _value.DangerousGetReferenceAt(index);
     }
 }
