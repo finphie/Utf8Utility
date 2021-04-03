@@ -40,7 +40,7 @@ namespace Utf8Utility
         public int Length => _value.Length;
 
         /// <summary>
-        /// i byte目を取得します。
+        /// 指定されたインデックスの値を取得します。
         /// </summary>
         /// <param name="index">インデックス</param>
         /// <returns>i byte目の<see cref="byte"/></returns>
@@ -48,7 +48,7 @@ namespace Utf8Utility
 
 #if NET5_0_OR_GREATER
         /// <summary>
-        /// i byte目を取得します。
+        /// 指定されたインデックスの値を取得します。
         /// </summary>
         /// <param name="index">インデックス</param>
         /// <returns>i byte目の<see cref="byte"/></returns>
@@ -102,7 +102,7 @@ namespace Utf8Utility
         public ReadOnlySpan<byte> AsSpan() => _value;
 
         /// <summary>
-        /// i byte目を取得します。
+        /// 指定されたインデックスの値を取得します。
         /// このメソッドは、境界チェックを行いません。
         /// </summary>
         /// <param name="index">インデックス</param>
