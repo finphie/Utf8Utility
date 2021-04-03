@@ -42,9 +42,25 @@ namespace Utf8Utility
         /// <summary>
         /// i byte目を取得します。
         /// </summary>
-        /// <param name="i">インデックス</param>
+        /// <param name="index">インデックス</param>
         /// <returns>i byte目の<see cref="byte"/></returns>
-        public byte this[int i] => _value[i];
+        public byte this[int index] => _value[index];
+
+#if NET5_0_OR_GREATER
+        /// <summary>
+        /// i byte目を取得します。
+        /// </summary>
+        /// <param name="index">インデックス</param>
+        /// <returns>i byte目の<see cref="byte"/></returns>
+        public ReadOnlySpan<byte> this[Index index] => _value.AsSpan(index);
+
+        /// <summary>
+        /// 指定された範囲の<see cref="byte"/>配列を取得します。
+        /// </summary>
+        /// <param name="range">範囲</param>
+        /// <returns>指定された範囲の<see cref="byte"/>配列</returns>
+        public ReadOnlySpan<byte> this[Range range] => _value.AsSpan(range);
+#endif
 
         /// <summary>
         /// 指定されたインスタンスのオブジェクトが等しいかどうかを表します。
