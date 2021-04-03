@@ -44,7 +44,7 @@ namespace Utf8Utility
         /// </summary>
         /// <param name="i">インデックス</param>
         /// <returns>i byte目の<see cref="byte"/></returns>
-        public byte this[int i] => _value.DangerousGetReferenceAt(i);
+        public byte this[int i] => _value[i];
 
         /// <summary>
         /// 指定されたインスタンスのオブジェクトが等しいかどうかを表します。
@@ -84,5 +84,13 @@ namespace Utf8Utility
         /// </summary>
         /// <returns><see cref="ReadOnlySpan{Byte}"/>構造体</returns>
         public ReadOnlySpan<byte> AsSpan() => _value;
+
+        /// <summary>
+        /// i byte目を取得します。
+        /// このメソッドは、境界チェックを行いません。
+        /// </summary>
+        /// <param name="index">インデックス</param>
+        /// <returns>i byte目の<see cref="byte"/></returns>
+        public byte DangerousGetByte(int index) => _value.DangerousGetReferenceAt(index);
     }
 }
