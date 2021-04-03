@@ -1,0 +1,36 @@
+<Project>
+
+  <PropertyGroup Condition="'$(IsGenerator)' == 'true'">
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(IsPackable)' == 'true'">
+    <NoPackageAnalysis>true</NoPackageAnalysis>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+  </PropertyGroup>
+
+  <Choose>
+    <When Condition="'$(IsPackable)' == 'true' and '$(IsGenerator)' == 'false'">
+      <Choose>
+        <When Condition="'$(OutputType)' == 'Library'">
+          <PropertyGroup>
+            <IncludeSymbols>true</IncludeSymbols>
+            <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+          </PropertyGroup>
+          <ItemGroup>
+            <PackageReference Include="Microsoft.SourceLink.GitHub" Version="*-*">
+              <PrivateAssets>all</PrivateAssets>
+              <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+            </PackageReference>
+          </ItemGroup>
+        </When>
+        <When Condition="'$(OutputType)' == 'Exe'">
+          <PropertyGroup Condition="'$(SelfContained)' != 'true'">
+            <PackAsTool>true</PackAsTool>
+          </PropertyGroup>
+        </When>
+      </Choose>
+    </When>
+  </Choose>
+
+</Project>

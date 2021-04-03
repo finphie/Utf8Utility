@@ -1,0 +1,17 @@
+# Visual Studio
+.vs/
+bin/
+obj/
+*.user
+
+# MSBuild log
+*.binlog
+
+# Unity
+/Assets/*
+/Library/
+/Logs/
+/Temp/
+!/Assets/Finphie/
+!/Assets/*.meta
+Assembly-CSharp*.csproj
