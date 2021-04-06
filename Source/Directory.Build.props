@@ -1,16 +1,18 @@
 <Project>
+  <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)..\'))" />
+
   <PropertyGroup>
     <IsBenchmark>$(MSBuildProjectName.Contains('Benchmark'))</IsBenchmark>
     <IsGenerator>$(MSBuildProjectName.EndsWith('Generator'))</IsGenerator>
     <IsInternal>$(MSBuildProjectName.Contains('Internal'))</IsInternal>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(IsBenchmark)' == 'false' and '$(IsGenerator)' == 'false' and '$(IsInternal)' == 'false'">
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  <PropertyGroup Condition="'$(IsBenchmark)' == 'true'">
+    <LangVersion>9.0</LangVersion>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(GenerateDocumentationFile)' != 'true'">
-    <NoWarn>$(NoWarn);SA0001</NoWarn>
+  <PropertyGroup Condition="'$(SelfContained)' != 'true' and '$(IsBenchmark)' == 'false' and '$(IsGenerator)' == 'false' and '$(IsInternal)' == 'false'">
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
@@ -18,10 +20,20 @@
     <Compile Include="$(MSBuildThisFileDirectory)\$(SolutionName).Shared\**\*.cs" LinkBase="Shared" />
   </ItemGroup>
 
+  <ItemGroup Condition="'$(IsBenchmark)' == 'true'">
+    <PackageReference Include="BenchmarkDotNet" Version="*" />
+  </ItemGroup>
+
   <ItemGroup Condition="'$(IsGenerator)' == 'true'">
     <None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
   </ItemGroup>
 
-  <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)..\'))" />
+  <ItemGroup>
+    <MyPubXmlFiles Include="$(MSBuildThisFileDirectory)\Common\**\*.pubxml" />
+  </ItemGroup>
+
+  <Target Name="CopyFiles" Condition="'$(IsPublishable)' == 'true'" BeforeTargets="BeforeResolveReferences">
+    <Copy SourceFiles="@(MyPubXmlFiles)" DestinationFiles="@(MyPubXmlFiles->'$(MSBuildProjectDirectory)\%(RecursiveDir)%(Filename)%(Extension)')" />
+  </Target>
 
 </Project>
