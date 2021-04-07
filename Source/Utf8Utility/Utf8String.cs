@@ -63,13 +63,25 @@ namespace Utf8Utility
 #endif
 
         /// <summary>
+        /// <see cref="Utf8String"/>構造体の新しいインスタンスを取得します。
+        /// </summary>
+        /// <param name="bytes">UTF-8でエンコードされた<see cref="byte"/>配列</param>
+        public static explicit operator Utf8String(byte[] bytes) => new(bytes);
+
+        /// <summary>
+        /// <see cref="Utf8String"/>構造体の新しいインスタンスを取得します。
+        /// </summary>
+        /// <param name="s">文字列</param>
+        public static explicit operator Utf8String(string s) => new(s);
+
+        /// <summary>
         /// 指定されたインスタンスのオブジェクトが等しいかどうかを表します。
         /// </summary>
         /// <param name="left"><see cref="Utf8String"/>インスタンス</param>
         /// <param name="right">比較対象の><see cref="Utf8String"/>インスタンス</param>
         /// <returns>
         /// 同じ文字列を表す場合は<see langword="true"/>、
-        /// 異なる場合は、<see langword="false"/>。
+        /// 異なる場合は<see langword="false"/>。
         /// </returns>
         public static bool operator ==(Utf8String left, Utf8String right) => left.Equals(right);
 
@@ -80,7 +92,7 @@ namespace Utf8Utility
         /// <param name="right">比較対象の><see cref="Utf8String"/>インスタンス</param>
         /// <returns>
         /// 異なる文字列を表す場合は<see langword="true"/>、
-        /// 同じ場合は、<see langword="false"/>。
+        /// 同じ場合は<see langword="false"/>。
         /// </returns>
         public static bool operator !=(Utf8String left, Utf8String right) => !(left == right);
 
@@ -94,6 +106,9 @@ namespace Utf8Utility
 
         /// <inheritdoc/>
         public override int GetHashCode() => _value.GetDjb2HashCode();
+
+        /// <inheritdoc/>
+        public override string ToString() => Encoding.UTF8.GetString(_value);
 
         /// <summary>
         /// <see cref="ReadOnlySpan{Byte}"/>構造体を取得します。
