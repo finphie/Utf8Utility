@@ -217,7 +217,7 @@ namespace Utf8Utility
             return entries;
         }
 
-        [DebuggerDisplay("({key}, {value})->{next}")]
+        [DebuggerDisplay("({Key}, {Value})->{Next}")]
         struct Entry
         {
             public Utf8String Key;
