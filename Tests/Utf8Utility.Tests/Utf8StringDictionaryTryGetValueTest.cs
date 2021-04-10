@@ -3,7 +3,7 @@ using Xunit;
 
 namespace Utf8Utility.Tests
 {
-    public class Utf8StringDictionaryTryGetValueTest
+    public sealed class Utf8StringDictionaryTryGetValueTest
     {
         [Theory]
         [InlineData("")]
