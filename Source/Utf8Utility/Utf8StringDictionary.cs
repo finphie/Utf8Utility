@@ -18,9 +18,6 @@ namespace Utf8Utility
     [SuppressMessage("Naming", "CA1711:識別子は、不適切なサフィックスを含むことはできません", Justification = "Dictionary")]
     public sealed class Utf8StringDictionary<TValue>
     {
-        static readonly Entry[] InitialEntries = new Entry[1];
-        static readonly int[] SizeOneIntArray = new int[1];
-
         int _freeList = -1;
         int[] _buckets;
         Entry[] _entries;
@@ -30,8 +27,8 @@ namespace Utf8Utility
         /// </summary>
         public Utf8StringDictionary()
         {
-            _buckets = SizeOneIntArray;
-            _entries = InitialEntries;
+            _buckets = new int[2];
+            _entries = new Entry[2];
         }
 
         /// <summary>
@@ -177,7 +174,7 @@ namespace Utf8Utility
             }
             else
             {
-                if (Count == entries.Length || entries.Length == 1)
+                if (Count == entries.Length)
                 {
                     entries = Resize();
                     bucketIndex = GetBucketIndex(key.GetHashCode());
