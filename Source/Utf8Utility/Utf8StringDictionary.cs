@@ -60,52 +60,8 @@ namespace Utf8Utility
 
         public void Add(Utf8String key, TValue value)
         {
-            var bucketIndex = GetBucketIndex(key.GetHashCode());
-            ref var valueRef = ref FindValue(key, bucketIndex);
-
-            if (Unsafe.IsNullRef(ref valueRef))
-            {
-                AddKey(key, bucketIndex) = value;
-            }
-            else
-            {
-                valueRef = value;
-            }
-        }
-
-        public bool TryGetValue(Utf8String key, [MaybeNullWhen(false)] out TValue value)
-        {
-            var bucketIndex = GetBucketIndex(key.GetHashCode());
-            ref var valueRef = ref FindValue(key, bucketIndex);
-
-            if (Unsafe.IsNullRef(ref valueRef))
-            {
-                value = default;
-                return false;
-            }
-
-            value = valueRef;
-            return true;
-        }
-
-        public bool TryGetValue(ReadOnlySpan<byte> key, [MaybeNullWhen(false)] out TValue value)
-        {
-            var bucketIndex = GetBucketIndex(key.GetDjb2HashCode());
-            ref var valueRef = ref FindValue(key, bucketIndex);
-
-            if (Unsafe.IsNullRef(ref valueRef))
-            {
-                value = default;
-                return false;
-            }
-
-            value = valueRef;
-            return true;
-        }
-
-        internal ref TValue FindValue(Utf8String key, int bucketIndex)
-        {
             var entries = _entries;
+            var bucketIndex = GetBucketIndex(key.GetHashCode());
 
             for (var i = GetBucket(bucketIndex) - 1; (uint)i < (uint)entries.Length; i = entries[i].Next)
             {
@@ -113,16 +69,38 @@ namespace Utf8Utility
 
                 if (key == entry.Key)
                 {
-                    return ref entry.Value;
+                    entry.Value = value;
+                    return;
                 }
             }
 
-            return ref Unsafe.NullRef<TValue>();
+            AddKey(key, bucketIndex) = value;
         }
 
-        internal ref TValue FindValue(ReadOnlySpan<byte> key, int bucketIndex)
+        public bool TryGetValue(Utf8String key, [MaybeNullWhen(false)] out TValue value)
         {
             var entries = _entries;
+            var bucketIndex = GetBucketIndex(key.GetHashCode());
+
+            for (var i = GetBucket(bucketIndex) - 1; (uint)i < (uint)entries.Length; i = entries[i].Next)
+            {
+                ref var entry = ref entries[i];
+
+                if (key == entry.Key)
+                {
+                    value = entry.Value;
+                    return true;
+                }
+            }
+
+            value = default;
+            return false;
+        }
+
+        public bool TryGetValue(ReadOnlySpan<byte> key, [MaybeNullWhen(false)] out TValue value)
+        {
+            var entries = _entries;
+            var bucketIndex = GetBucketIndex(key.GetDjb2HashCode());
 
             for (var i = GetBucket(bucketIndex) - 1; (uint)i < (uint)entries.Length; i = entries[i].Next)
             {
@@ -130,11 +108,13 @@ namespace Utf8Utility
 
                 if (key.SequenceEqual(entry.Key.AsSpan()))
                 {
-                    return ref entry.Value;
+                    value = entry.Value;
+                    return true;
                 }
             }
 
-            return ref Unsafe.NullRef<TValue>();
+            value = default;
+            return false;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
