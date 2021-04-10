@@ -179,7 +179,7 @@ namespace Utf8Utility
                 if (Count == entries.Length || entries.Length == 1)
                 {
                     entries = Resize();
-                    bucketIndex = key.GetHashCode() & (_buckets.Length - 1);
+                    bucketIndex = GetBucketIndex(key.GetHashCode());
                 }
 
                 entryIndex = Count;
