@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Jobs;
+using Utf8Utility.Benchmarks.Helpers;
 
 namespace Utf8Utility.Benchmarks
 {
     [SimpleJob(RuntimeMoniker.NetCoreApp50)]
     [MemoryDiagnoser]
-    public class DictionaryBenchmark
+    public class Utf8StringDictionaryTryGetValueBenchmark
     {
         const int Length = 10;
 
@@ -25,47 +26,36 @@ namespace Utf8Utility.Benchmarks
         {
             for (var i = 0; i < Count; i++)
             {
-                var key = new Utf8String(RandomString(Length));
+                var key = new Utf8String(StringHelper.RandomString(Length));
 
                 _dict.Add(key, 1);
                 _utf8Dict.Add(key, 1);
             }
 
-            Key = new Utf8String(RandomString(Length));
+            Key = new Utf8String(StringHelper.RandomString(Length));
             _dict.Add(Key, 1);
             _utf8Dict.Add(Key, 1);
         }
 
         [Benchmark]
-        public int Dictionary_TryGetValue()
+        public int Dictionary()
         {
             _dict.TryGetValue(Key, out var value);
             return value;
         }
 
         [Benchmark]
-        public int Utf8Dictionary_TryGetValue()
+        public int Utf8Dictionary()
         {
             _utf8Dict.TryGetValue(Key, out var value);
             return value;
         }
 
         [Benchmark]
-        public int Utf8Dictionary_TryGetValue_Span()
+        public int Utf8Dictionary_Span()
         {
             _utf8Dict.TryGetValue(Key.AsSpan(), out var value);
             return value;
-        }
-
-        static string RandomString(int length)
-        {
-            var random = new Random();
-            const string Table = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-
-            var array = Enumerable.Repeat(Table, length)
-                .Select(x => x[random.Next(x.Length)])
-                .ToArray();
-            return new string(array);
         }
     }
 }
