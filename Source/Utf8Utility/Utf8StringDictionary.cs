@@ -25,12 +25,19 @@ namespace Utf8Utility
         int[] _buckets;
         Entry[] _entries;
 
+        /// <summary>
+        /// <see cref="Utf8StringDictionary{TValue}"/>クラスの新しいインスタンスを初期化します。
+        /// </summary>
         public Utf8StringDictionary()
         {
             _buckets = SizeOneIntArray;
             _entries = InitialEntries;
         }
 
+        /// <summary>
+        /// <see cref="Utf8StringDictionary{TValue}"/>クラスの新しいインスタンスを初期化します。
+        /// </summary>
+        /// <param name="capacity">格納できる要素数の初期値</param>
         public Utf8StringDictionary(int capacity)
         {
             if (capacity < 0)
@@ -48,16 +55,19 @@ namespace Utf8Utility
             _entries = new Entry[capacity];
         }
 
+        /// <summary>
+        /// 要素数を取得します。
+        /// </summary>
+        /// <value>
+        /// 要素数
+        /// </value>
         public int Count { get; private set; }
 
-        public void Clear()
-        {
-            Count = 0;
-            _freeList = -1;
-            _buckets = SizeOneIntArray;
-            _entries = InitialEntries;
-        }
-
+        /// <summary>
+        /// 要素を追加します。
+        /// </summary>
+        /// <param name="key">キー</param>
+        /// <param name="value">値</param>
         public void Add(Utf8String key, TValue value)
         {
             var entries = _entries;
@@ -77,6 +87,15 @@ namespace Utf8Utility
             AddKey(key, bucketIndex) = value;
         }
 
+        /// <summary>
+        /// 指定されたキーに対する値を取得します。
+        /// </summary>
+        /// <param name="key">キー</param>
+        /// <param name="value">値</param>
+        /// <returns>
+        /// 指定されたキーが存在した場合は<see langword="true"/>、
+        /// それ以外の場合は<see langword="false"/>。
+        /// </returns>
         public bool TryGetValue(Utf8String key, [MaybeNullWhen(false)] out TValue value)
         {
             var entries = _entries;
@@ -97,6 +116,15 @@ namespace Utf8Utility
             return false;
         }
 
+        /// <summary>
+        /// 指定されたキーに対する値を取得します。
+        /// </summary>
+        /// <param name="key">キー</param>
+        /// <param name="value">値</param>
+        /// <returns>
+        /// 指定されたキーが存在した場合は<see langword="true"/>、
+        /// それ以外の場合は<see langword="false"/>。
+        /// </returns>
         public bool TryGetValue(ReadOnlySpan<byte> key, [MaybeNullWhen(false)] out TValue value)
         {
             var entries = _entries;
@@ -115,6 +143,17 @@ namespace Utf8Utility
 
             value = default;
             return false;
+        }
+
+        /// <summary>
+        /// すべてのキーと値を削除します。
+        /// </summary>
+        public void Clear()
+        {
+            Count = 0;
+            _freeList = -1;
+            _buckets = SizeOneIntArray;
+            _entries = InitialEntries;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -155,11 +194,8 @@ namespace Utf8Utility
 
         Entry[] Resize()
         {
-            Debug.Assert(_entries.Length == Count || _entries.Length == 1);
             var count = Count;
-            var newSize = _entries.Length * 2;
-            if ((uint)newSize > int.MaxValue)
-                throw new InvalidOperationException();
+            var newSize = checked(_entries.Length * 2);
 
             var entries = new Entry[newSize];
             Array.Copy(_entries, 0, entries, 0, count);

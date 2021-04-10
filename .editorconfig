@@ -359,6 +359,11 @@ dotnet_code_quality.api_surface = all
 # 理由: 内部ではListを利用したい場合がある。
 dotnet_code_quality.CA1002.api_surface = public
 
+# Do not declare visible instance fields
+# https://docs.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1051
+# 構造体ではプロパティではなくフィールドにしたい場合がある。
+dotnet_code_quality.ca1051.exclude_structs = true
+
 # Identifiers should not contain type names
 # https://docs.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1720
 # 理由: 内部では識別子に型名を利用したい場合がある。
@@ -439,6 +444,12 @@ dotnet_diagnostic.SA1205.severity = none
 # 理由: IDE0040（Add accessibility modifiers）と重複。
 # https://docs.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0040
 dotnet_diagnostic.SA1400.severity = none
+
+# A field within a C# class has an access modifier other than private.
+# https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1401.md
+# 理由: CA1051（Do not declare visible instance fields）と重複。
+# https://docs.microsoft.com/ja-jp/dotnet/fundamentals/code-analysis/quality-rules/ca1051
+dotnet_diagnostic.SA1401.severity = none
 
 # The last statement in a multi-line C# initializer or list is missing a trailing comma.
 # https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1413.md
