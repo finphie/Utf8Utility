@@ -26,13 +26,13 @@ namespace Utf8Utility.Tests
             var utf8Dict = new Utf8StringDictionary<int>();
             var utf8Key = new Utf8String(key);
 
-            for (var i = 0; i < 2; i++)
-            {
-                utf8Dict.Add(utf8Key, 1);
+            utf8Dict.Add(utf8Key, 1);
+            utf8Dict.TryGetValue(utf8Key, out var utf8DictValue).Should().BeTrue();
+            utf8DictValue.Should().Be(1);
 
-                utf8Dict.TryGetValue(utf8Key, out var utf8DictValue).Should().BeTrue();
-                utf8DictValue.Should().Be(1);
-            }
+            utf8Dict.Add(utf8Key, 2);
+            utf8Dict.TryGetValue(utf8Key, out utf8DictValue).Should().BeTrue();
+            utf8DictValue.Should().Be(2);
         }
 
         [Theory]
