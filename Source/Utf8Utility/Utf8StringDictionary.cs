@@ -150,10 +150,11 @@ namespace Utf8Utility
         /// </summary>
         public void Clear()
         {
+            Array.Clear(_buckets, 0, _buckets.Length);
+            Array.Clear(_entries, 0, Count);
+
             Count = 0;
             _freeList = -1;
-            _buckets = SizeOneIntArray;
-            _entries = InitialEntries;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
