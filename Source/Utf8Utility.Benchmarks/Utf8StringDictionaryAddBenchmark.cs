@@ -12,9 +12,6 @@ namespace Utf8Utility.Benchmarks
     {
         const int Length = 10;
 
-        readonly Dictionary<Utf8String, int> _dict = new();
-        readonly Utf8StringDictionary<int> _utf8Dict = new();
-
         [Params(1, 10, 100, 1000)]
         public int Count { get; set; }
 
@@ -33,21 +30,29 @@ namespace Utf8Utility.Benchmarks
         }
 
         [Benchmark]
-        public void Dictionary()
+        public Dictionary<Utf8String, int> Dictionary()
         {
+            var dict = new Dictionary<Utf8String, int>();
+
             foreach (var key in Keys)
             {
-                _dict.Add(key, 1);
+                dict.TryAdd(key, 1);
             }
+
+            return dict;
         }
 
         [Benchmark]
-        public void Utf8Dictionary()
+        public Utf8StringDictionary<int> Utf8Dictionary()
         {
+            var utf8Dict = new Utf8StringDictionary<int>();
+
             foreach (var key in Keys)
             {
-                _utf8Dict.Add(key, 1);
+                utf8Dict.Add(key, 1);
             }
+
+            return utf8Dict;
         }
     }
 }
