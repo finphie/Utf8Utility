@@ -54,5 +54,31 @@ namespace Utf8Utility.Benchmarks
 
             return utf8Dict;
         }
+
+        [Benchmark]
+        public Dictionary<Utf8String, int> Dictionary_SetCapacity()
+        {
+            var dict = new Dictionary<Utf8String, int>(Count);
+
+            foreach (var key in Keys)
+            {
+                dict.TryAdd(key, 1);
+            }
+
+            return dict;
+        }
+
+        [Benchmark]
+        public Utf8StringDictionary<int> Utf8Dictionary_SetCapacity()
+        {
+            var utf8Dict = new Utf8StringDictionary<int>(Count);
+
+            foreach (var key in Keys)
+            {
+                utf8Dict.Add(key, 1);
+            }
+
+            return utf8Dict;
+        }
     }
 }
