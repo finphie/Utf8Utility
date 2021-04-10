@@ -168,10 +168,11 @@ namespace Utf8Utility
         {
             var entries = _entries;
             int entryIndex;
+
             if (_freeList != -1)
             {
                 entryIndex = _freeList;
-                _freeList = -3 - entries[_freeList].Next;
+                _freeList = -3 - entries.DangerousGetReferenceAt(_freeList).Next;
             }
             else
             {
@@ -184,12 +185,14 @@ namespace Utf8Utility
                 entryIndex = Count;
             }
 
-            entries[entryIndex].Key = key;
-            entries[entryIndex].Next = _buckets[bucketIndex] - 1;
-            _buckets[bucketIndex] = entryIndex + 1;
+            ref var entry = ref entries.DangerousGetReferenceAt(entryIndex);
+            ref var bucket = ref _buckets.DangerousGetReferenceAt(bucketIndex);
+            entry.Key = key;
+            entry.Next = bucket - 1;
+            bucket = entryIndex + 1;
             Count++;
 
-            return ref entries[entryIndex].Value;
+            return ref entry.Value;
         }
 
         Entry[] Resize()
@@ -203,9 +206,11 @@ namespace Utf8Utility
             var newBuckets = new int[entries.Length];
             while (count-- > 0)
             {
-                var bucketIndex = entries[count].Key.GetHashCode() & (newBuckets.Length - 1);
-                entries[count].Next = newBuckets[bucketIndex] - 1;
-                newBuckets[bucketIndex] = count + 1;
+                ref var entry = ref entries.DangerousGetReferenceAt(count);
+                var bucketIndex = entry.Key.GetHashCode() & (newBuckets.Length - 1);
+                ref var newBucket = ref newBuckets.DangerousGetReferenceAt(bucketIndex);
+                entry.Next = newBucket - 1;
+                newBucket = count + 1;
             }
 
             _buckets = newBuckets;
