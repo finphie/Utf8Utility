@@ -2,12 +2,22 @@
 using System.Text;
 using Microsoft.Toolkit.HighPerformance;
 
+#if false && NET6_0_OR_GREATER
+using System.Buffers;
+using System.Text.Unicode;
+#endif
+
 namespace Utf8Utility
 {
     /// <summary>
     /// UTF-8を表す構造体です。
     /// </summary>
-    public readonly struct Utf8String : IEquatable<Utf8String>
+    public readonly struct Utf8String
+#if false && NET6_0_OR_GREATER
+        : IEquatable<Utf8String>, ISpanFormattable
+#else
+        : IEquatable<Utf8String>, IFormattable
+#endif
     {
         readonly byte[] _value;
 
@@ -109,6 +119,15 @@ namespace Utf8Utility
 
         /// <inheritdoc/>
         public override string ToString() => Encoding.UTF8.GetString(_value);
+
+        /// <inheritdoc/>
+        public string ToString(string? format, IFormatProvider? formatProvider) => ToString();
+
+#if false && NET6_0_OR_GREATER
+        /// <inheritdoc/>
+        public bool TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider)
+            => Utf8.ToUtf16(_value, destination, out _, out charsWritten) == OperationStatus.Done;
+#endif
 
         /// <summary>
         /// <see cref="ReadOnlySpan{Byte}"/>構造体を取得します。
