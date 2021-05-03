@@ -10,13 +10,14 @@ on:
       - '**/*.csproj'
       - '**/*.sln'
       - '**/Directory.Build.props'
+      - '**/Directory.Build.targets'
       - '**/.editorconfig'
       - .github/workflows/build-dotnet.yml
 
 env:
   DOTNET_NOLOGO: true
   DOTNET_CLI_TELEMETRY_OPTOUT: true
-  dotnet-version: 6.0.100-preview.2.21155.3
+  dotnet-version: 6.0.100-preview.3.21202.5
 
 jobs:
   check:
