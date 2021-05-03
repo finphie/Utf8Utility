@@ -82,7 +82,7 @@ jobs:
 
       - name: Push(Azure Artifacts)
         if: steps.pack.outputs.is_packable == 'True'
-        run: dotnet nuget push **/*.nupkg --source "$Env:SOURCE"
+        run: dotnet nuget push **/*.nupkg --source "$Env:SOURCE" --api-key $Env:TOKEN
         env:
           SOURCE: Azure Artifacts
           TOKEN: ${{ secrets.AZURE_ARTIFACT_PAT }}
