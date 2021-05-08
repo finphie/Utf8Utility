@@ -11,7 +11,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{DB83EC23
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Utf8Utility.Tests", "Tests\Utf8Utility.Tests\Utf8Utility.Tests.csproj", "{8992E62E-BA22-4721-95EC-E2E5A6167283}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Utf8Utility.Serialization.SystemTextJson", "Source\Utf8Utility.Serialization.SystemTextJson\Utf8Utility.Serialization.SystemTextJson.csproj", "{C26C581A-60FF-4630-B4A3-DF6250F518E4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Utf8Utility.Serialization.Json", "Source\Utf8Utility.Serialization.Json\Utf8Utility.Serialization.Json.csproj", "{C26C581A-60FF-4630-B4A3-DF6250F518E4}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Utf8Utility.Benchmarks", "Source\Utf8Utility.Benchmarks\Utf8Utility.Benchmarks.csproj", "{B6D0A3B3-1C22-48C6-9F57-BF45B5007400}"
 EndProject
