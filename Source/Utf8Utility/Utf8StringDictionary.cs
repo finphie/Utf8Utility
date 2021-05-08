@@ -16,7 +16,7 @@ namespace Utf8Utility
     /// <typeparam name="TValue">Dictionary内部の値の型</typeparam>
     [DebuggerDisplay($"Count = {nameof(Count)}")]
     [SuppressMessage("Naming", "CA1711:識別子は、不適切なサフィックスを含むことはできません", Justification = "Dictionary")]
-    public sealed class Utf8StringDictionary<TValue>
+    public sealed class Utf8StringDictionary<TValue> : IReadOnlyUtf8StringDictionary<TValue>
     {
         int _freeList = -1;
         int[] _buckets;
@@ -84,15 +84,7 @@ namespace Utf8Utility
             AddKey(key, bucketIndex) = value;
         }
 
-        /// <summary>
-        /// 指定されたキーに対する値を取得します。
-        /// </summary>
-        /// <param name="key">キー</param>
-        /// <param name="value">値</param>
-        /// <returns>
-        /// 指定されたキーが存在した場合は<see langword="true"/>、
-        /// それ以外の場合は<see langword="false"/>。
-        /// </returns>
+        /// <inheritdoc/>
         public bool TryGetValue(Utf8String key, [MaybeNullWhen(false)] out TValue value)
         {
             var entries = _entries;
@@ -113,15 +105,7 @@ namespace Utf8Utility
             return false;
         }
 
-        /// <summary>
-        /// 指定されたキーに対する値を取得します。
-        /// </summary>
-        /// <param name="key">キー</param>
-        /// <param name="value">値</param>
-        /// <returns>
-        /// 指定されたキーが存在した場合は<see langword="true"/>、
-        /// それ以外の場合は<see langword="false"/>。
-        /// </returns>
+        /// <inheritdoc/>
         public bool TryGetValue(ReadOnlySpan<byte> key, [MaybeNullWhen(false)] out TValue value)
         {
             var entries = _entries;
