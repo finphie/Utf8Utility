@@ -3,7 +3,7 @@ using System.Buffers;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace Utf8Utility.Serialization.SystemTextJson
+namespace Utf8Utility.Serialization.Json
 {
     /// <summary>
     /// <see cref="System.Text.Json"/>用のカスタムコンバーターです。
