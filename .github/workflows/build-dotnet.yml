@@ -17,7 +17,7 @@ on:
 env:
   DOTNET_NOLOGO: true
   DOTNET_CLI_TELEMETRY_OPTOUT: true
-  dotnet-version: 6.0.100-preview.3.21202.5
+  dotnet-version: 6.0
 
 jobs:
   check:
@@ -58,12 +58,13 @@ jobs:
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: ${{ env.dotnet-version }}
+          include-prerelease: True
 
       - name: Setup .NET 5
         uses: actions/setup-dotnet@v1
         if: matrix.os != 'macOS-latest'
         with:
-          dotnet-version: 5.0.x
+          dotnet-version: 5.x
 
       - name: .NET Build
         run: dotnet build --configuration Release
@@ -85,12 +86,13 @@ jobs:
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: ${{ env.dotnet-version }}
+          include-prerelease: True
 
       - name: .NET restore
         run: dotnet restore
 
       - name: Install dotnet format
-        run: dotnet tool install -g dotnet-format
+        run: dotnet tool install --global dotnet-format -version 5.0.211103
 
       - name: Lint .NET code
         run: dotnet format --check --fix-whitespace --fix-style info --fix-analyzers info --verbosity diagnostic
