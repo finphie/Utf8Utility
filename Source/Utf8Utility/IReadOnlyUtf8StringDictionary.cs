@@ -31,5 +31,16 @@ namespace Utf8Utility
         /// それ以外の場合は<see langword="false"/>。
         /// </returns>
         bool TryGetValue(ReadOnlySpan<byte> key, [MaybeNullWhen(false)] out TValue value);
+
+        /// <summary>
+        /// 指定されたキーに対する値を取得します。
+        /// </summary>
+        /// <param name="key">キー</param>
+        /// <param name="value">値</param>
+        /// <returns>
+        /// 指定されたキーが存在した場合は<see langword="true"/>、
+        /// それ以外の場合は<see langword="false"/>。
+        /// </returns>
+        bool TryGetValue(ReadOnlySpan<char> key, [MaybeNullWhen(false)] out TValue value);
     }
 }
