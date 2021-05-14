@@ -85,7 +85,7 @@ jobs:
         run: |
           dotnet nuget add source $Env:SOURCE_URL -n "$Env:SOURCE" -u $Env:GITHUB_ACTOR -p $Env:TOKEN
           ls
-          dotnet nuget push ${{ github.event.repository.name }}/publish/*.nupkg --source "$Env:SOURCE" --api-key $Env:TOKEN
+          dotnet nuget push "./${{ github.event.repository.name }}/publish/*.nupkg" --source "$Env:SOURCE" --api-key $Env:TOKEN
         env:
           SOURCE: Azure Artifacts
           SOURCE_URL: 'https://pkgs.dev.azure.com/finphie/Main/_packaging/DotNet/nuget/v3/index.json'
