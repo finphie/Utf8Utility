@@ -1,4 +1,5 @@
-﻿using FluentAssertions;
+﻿using System;
+using FluentAssertions;
 using Xunit;
 
 namespace Utf8Utility.Tests
@@ -15,6 +16,12 @@ namespace Utf8Utility.Tests
             utf8Dict.Add(utf8Key, 1);
 
             utf8Dict.TryGetValue(utf8Key, out var utf8DictValue).Should().BeTrue();
+            utf8DictValue.Should().Be(1);
+
+            utf8Dict.TryGetValue(utf8Key.AsSpan(), out utf8DictValue).Should().BeTrue();
+            utf8DictValue.Should().Be(1);
+
+            utf8Dict.TryGetValue(key.AsSpan(), out utf8DictValue).Should().BeTrue();
             utf8DictValue.Should().Be(1);
         }
 
@@ -42,7 +49,14 @@ namespace Utf8Utility.Tests
         {
             var utf8Dict = new Utf8StringDictionary<int>();
             var utf8Key = new Utf8String(key);
+
             utf8Dict.TryGetValue(utf8Key, out var utf8DictValue).Should().BeFalse();
+            utf8DictValue.Should().Be(default);
+
+            utf8Dict.TryGetValue(utf8Key.AsSpan(), out utf8DictValue).Should().BeFalse();
+            utf8DictValue.Should().Be(default);
+
+            utf8Dict.TryGetValue(key.AsSpan(), out utf8DictValue).Should().BeFalse();
             utf8DictValue.Should().Be(default);
         }
     }
