@@ -136,6 +136,11 @@ namespace Utf8Utility
 #if NET5_0_OR_GREATER
             count = Encoding.UTF8.GetByteCount(key);
 #else
+            if (key.IsEmpty)
+            {
+                return TryGetValue(ReadOnlySpan<byte>.Empty, out value);
+            }
+
             unsafe
             {
                 fixed (char* chars = key)
