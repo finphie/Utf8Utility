@@ -57,5 +57,5 @@ MIT
 ### ライブラリ
 
 - Microsoft.Toolkit.HighPerformance  
-<https://www.nuget.org/packages/Microsoft.Toolkit.HighPerformance/>  
+<https://github.com/windows-toolkit/WindowsCommunityToolkit>  
 (c) .NET Foundation and Contributors.
