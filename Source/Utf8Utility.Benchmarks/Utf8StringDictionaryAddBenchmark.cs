@@ -6,7 +6,7 @@ using Utf8Utility.Benchmarks.Helpers;
 
 namespace Utf8Utility.Benchmarks
 {
-    [SimpleJob(RuntimeMoniker.NetCoreApp50)]
+    [SimpleJob(RuntimeMoniker.Net50)]
     [MemoryDiagnoser]
     public class Utf8StringDictionaryAddBenchmark
     {
