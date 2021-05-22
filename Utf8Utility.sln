@@ -15,6 +15,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Utf8Utility.Serialization.J
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Utf8Utility.Benchmarks", "Source\Utf8Utility.Benchmarks\Utf8Utility.Benchmarks.csproj", "{B6D0A3B3-1C22-48C6-9F57-BF45B5007400}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Utf8Utility.Serialization.Json.Tests", "Tests\Utf8Utility.Serialization.Json.Tests\Utf8Utility.Serialization.Json.Tests.csproj", "{BD23370A-651B-4B1A-8011-249D5B092EDE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -37,6 +39,10 @@ Global
 		{B6D0A3B3-1C22-48C6-9F57-BF45B5007400}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B6D0A3B3-1C22-48C6-9F57-BF45B5007400}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B6D0A3B3-1C22-48C6-9F57-BF45B5007400}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BD23370A-651B-4B1A-8011-249D5B092EDE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BD23370A-651B-4B1A-8011-249D5B092EDE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BD23370A-651B-4B1A-8011-249D5B092EDE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BD23370A-651B-4B1A-8011-249D5B092EDE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -46,6 +52,7 @@ Global
 		{8992E62E-BA22-4721-95EC-E2E5A6167283} = {DB83EC23-20C4-44EB-A46D-4FC3F0B5A276}
 		{C26C581A-60FF-4630-B4A3-DF6250F518E4} = {3FFAAC6A-F722-4F57-ADC0-FDF115887493}
 		{B6D0A3B3-1C22-48C6-9F57-BF45B5007400} = {3FFAAC6A-F722-4F57-ADC0-FDF115887493}
+		{BD23370A-651B-4B1A-8011-249D5B092EDE} = {DB83EC23-20C4-44EB-A46D-4FC3F0B5A276}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {0EB158F1-FA62-4BDF-9B1A-5A691086C4EF}
