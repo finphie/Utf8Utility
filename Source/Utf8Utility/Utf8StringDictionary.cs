@@ -189,7 +189,7 @@ namespace Utf8Utility
         public void Clear()
         {
             _buckets.AsSpan().Clear();
-            _entries.AsSpan().Clear();
+            _entries.AsSpan(0, Count).Clear();
 
             Count = 0;
             _freeList = -1;
