@@ -23,12 +23,14 @@ jobs:
   test:
     name: Test
     # if: hashFiles(join(join('**', github.event.repository.name, '/'), 'sln', '.') != ''
-    if: ${{ hashFiles(format('**/{0}.sln', github.event.repository.name)) != '' }}
+    if: env.HASH != ''
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
         os: [windows-latest, ubuntu-latest, macOS-latest]
+    env:
+      HASH: ${{ hashFiles(format('**/{0}.sln', github.event.repository.name)) }}
 
     steps:
       - name: Checkout repository
