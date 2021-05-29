@@ -22,7 +22,8 @@ env:
 jobs:
   test:
     name: Test
-    if: hashFiles('**/*.sln') != ''
+    # if: hashFiles(join(join('**', github.event.repository.name, '/'), 'sln', '.') != ''
+    if: hashFiles(format('**/{0}.sln', github.event.repository.name)) != ''
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
