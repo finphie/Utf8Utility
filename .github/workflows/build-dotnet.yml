@@ -22,7 +22,7 @@ env:
 jobs:
   test:
     name: Test
-    if: hashFiles('*.sln') != ''
+    if: hashFiles('**/*.sln') != ''
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
