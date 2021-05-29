@@ -2,7 +2,7 @@
 using System.Text;
 using Microsoft.Toolkit.HighPerformance;
 
-#if false && NET6_0_OR_GREATER
+#if NET6_0_OR_GREATER
 using System.Buffers;
 using System.Text.Unicode;
 #endif
@@ -13,7 +13,7 @@ namespace Utf8Utility
     /// UTF-8を表す構造体です。
     /// </summary>
     public readonly struct Utf8String
-#if false && NET6_0_OR_GREATER
+#if NET6_0_OR_GREATER
         : IEquatable<Utf8String>, ISpanFormattable
 #else
         : IEquatable<Utf8String>, IFormattable
@@ -123,7 +123,7 @@ namespace Utf8Utility
         /// <inheritdoc/>
         public string ToString(string? format, IFormatProvider? formatProvider) => ToString();
 
-#if false && NET6_0_OR_GREATER
+#if NET6_0_OR_GREATER
         /// <inheritdoc/>
         public bool TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider)
             => Utf8.ToUtf16(_value, destination, out _, out charsWritten) == OperationStatus.Done;
