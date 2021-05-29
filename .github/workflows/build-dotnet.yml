@@ -46,8 +46,6 @@ jobs:
       fail-fast: false
       matrix:
         os: [windows-latest, ubuntu-latest, macOS-latest]
-    env:
-      HASH: ${{ hashFiles(format('**/{0}.sln', github.event.repository.name)) }}
 
     steps:
       - name: Checkout repository
