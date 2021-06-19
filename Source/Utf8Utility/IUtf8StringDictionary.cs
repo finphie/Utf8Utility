@@ -19,7 +19,7 @@ namespace Utf8Utility
         /// 要素の追加に成功した場合は<see langword="true"/>、
         /// それ以外の場合は<see langword="false"/>。
         /// </returns>
-        public bool TryAdd(Utf8String key, TValue value);
+        bool TryAdd(Utf8String key, TValue value);
 
         /// <summary>
         /// 指定されたキーに対する値を取得します。
