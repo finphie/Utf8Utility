@@ -84,47 +84,26 @@ namespace Utf8Utility
 
         /// <inheritdoc/>
         public bool TryGetValue(Utf8String key, [MaybeNullWhen(false)] out TValue value)
-        {
-            var entries = _entries;
-            var bucketIndex = GetBucketIndex(key.GetHashCode());
-
-            for (var i = GetBucket(bucketIndex) - 1; (uint)i < (uint)entries.Length; i = entries[i].Next)
-            {
-                ref var entry = ref entries[i];
-
-                if (key == entry.Key)
-                {
-                    value = entry.Value;
-                    return true;
-                }
-            }
-
-            value = default;
-            return false;
-        }
+            => TryGetValue(key, out value);
 
         /// <inheritdoc/>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool TryGetValue(ReadOnlySpan<byte> key, [MaybeNullWhen(false)] out TValue value)
         {
-            var entries = _entries;
-            var bucketIndex = GetBucketIndex(key.GetDjb2HashCode());
+            ref var valueRef = ref GetValueRefOrNullRef(key);
 
-            for (var i = GetBucket(bucketIndex) - 1; (uint)i < (uint)entries.Length; i = entries[i].Next)
+            if (Unsafe.IsNullRef(ref valueRef))
             {
-                ref var entry = ref entries[i];
-
-                if (key.SequenceEqual(entry.Key.AsSpan()))
-                {
-                    value = entry.Value;
-                    return true;
-                }
+                value = default;
+                return false;
             }
 
-            value = default;
-            return false;
+            value = valueRef;
+            return true;
         }
 
         /// <inheritdoc/>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool TryGetValue(ReadOnlySpan<char> key, [MaybeNullWhen(false)] out TValue value)
         {
             int count;
@@ -177,6 +156,43 @@ namespace Utf8Utility
                     ArrayPool<byte>.Shared.Return(rentedUtf8Key);
                 }
             }
+        }
+
+        /// <summary>
+        /// キーが存在する場合は<typeparamref name="TValue"/>への参照、存在しない場合はnull参照を返します。
+        /// </summary>
+        /// <param name="key">ルックアップに使用されるキー。</param>
+        /// <returns>
+        /// キーが存在する場合は<typeparamref name="TValue"/>への参照、
+        /// それ以外の場合はNull参照。
+        /// </returns>
+        public ref TValue GetValueRefOrNullRef(Utf8String key)
+            => ref GetValueRefOrNullRef(key.AsSpan());
+
+        /// <summary>
+        /// キーが存在する場合は<typeparamref name="TValue"/>への参照、存在しない場合はnull参照を返します。
+        /// </summary>
+        /// <param name="key">ルックアップに使用されるキー。</param>
+        /// <returns>
+        /// キーが存在する場合は<typeparamref name="TValue"/>への参照、
+        /// それ以外の場合はNull参照。
+        /// </returns>
+        public ref TValue GetValueRefOrNullRef(ReadOnlySpan<byte> key)
+        {
+            var entries = _entries;
+            var bucketIndex = GetBucketIndex(key.GetDjb2HashCode());
+
+            for (var i = GetBucket(bucketIndex) - 1; (uint)i < (uint)entries.Length; i = entries[i].Next)
+            {
+                ref var entry = ref entries[i];
+
+                if (key.SequenceEqual(entry.Key.AsSpan()))
+                {
+                    return ref entry.Value;
+                }
+            }
+
+            return ref Unsafe.NullRef<TValue>();
         }
 
         /// <summary>
