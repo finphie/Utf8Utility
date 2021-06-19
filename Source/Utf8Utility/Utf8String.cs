@@ -2,11 +2,6 @@
 using System.Text;
 using Microsoft.Toolkit.HighPerformance;
 
-#if NET6_0_OR_GREATER
-using System.Buffers;
-using System.Text.Unicode;
-#endif
-
 namespace Utf8Utility
 {
     /// <summary>
@@ -126,7 +121,7 @@ namespace Utf8Utility
 #if NET6_0_OR_GREATER
         /// <inheritdoc/>
         public bool TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider)
-            => Utf8.ToUtf16(_value, destination, out _, out charsWritten) == OperationStatus.Done;
+            => System.Text.Unicode.Utf8.ToUtf16(_value, destination, out _, out charsWritten) == System.Buffers.OperationStatus.Done;
 #endif
 
         /// <summary>
