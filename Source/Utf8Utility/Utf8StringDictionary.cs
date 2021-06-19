@@ -63,26 +63,39 @@ namespace Utf8Utility
         public int Count { get; private set; }
 
         /// <inheritdoc/>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool TryAdd(Utf8String key, TValue value)
         {
             var entries = _entries;
             var bucketIndex = GetBucketIndex(key.GetHashCode());
+            var i = GetBucket(bucketIndex) - 1;
 
-            for (var i = GetBucket(bucketIndex) - 1; (uint)i < (uint)entries.Length; i = entries[i].Next)
+            do
             {
+                // 境界チェック削除のためにdo-while文の必要がある。
+                // https://github.com/dotnet/runtime/issues/9422
+                if ((uint)i >= (uint)entries.Length)
+                {
+                    break;
+                }
+
                 ref var entry = ref entries[i];
 
                 if (key == entry.Key)
                 {
                     return false;
                 }
+
+                i = entry.Next;
             }
+            while (true);
 
             AddKey(key, bucketIndex) = value;
             return true;
         }
 
         /// <inheritdoc/>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool TryGetValue(Utf8String key, [MaybeNullWhen(false)] out TValue value)
             => TryGetValue(key.AsSpan(), out value);
 
@@ -166,6 +179,7 @@ namespace Utf8Utility
         /// キーが存在する場合は<typeparamref name="TValue"/>への参照、
         /// それ以外の場合はNull参照。
         /// </returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ref TValue GetValueRefOrNullRef(Utf8String key)
             => ref GetValueRefOrNullRef(key.AsSpan());
 
@@ -177,20 +191,32 @@ namespace Utf8Utility
         /// キーが存在する場合は<typeparamref name="TValue"/>への参照、
         /// それ以外の場合はNull参照。
         /// </returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ref TValue GetValueRefOrNullRef(ReadOnlySpan<byte> key)
         {
             var entries = _entries;
             var bucketIndex = GetBucketIndex(key.GetDjb2HashCode());
+            var i = GetBucket(bucketIndex) - 1;
 
-            for (var i = GetBucket(bucketIndex) - 1; (uint)i < (uint)entries.Length; i = entries[i].Next)
+            do
             {
+                // 境界チェック削除のためにdo-while文の必要がある。
+                // https://github.com/dotnet/runtime/issues/9422
+                if ((uint)i >= (uint)entries.Length)
+                {
+                    break;
+                }
+
                 ref var entry = ref entries[i];
 
                 if (key.SequenceEqual(entry.Key.AsSpan()))
                 {
                     return ref entry.Value;
                 }
+
+                i = entry.Next;
             }
+            while (true);
 
             return ref Unsafe.NullRef<TValue>();
         }
@@ -198,6 +224,7 @@ namespace Utf8Utility
         /// <summary>
         /// すべてのキーと値を削除します。
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Clear()
         {
             _buckets.AsSpan().Clear();
