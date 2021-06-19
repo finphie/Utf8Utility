@@ -2,10 +2,6 @@
 using FluentAssertions;
 using Xunit;
 
-#if NET5_0_OR_GREATER
-using System.Text;
-#endif
-
 namespace Utf8Utility.Tests
 {
     public sealed class Utf8StringIndexerTest
@@ -36,7 +32,7 @@ namespace Utf8Utility.Tests
         [Fact]
         public void Index()
         {
-            var bytes = Encoding.UTF8.GetBytes("abc");
+            var bytes = System.Text.Encoding.UTF8.GetBytes("abc");
             var x = new Utf8String(bytes);
             x[^1].ToArray().Should().BeEquivalentTo(bytes[^1]);
         }
@@ -49,7 +45,7 @@ namespace Utf8Utility.Tests
 
             static byte[] Execute()
             {
-                var bytes = Encoding.UTF8.GetBytes("abc");
+                var bytes = System.Text.Encoding.UTF8.GetBytes("abc");
                 var x = new Utf8String(bytes);
                 return x[^10].ToArray();
             }
@@ -58,7 +54,7 @@ namespace Utf8Utility.Tests
         [Fact]
         public void Range()
         {
-            var bytes = Encoding.UTF8.GetBytes("abc");
+            var bytes = System.Text.Encoding.UTF8.GetBytes("abc");
             var x = new Utf8String(bytes);
             x[1..].ToArray().Should().BeEquivalentTo(bytes[1..]);
         }
@@ -71,7 +67,7 @@ namespace Utf8Utility.Tests
 
             static byte[] Execute()
             {
-                var bytes = Encoding.UTF8.GetBytes("abc");
+                var bytes = System.Text.Encoding.UTF8.GetBytes("abc");
                 var x = new Utf8String(bytes);
                 return x[10..].ToArray();
             }

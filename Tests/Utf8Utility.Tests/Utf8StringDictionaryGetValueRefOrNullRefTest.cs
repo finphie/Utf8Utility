@@ -28,7 +28,7 @@ namespace Utf8Utility.Tests
             utf8Dict.TryAdd(utf8Key, new(1, "a"));
 
             utf8Dict.TryGetValue(utf8Key, out var value);
-            value.A.Should().Should().Be(1);
+            value!.A.Should().Should().Be(1);
             value.B.Should().Should().Be("a");
 
             ref var itemRef = ref utf8Dict.GetValueRefOrNullRef(utf8Key);
