@@ -84,7 +84,7 @@ namespace Utf8Utility
 
         /// <inheritdoc/>
         public bool TryGetValue(Utf8String key, [MaybeNullWhen(false)] out TValue value)
-            => TryGetValue(key, out value);
+            => TryGetValue(key.AsSpan(), out value);
 
         /// <inheritdoc/>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
