@@ -8,7 +8,7 @@ namespace Utf8Utility.Benchmarks
 {
     [SimpleJob(RuntimeMoniker.Net50)]
     [MemoryDiagnoser]
-    public class Utf8StringDictionaryAddBenchmark
+    public class Utf8StringDictionaryTryAddBenchmark
     {
         const int Length = 10;
 
@@ -49,7 +49,7 @@ namespace Utf8Utility.Benchmarks
 
             foreach (var key in Keys)
             {
-                utf8Dict.Add(key, 1);
+                utf8Dict.TryAdd(key, 1);
             }
 
             return utf8Dict;
@@ -75,7 +75,7 @@ namespace Utf8Utility.Benchmarks
 
             foreach (var key in Keys)
             {
-                utf8Dict.Add(key, 1);
+                utf8Dict.TryAdd(key, 1);
             }
 
             return utf8Dict;

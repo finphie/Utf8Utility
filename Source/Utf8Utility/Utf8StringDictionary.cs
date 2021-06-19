@@ -18,7 +18,7 @@ namespace Utf8Utility
     /// <typeparam name="TValue">Dictionary内部の値の型</typeparam>
     [DebuggerDisplay($"Count = {nameof(Count)}")]
     [SuppressMessage("Naming", "CA1711:識別子は、不適切なサフィックスを含むことはできません", Justification = "Dictionary")]
-    public sealed class Utf8StringDictionary<TValue> : IReadOnlyUtf8StringDictionary<TValue>
+    public sealed class Utf8StringDictionary<TValue> : IUtf8StringDictionary<TValue>, IReadOnlyUtf8StringDictionary<TValue>
     {
         int _freeList = -1;
         int[] _buckets;
@@ -62,12 +62,8 @@ namespace Utf8Utility
         /// </value>
         public int Count { get; private set; }
 
-        /// <summary>
-        /// 要素を追加します。
-        /// </summary>
-        /// <param name="key">キー</param>
-        /// <param name="value">値</param>
-        public void Add(Utf8String key, TValue value)
+        /// <inheritdoc/>
+        public bool TryAdd(Utf8String key, TValue value)
         {
             var entries = _entries;
             var bucketIndex = GetBucketIndex(key.GetHashCode());
@@ -78,12 +74,12 @@ namespace Utf8Utility
 
                 if (key == entry.Key)
                 {
-                    entry.Value = value;
-                    return;
+                    return false;
                 }
             }
 
             AddKey(key, bucketIndex) = value;
+            return true;
         }
 
         /// <inheritdoc/>

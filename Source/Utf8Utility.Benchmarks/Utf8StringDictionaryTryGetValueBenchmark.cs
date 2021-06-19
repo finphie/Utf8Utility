@@ -27,12 +27,12 @@ namespace Utf8Utility.Benchmarks
                 var key = new Utf8String(StringHelper.RandomString(Length));
 
                 _dict.Add(key, 1);
-                _utf8Dict.Add(key, 1);
+                _utf8Dict.TryAdd(key, 1);
             }
 
             Key = new Utf8String(StringHelper.RandomString(Length));
             _dict.Add(Key, 1);
-            _utf8Dict.Add(Key, 1);
+            _utf8Dict.TryAdd(Key, 1);
         }
 
         [Benchmark]
