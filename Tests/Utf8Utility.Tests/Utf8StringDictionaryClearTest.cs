@@ -20,7 +20,7 @@ namespace Utf8Utility.Tests
         {
             var utf8Dict = new Utf8StringDictionary<int>();
             var utf8Key = new Utf8String("abc");
-            utf8Dict.Add(utf8Key, 1);
+            utf8Dict.TryAdd(utf8Key, 1);
             utf8Dict.Clear();
 
             utf8Dict.TryGetValue(utf8Key, out var utf8DictValue).Should().BeFalse();

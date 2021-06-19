@@ -13,7 +13,7 @@ namespace Utf8Utility.Tests
         {
             var utf8Dict = new Utf8StringDictionary<int>();
             var utf8Key = new Utf8String(key);
-            utf8Dict.Add(utf8Key, 1);
+            utf8Dict.TryAdd(utf8Key, 1);
 
             utf8Dict.TryGetValue(utf8Key, out var utf8DictValue).Should().BeTrue();
             utf8DictValue.Should().Be(1);
@@ -28,18 +28,18 @@ namespace Utf8Utility.Tests
         [Theory]
         [InlineData("")]
         [InlineData("abc")]
-        public void 存在するキーを2回追加_trueを返す(string key)
+        public void 存在するキーを2回追加_最初に追加された要素を取得しtrueを返す(string key)
         {
             var utf8Dict = new Utf8StringDictionary<int>();
             var utf8Key = new Utf8String(key);
 
-            utf8Dict.Add(utf8Key, 1);
+            utf8Dict.TryAdd(utf8Key, 1);
             utf8Dict.TryGetValue(utf8Key, out var utf8DictValue).Should().BeTrue();
             utf8DictValue.Should().Be(1);
 
-            utf8Dict.Add(utf8Key, 2);
+            utf8Dict.TryAdd(utf8Key, 2);
             utf8Dict.TryGetValue(utf8Key, out utf8DictValue).Should().BeTrue();
-            utf8DictValue.Should().Be(2);
+            utf8DictValue.Should().Be(1);
         }
 
         [Theory]
