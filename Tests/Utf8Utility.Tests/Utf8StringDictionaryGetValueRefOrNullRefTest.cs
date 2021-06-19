@@ -11,7 +11,8 @@ namespace Utf8Utility.Tests
         {
             var utf8Dict = new Utf8StringDictionary<int>();
             var utf8Key = new Utf8String("abc");
-            utf8Dict.TryAdd(utf8Key, 1);
+
+            utf8Dict.TryAdd(utf8Key, 1).Should().BeTrue();
 
             ref var itemRef = ref utf8Dict.GetValueRefOrNullRef(utf8Key);
             itemRef.Should().Be(1);
@@ -25,24 +26,21 @@ namespace Utf8Utility.Tests
         {
             var utf8Dict = new Utf8StringDictionary<Test>();
             var utf8Key = new Utf8String("abc");
-            utf8Dict.TryAdd(utf8Key, new(1, "a"));
 
-            utf8Dict.TryGetValue(utf8Key, out var value);
-            value!.A.Should().Should().Be(1);
-            value.B.Should().Should().Be("a");
+            utf8Dict.TryAdd(utf8Key, new(1, "a")).Should().BeTrue();
 
             ref var itemRef = ref utf8Dict.GetValueRefOrNullRef(utf8Key);
-            itemRef.A.Should().Should().Be(1);
-            itemRef.B.Should().Should().Be("a");
+            itemRef.A.Should().Be(1);
+            itemRef.B.Should().Be("a");
 
             itemRef.A = 2;
             itemRef.B = "b";
-            itemRef.A.Should().Should().Be(2);
-            itemRef.B.Should().Should().Be("b");
+            itemRef.A.Should().Be(2);
+            itemRef.B.Should().Be("b");
 
             itemRef = new(3, "c");
-            itemRef.A.Should().Should().Be(3);
-            itemRef.B.Should().Should().Be("c");
+            itemRef.A.Should().Be(3);
+            itemRef.B.Should().Be("c");
         }
 
         [Fact]
