@@ -45,29 +45,6 @@ namespace Utf8Utility
         public int Length => _value.Length;
 
         /// <summary>
-        /// 指定されたインデックスの値を取得します。
-        /// </summary>
-        /// <param name="index">インデックス</param>
-        /// <returns>指定されたインデックスの値</returns>
-        public byte this[int index] => _value[index];
-
-#if NET5_0_OR_GREATER
-        /// <summary>
-        /// 指定されたインデックスの値を取得します。
-        /// </summary>
-        /// <param name="index">インデックス</param>
-        /// <returns>指定されたインデックスの値</returns>
-        public ReadOnlySpan<byte> this[Index index] => _value.AsSpan(index);
-
-        /// <summary>
-        /// 指定された範囲の<see cref="byte"/>配列を取得します。
-        /// </summary>
-        /// <param name="range">範囲</param>
-        /// <returns>指定された範囲の<see cref="byte"/>配列</returns>
-        public ReadOnlySpan<byte> this[Range range] => _value.AsSpan(range);
-#endif
-
-        /// <summary>
         /// <see cref="Utf8String"/>構造体の新しいインスタンスを取得します。
         /// </summary>
         /// <param name="bytes">UTF-8でエンコードされた<see cref="byte"/>配列</param>
