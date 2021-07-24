@@ -16,7 +16,7 @@ namespace Utf8Utility
     /// Microsoft.Collections.Extensions.DictionarySlimを参考に実装しました。
     /// </remarks>
     /// <typeparam name="TValue">Dictionary内部の値の型</typeparam>
-    [DebuggerDisplay($"Count = {nameof(Count)}")]
+    [DebuggerDisplay($"Count = {{{nameof(Count)}}}")]
     [SuppressMessage("Naming", "CA1711:識別子は、不適切なサフィックスを含むことはできません", Justification = "Dictionary")]
     public sealed class Utf8StringDictionary<TValue> : IUtf8StringDictionary<TValue>, IReadOnlyUtf8StringDictionary<TValue>
     {
