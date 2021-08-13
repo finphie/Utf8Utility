@@ -2,34 +2,33 @@
 using FluentAssertions;
 using Xunit;
 
-namespace Utf8Utility.Serialization.Json.Tests
+namespace Utf8Utility.Serialization.Json.Tests;
+
+public sealed class Utf8StringConverterTest
 {
-    public sealed class Utf8StringConverterTest
+    static readonly JsonSerializerOptions Options = new();
+
+    static Utf8StringConverterTest() => Options.Converters.Add(new Utf8StringConverter());
+
+    [Theory]
+    [InlineData("")]
+    [InlineData("abc")]
+    public void Read(string value)
     {
-        static readonly JsonSerializerOptions Options = new();
+        var json = $"\"{value}\"";
 
-        static Utf8StringConverterTest() => Options.Converters.Add(new Utf8StringConverter());
+        var deserialized = JsonSerializer.Deserialize<Utf8String>(json, Options);
+        deserialized.Should().Be((Utf8String)value);
+    }
 
-        [Theory]
-        [InlineData("")]
-        [InlineData("abc")]
-        public void Read(string value)
-        {
-            var json = $"\"{value}\"";
+    [Theory]
+    [InlineData("\"\"")]
+    [InlineData("\"abc\"")]
+    public void Write(string json)
+    {
+        var deserialized = JsonSerializer.Deserialize<Utf8String>(json, Options);
+        var serialized = JsonSerializer.Serialize(deserialized, Options);
 
-            var deserialized = JsonSerializer.Deserialize<Utf8String>(json, Options);
-            deserialized.Should().Be((Utf8String)value);
-        }
-
-        [Theory]
-        [InlineData("\"\"")]
-        [InlineData("\"abc\"")]
-        public void Write(string json)
-        {
-            var deserialized = JsonSerializer.Deserialize<Utf8String>(json, Options);
-            var serialized = JsonSerializer.Serialize(deserialized, Options);
-
-            serialized.Should().Be(json);
-        }
+        serialized.Should().Be(json);
     }
 }
