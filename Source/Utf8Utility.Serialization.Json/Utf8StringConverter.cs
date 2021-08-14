@@ -1,5 +1,4 @@
-﻿using System;
-using System.Buffers;
+﻿using System.Buffers;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -17,7 +16,7 @@ public sealed class Utf8StringConverter : JsonConverter<Utf8String>
             ? reader.ValueSequence.ToArray()
             : reader.ValueSpan.ToArray();
 
-        return new Utf8String(bytes);
+        return new(bytes);
     }
 
     /// <inheritdoc/>
