@@ -7,16 +7,11 @@
     <IsInternal>$(MSBuildProjectName.Contains('Internal'))</IsInternal>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(IsBenchmark)' == 'true'">
-    <LangVersion>9.0</LangVersion>
-  </PropertyGroup>
-
   <PropertyGroup Condition="'$(SelfContained)' != 'true' and '$(IsBenchmark)' == 'false' and '$(IsGenerator)' == 'false' and '$(IsInternal)' == 'false'">
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)\Common\**\*.cs" Visible="false" />
     <Compile Include="$(MSBuildThisFileDirectory)\$(SolutionName).Shared\**\*.cs" LinkBase="Shared" />
   </ItemGroup>
 
