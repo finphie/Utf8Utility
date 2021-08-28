@@ -32,7 +32,7 @@ using Utf8Utility;
 var s = new Utf8String("abc");
 var dict = new Utf8StringDictionary<int>();
 
-dict.Add(s, 1);
+dict.TryAdd(s, 1);
 dict.TryGetValue(s, out var result);
 ```
 
