@@ -48,7 +48,7 @@ public sealed class Utf8StringDictionary<TValue> : IUtf8StringDictionary<TValue>
             capacity = 2;
         }
 
-        capacity = BitOperations.RoundUpPowerOfTwo(capacity);
+        capacity = BitOperations.RoundUpToPowerOf2(capacity);
         _buckets = new int[capacity];
         _entries = new Entry[capacity];
     }
