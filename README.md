@@ -39,7 +39,6 @@ dict.TryGetValue(s, out var result);
 ## サポートフレームワーク
 
 - .NET 6
-- .NET 5
 - .NET Standard 2.0
 
 ## 作者
