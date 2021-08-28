@@ -1,10 +1,5 @@
 ﻿using System.Runtime.CompilerServices;
 
-#if NET5_0_OR_GREATER
-using System.Runtime.Intrinsics.Arm;
-using System.Runtime.Intrinsics.X86;
-#endif
-
 namespace Utf8Utility.Helpers;
 
 /// <summary>
@@ -18,26 +13,18 @@ static class BitOperations
     /// <param name="value">数値</param>
     /// <returns>2の累乗</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static int RoundUpPowerOfTwo(int value)
-    {
-#if NET5_0_OR_GREATER
-        return Lzcnt.IsSupported || ArmBase.IsSupported || X86Base.IsSupported
-            ? 1 << (32 - System.Numerics.BitOperations.LeadingZeroCount((uint)(value - 1)))
-            : SoftwareFallback(value);
+    public static int RoundUpToPowerOf2(int value)
+#if NET6_0_OR_GREATER
+        => (int)System.Numerics.BitOperations.RoundUpToPowerOf2((uint)value);
 #else
-        return SoftwareFallback(value);
-#endif
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        static int SoftwareFallback(int value)
-        {
-            value--;
-            value |= value >> 1;
-            value |= value >> 2;
-            value |= value >> 4;
-            value |= value >> 8;
-            value |= value >> 16;
-            return ++value;
-        }
+    {
+        value--;
+        value |= value >> 1;
+        value |= value >> 2;
+        value |= value >> 4;
+        value |= value >> 8;
+        value |= value >> 16;
+        return ++value;
     }
+#endif
 }
