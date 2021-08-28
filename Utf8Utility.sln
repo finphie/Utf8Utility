@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31025.218
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31606.5
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Utf8Utility", "Source\Utf8Utility\Utf8Utility.csproj", "{F03E6492-F6CB-4DC8-B308-CF93E7B4730E}"
 EndProject
@@ -11,11 +11,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{DB83EC23
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Utf8Utility.Tests", "Tests\Utf8Utility.Tests\Utf8Utility.Tests.csproj", "{8992E62E-BA22-4721-95EC-E2E5A6167283}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Utf8Utility.Serialization.Json", "Source\Utf8Utility.Serialization.Json\Utf8Utility.Serialization.Json.csproj", "{C26C581A-60FF-4630-B4A3-DF6250F518E4}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Utf8Utility.Benchmarks", "Source\Utf8Utility.Benchmarks\Utf8Utility.Benchmarks.csproj", "{B6D0A3B3-1C22-48C6-9F57-BF45B5007400}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Utf8Utility.Serialization.Json.Tests", "Tests\Utf8Utility.Serialization.Json.Tests\Utf8Utility.Serialization.Json.Tests.csproj", "{BD23370A-651B-4B1A-8011-249D5B092EDE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -31,18 +27,10 @@ Global
 		{8992E62E-BA22-4721-95EC-E2E5A6167283}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8992E62E-BA22-4721-95EC-E2E5A6167283}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8992E62E-BA22-4721-95EC-E2E5A6167283}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C26C581A-60FF-4630-B4A3-DF6250F518E4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C26C581A-60FF-4630-B4A3-DF6250F518E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C26C581A-60FF-4630-B4A3-DF6250F518E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C26C581A-60FF-4630-B4A3-DF6250F518E4}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B6D0A3B3-1C22-48C6-9F57-BF45B5007400}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B6D0A3B3-1C22-48C6-9F57-BF45B5007400}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B6D0A3B3-1C22-48C6-9F57-BF45B5007400}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B6D0A3B3-1C22-48C6-9F57-BF45B5007400}.Release|Any CPU.Build.0 = Release|Any CPU
-		{BD23370A-651B-4B1A-8011-249D5B092EDE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BD23370A-651B-4B1A-8011-249D5B092EDE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BD23370A-651B-4B1A-8011-249D5B092EDE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BD23370A-651B-4B1A-8011-249D5B092EDE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -50,9 +38,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{F03E6492-F6CB-4DC8-B308-CF93E7B4730E} = {3FFAAC6A-F722-4F57-ADC0-FDF115887493}
 		{8992E62E-BA22-4721-95EC-E2E5A6167283} = {DB83EC23-20C4-44EB-A46D-4FC3F0B5A276}
-		{C26C581A-60FF-4630-B4A3-DF6250F518E4} = {3FFAAC6A-F722-4F57-ADC0-FDF115887493}
 		{B6D0A3B3-1C22-48C6-9F57-BF45B5007400} = {3FFAAC6A-F722-4F57-ADC0-FDF115887493}
-		{BD23370A-651B-4B1A-8011-249D5B092EDE} = {DB83EC23-20C4-44EB-A46D-4FC3F0B5A276}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {0EB158F1-FA62-4BDF-9B1A-5A691086C4EF}
