@@ -9,11 +9,13 @@ on:
       - version.json
       - 'Source/**/*.cs'
       - 'Source/**/*.xaml'
+      - 'Source/**/*.razor'
       - 'Source/**/*.cshtml'
       - 'Source/**/*.csproj'
       - '**/*.sln'
       - '**/Directory.Build.props'
       - '**/Directory.Build.targets'
+      - '!Source/Common/*.cs'
       - '!Source/*.Benchmarks/**'
       - '!Source/*.Samples/**'
 
@@ -69,11 +71,6 @@ jobs:
         with:
           dotnet-version: ${{ env.dotnet-version }}
           include-prerelease: true
-
-      - name: Setup .NET 5
-        uses: actions/setup-dotnet@v1
-        with:
-          dotnet-version: 5.x
 
       - name: .NET Pack
         id: pack

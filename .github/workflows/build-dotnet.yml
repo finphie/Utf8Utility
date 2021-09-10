@@ -6,12 +6,14 @@ on:
     paths:
       - '**/*.cs'
       - '**/*.xaml'
+      - '**/*.razor'
       - '**/*.cshtml'
       - '**/*.csproj'
       - '**/*.sln'
       - '**/Directory.Build.props'
       - '**/Directory.Build.targets'
       - '**/.editorconfig'
+      - '**/.globalconfig'
       - .github/workflows/build-dotnet.yml
 
 env:
@@ -56,12 +58,6 @@ jobs:
         with:
           dotnet-version: ${{ env.dotnet-version }}
           include-prerelease: true
-
-      - name: Setup .NET 5
-        uses: actions/setup-dotnet@v1
-        if: matrix.os != 'macOS-latest'
-        with:
-          dotnet-version: 5.x
 
       - name: .NET Build
         run: dotnet build --configuration Release -warnAsError
