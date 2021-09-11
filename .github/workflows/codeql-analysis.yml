@@ -1,7 +1,9 @@
-name: Build(.NET)
+name: CodeQL
 
 on:
   pull_request:
+    branches:
+      - main
     paths:
       - '**/*.cs'
       - '**/*.xaml'
@@ -11,9 +13,6 @@ on:
       - '**/*.sln'
       - '**/Directory.Build.props'
       - '**/Directory.Build.targets'
-      - '**/.editorconfig'
-      - '**/.globalconfig'
-      - .github/workflows/build-dotnet.yml
 
 env:
   DOTNET_NOLOGO: true
@@ -21,15 +20,19 @@ env:
   dotnet-version: '6.0'
 
 jobs:
-  test:
-    name: Test
-    needs: check
+  analyze:
+    name: Analyze
     if: github.event.repository.name != 'dotfiles'
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-latest, ubuntu-latest, macOS-latest]
+        language: [csharp]
 
     steps:
       - name: Checkout repository
@@ -47,10 +50,17 @@ jobs:
           dotnet-version: ${{ env.dotnet-version }}
           include-prerelease: true
 
-      - name: .NET Build
+      - name: Initialize CodeQL
         if: steps.check.outputs.dotnet == 'True'
-        run: dotnet build --configuration Release -warnAsError
+        uses: github/codeql-action/init@v1
+        with:
+          languages: ${{ matrix.language }}
+          config-file: ./.github/codeql/codeql-config.yml
 
-      - name: .NET Test
+      - name: Autobuild
         if: steps.check.outputs.dotnet == 'True'
-        run: dotnet test --configuration Release --no-build
+        uses: github/codeql-action/autobuild@v1
+
+      - name: Perform CodeQL Analysis
+        if: steps.check.outputs.dotnet == 'True'
+        uses: github/codeql-action/analyze@v1
