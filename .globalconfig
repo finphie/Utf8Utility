@@ -2,10 +2,6 @@ is_global = true
 
 ### .NET コーディング規則 ###
 
-# 名前空間の設定
-# https://github.com/dotnet/roslyn/issues/55014
-dotnet_diagnostic.IDE0130.severity = none
-
 # using の整理
 dotnet_separate_import_directive_groups = false
 dotnet_sort_system_directives_first = true
@@ -346,6 +342,11 @@ dotnet_diagnostic.CA1715.severity = none
 # https://docs.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1716
 # 理由: 言語キーワードと重複してもエスケープすれば回避できる。
 dotnet_diagnostic.CA1716.severity = none
+
+# AD0001が発生するため、CA2252を無効化
+# https://github.com/dotnet/roslyn-analyzers/issues/5450
+# https://github.com/dotnet/roslyn-analyzers/issues/5482
+dotnet_diagnostic.CA2252.severity = none
 
 # 'type': base type 'type' is not CLS-compliant
 # https://docs.microsoft.com/dotnet/csharp/language-reference/compiler-messages/cs3009
