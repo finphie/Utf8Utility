@@ -4,13 +4,13 @@ using Xunit;
 
 namespace Utf8Utility.Tests;
 
-public sealed class Utf8StringDictionaryGetValueRefOrNullRefTest
+public sealed class Utf8ArrayDictionaryGetValueRefOrNullRefTest
 {
     [Fact]
     public void 存在するキー_値型アイテムを取得()
     {
-        var utf8Dict = new Utf8StringDictionary<int>();
-        var utf8Key = new Utf8String("abc");
+        var utf8Dict = new Utf8ArrayDictionary<int>();
+        var utf8Key = new Utf8Array("abc");
 
         utf8Dict.TryAdd(utf8Key, 1).Should().BeTrue();
 
@@ -30,8 +30,8 @@ public sealed class Utf8StringDictionaryGetValueRefOrNullRefTest
     [Fact]
     public void 存在するキー_参照型アイテムを取得()
     {
-        var utf8Dict = new Utf8StringDictionary<Test>();
-        var utf8Key = new Utf8String("abc");
+        var utf8Dict = new Utf8ArrayDictionary<Test>();
+        var utf8Key = new Utf8Array("abc");
 
         utf8Dict.TryAdd(utf8Key, new(1, "a")).Should().BeTrue();
 
@@ -65,8 +65,8 @@ public sealed class Utf8StringDictionaryGetValueRefOrNullRefTest
     [Fact]
     public void 存在しないキー_値型アイテムを取得()
     {
-        var utf8Dict = new Utf8StringDictionary<int>();
-        var utf8Key = new Utf8String("abc");
+        var utf8Dict = new Utf8ArrayDictionary<int>();
+        var utf8Key = new Utf8Array("abc");
 
         Unsafe.IsNullRef(ref utf8Dict.GetValueRefOrNullRef(utf8Key)).Should().BeTrue();
         Unsafe.IsNullRef(ref utf8Dict.GetValueRefOrNullRef(utf8Key.AsSpan())).Should().BeTrue();
@@ -75,8 +75,8 @@ public sealed class Utf8StringDictionaryGetValueRefOrNullRefTest
     [Fact]
     public void 存在しないキー_参照型アイテムを取得()
     {
-        var utf8Dict = new Utf8StringDictionary<Test>();
-        var utf8Key = new Utf8String("abc");
+        var utf8Dict = new Utf8ArrayDictionary<Test>();
+        var utf8Key = new Utf8Array("abc");
 
         Unsafe.IsNullRef(ref utf8Dict.GetValueRefOrNullRef(utf8Key)).Should().BeTrue();
         Unsafe.IsNullRef(ref utf8Dict.GetValueRefOrNullRef(utf8Key.AsSpan())).Should().BeTrue();

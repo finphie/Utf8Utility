@@ -7,7 +7,7 @@ namespace Utf8Utility.Benchmarks;
 
 [SimpleJob(RuntimeMoniker.Net60)]
 [MemoryDiagnoser]
-public class Utf8StringDictionaryTryAddBenchmark
+public class Utf8ArrayDictionaryTryAddBenchmark
 {
     const int Length = 10;
 
@@ -15,23 +15,23 @@ public class Utf8StringDictionaryTryAddBenchmark
     public int Count { get; set; }
 
     [NotNull]
-    public Utf8String[]? Keys { get; set; }
+    public Utf8Array[]? Keys { get; set; }
 
     [GlobalSetup]
     public void Setup()
     {
-        Keys = new Utf8String[Count];
+        Keys = new Utf8Array[Count];
 
         for (var i = 0; i < Keys.Length; i++)
         {
-            Keys[i] = new Utf8String(StringHelper.RandomString(Length));
+            Keys[i] = new Utf8Array(StringHelper.RandomString(Length));
         }
     }
 
     [Benchmark]
-    public Dictionary<Utf8String, int> Dictionary()
+    public Dictionary<Utf8Array, int> Dictionary()
     {
-        var dict = new Dictionary<Utf8String, int>();
+        var dict = new Dictionary<Utf8Array, int>();
 
         foreach (var key in Keys)
         {
@@ -42,9 +42,9 @@ public class Utf8StringDictionaryTryAddBenchmark
     }
 
     [Benchmark]
-    public Utf8StringDictionary<int> Utf8Dictionary()
+    public Utf8ArrayDictionary<int> Utf8Dictionary()
     {
-        var utf8Dict = new Utf8StringDictionary<int>();
+        var utf8Dict = new Utf8ArrayDictionary<int>();
 
         foreach (var key in Keys)
         {
@@ -55,9 +55,9 @@ public class Utf8StringDictionaryTryAddBenchmark
     }
 
     [Benchmark]
-    public Dictionary<Utf8String, int> Dictionary_SetCapacity()
+    public Dictionary<Utf8Array, int> Dictionary_SetCapacity()
     {
-        var dict = new Dictionary<Utf8String, int>(Count);
+        var dict = new Dictionary<Utf8Array, int>(Count);
 
         foreach (var key in Keys)
         {
@@ -68,9 +68,9 @@ public class Utf8StringDictionaryTryAddBenchmark
     }
 
     [Benchmark]
-    public Utf8StringDictionary<int> Utf8Dictionary_SetCapacity()
+    public Utf8ArrayDictionary<int> Utf8Dictionary_SetCapacity()
     {
-        var utf8Dict = new Utf8StringDictionary<int>(Count);
+        var utf8Dict = new Utf8ArrayDictionary<int>(Count);
 
         foreach (var key in Keys)
         {

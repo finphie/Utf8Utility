@@ -7,7 +7,7 @@ namespace Utf8Utility;
 /// </summary>
 /// <typeparam name="TValue">Dictionary内部の値の型</typeparam>
 [SuppressMessage("Naming", "CA1711:識別子は、不適切なサフィックスを含むことはできません", Justification = "Dictionary")]
-public interface IReadOnlyUtf8StringDictionary<TValue>
+public interface IReadOnlyUtf8ArrayDictionary<TValue>
 {
     /// <summary>
     /// 指定されたキーに対する値を取得します。
@@ -18,7 +18,7 @@ public interface IReadOnlyUtf8StringDictionary<TValue>
     /// 指定されたキーが存在した場合は<see langword="true"/>、
     /// それ以外の場合は<see langword="false"/>。
     /// </returns>
-    bool TryGetValue(Utf8String key, [MaybeNullWhen(false)] out TValue value);
+    bool TryGetValue(Utf8Array key, [MaybeNullWhen(false)] out TValue value);
 
     /// <summary>
     /// 指定されたキーに対する値を取得します。

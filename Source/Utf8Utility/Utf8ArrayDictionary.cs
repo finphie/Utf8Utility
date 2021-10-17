@@ -9,7 +9,7 @@ using Utf8Utility.Helpers;
 namespace Utf8Utility;
 
 /// <summary>
-/// <see cref="Utf8String"/>をキーにしたDictionaryです。
+/// <see cref="Utf8Array"/>をキーにしたDictionaryです。
 /// </summary>
 /// <remarks>
 /// Microsoft.Collections.Extensions.DictionarySlimを参考に実装しました。
@@ -17,26 +17,26 @@ namespace Utf8Utility;
 /// <typeparam name="TValue">Dictionary内部の値の型</typeparam>
 [DebuggerDisplay($"Count = {{{nameof(Count)}}}")]
 [SuppressMessage("Naming", "CA1711:識別子は、不適切なサフィックスを含むことはできません", Justification = "Dictionary")]
-public sealed class Utf8StringDictionary<TValue> : IUtf8StringDictionary<TValue>, IReadOnlyUtf8StringDictionary<TValue>
+public sealed class Utf8ArrayDictionary<TValue> : IUtf8ArrayDictionary<TValue>, IReadOnlyUtf8ArrayDictionary<TValue>
 {
     int _freeList = -1;
     int[] _buckets;
     Entry[] _entries;
 
     /// <summary>
-    /// <see cref="Utf8StringDictionary{TValue}"/>クラスの新しいインスタンスを初期化します。
+    /// <see cref="Utf8ArrayDictionary{TValue}"/>クラスの新しいインスタンスを初期化します。
     /// </summary>
-    public Utf8StringDictionary()
+    public Utf8ArrayDictionary()
     {
         _buckets = new int[2];
         _entries = new Entry[2];
     }
 
     /// <summary>
-    /// <see cref="Utf8StringDictionary{TValue}"/>クラスの新しいインスタンスを初期化します。
+    /// <see cref="Utf8ArrayDictionary{TValue}"/>クラスの新しいインスタンスを初期化します。
     /// </summary>
     /// <param name="capacity">格納できる要素数の初期値</param>
-    public Utf8StringDictionary(int capacity)
+    public Utf8ArrayDictionary(int capacity)
     {
         if (capacity < 0)
         {
@@ -63,7 +63,7 @@ public sealed class Utf8StringDictionary<TValue> : IUtf8StringDictionary<TValue>
 
     /// <inheritdoc/>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public bool TryAdd(Utf8String key, TValue value)
+    public bool TryAdd(Utf8Array key, TValue value)
     {
         var entries = _entries;
         var bucketIndex = GetBucketIndex(key.GetHashCode());
@@ -95,7 +95,7 @@ public sealed class Utf8StringDictionary<TValue> : IUtf8StringDictionary<TValue>
 
     /// <inheritdoc/>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public bool TryGetValue(Utf8String key, [MaybeNullWhen(false)] out TValue value)
+    public bool TryGetValue(Utf8Array key, [MaybeNullWhen(false)] out TValue value)
         => TryGetValue(key.AsSpan(), out value);
 
     /// <inheritdoc/>
@@ -179,7 +179,7 @@ public sealed class Utf8StringDictionary<TValue> : IUtf8StringDictionary<TValue>
     /// それ以外の場合はNull参照。
     /// </returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public ref TValue GetValueRefOrNullRef(Utf8String key)
+    public ref TValue GetValueRefOrNullRef(Utf8Array key)
         => ref GetValueRefOrNullRef(key.AsSpan());
 
     /// <summary>
@@ -241,7 +241,7 @@ public sealed class Utf8StringDictionary<TValue> : IUtf8StringDictionary<TValue>
     ref int GetBucket(int bucketIndex)
         => ref _buckets.DangerousGetReferenceAt(bucketIndex);
 
-    ref TValue AddKey(Utf8String key, int bucketIndex)
+    ref TValue AddKey(Utf8Array key, int bucketIndex)
     {
         var entries = _entries;
         int entryIndex;
@@ -299,7 +299,7 @@ public sealed class Utf8StringDictionary<TValue> : IUtf8StringDictionary<TValue>
     [DebuggerDisplay("({Key}, {Value})->{Next}")]
     struct Entry
     {
-        public Utf8String Key;
+        public Utf8Array Key;
         public TValue Value;
         public int Next;
     }

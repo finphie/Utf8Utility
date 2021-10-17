@@ -3,15 +3,15 @@ using Xunit;
 
 namespace Utf8Utility.Tests;
 
-public sealed class Utf8StringDictionaryTryGetValueTest
+public sealed class Utf8ArrayDictionaryTryGetValueTest
 {
     [Theory]
     [InlineData("")]
     [InlineData("abc")]
     public void 存在するキー_値型アイテムを取得_trueを返す(string key)
     {
-        var utf8Dict = new Utf8StringDictionary<int>();
-        var utf8Key = new Utf8String(key);
+        var utf8Dict = new Utf8ArrayDictionary<int>();
+        var utf8Key = new Utf8Array(key);
 
         utf8Dict.TryAdd(utf8Key, 1).Should().BeTrue();
 
@@ -30,8 +30,8 @@ public sealed class Utf8StringDictionaryTryGetValueTest
     [InlineData("abc")]
     public void 存在するキー_参照型アイテムを取得_trueを返す(string key)
     {
-        var utf8Dict = new Utf8StringDictionary<Test>();
-        var utf8Key = new Utf8String(key);
+        var utf8Dict = new Utf8ArrayDictionary<Test>();
+        var utf8Key = new Utf8Array(key);
         var value = new Test(1, "a");
 
         utf8Dict.TryAdd(utf8Key, value).Should().BeTrue();
@@ -54,8 +54,8 @@ public sealed class Utf8StringDictionaryTryGetValueTest
     [InlineData("abc")]
     public void 存在するキー_最初に追加された値型アイテムを取得_trueを返す(string key)
     {
-        var utf8Dict = new Utf8StringDictionary<int>();
-        var utf8Key = new Utf8String(key);
+        var utf8Dict = new Utf8ArrayDictionary<int>();
+        var utf8Key = new Utf8Array(key);
 
         utf8Dict.TryAdd(utf8Key, 1).Should().BeTrue();
 
@@ -73,8 +73,8 @@ public sealed class Utf8StringDictionaryTryGetValueTest
     [InlineData("abc")]
     public void 存在するキー_最初に追加された参照型アイテムを取得_trueを返す(string key)
     {
-        var utf8Dict = new Utf8StringDictionary<Test>();
-        var utf8Key = new Utf8String(key);
+        var utf8Dict = new Utf8ArrayDictionary<Test>();
+        var utf8Key = new Utf8Array(key);
         var value = new Test(1, "a");
 
         utf8Dict.TryAdd(utf8Key, value).Should().BeTrue();
@@ -95,8 +95,8 @@ public sealed class Utf8StringDictionaryTryGetValueTest
     [InlineData("abc")]
     public void 存在しないキー_falseを返す(string key)
     {
-        var utf8Dict = new Utf8StringDictionary<int>();
-        var utf8Key = new Utf8String(key);
+        var utf8Dict = new Utf8ArrayDictionary<int>();
+        var utf8Key = new Utf8Array(key);
 
         utf8Dict.TryGetValue(utf8Key, out var utf8DictValue).Should().BeFalse();
         utf8DictValue.Should().Be(default);

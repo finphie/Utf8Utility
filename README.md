@@ -29,11 +29,11 @@ dotnet add package Utf8Utility -s https://pkgs.dev.azure.com/finphie/Main/_packa
 ```csharp
 using Utf8Utility;
 
-var s = new Utf8String("abc");
-var dict = new Utf8StringDictionary<int>();
+var array = new Utf8Array("abc");
+var dict = new Utf8ArrayDictionary<int>();
 
-dict.TryAdd(s, 1);
-dict.TryGetValue(s, out var result);
+dict.TryAdd(array, 1);
+dict.TryGetValue(array, out var result);
 ```
 
 ## サポートフレームワーク
