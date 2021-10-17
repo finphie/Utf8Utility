@@ -3,12 +3,12 @@ using Xunit;
 
 namespace Utf8Utility.Tests;
 
-public sealed class Utf8StringDictionaryClearTest
+public sealed class Utf8ArrayDictionaryClearTest
 {
     [Fact]
     public void 要素0の状態_Countが0になる()
     {
-        var utf8Dict = new Utf8StringDictionary<int>();
+        var utf8Dict = new Utf8ArrayDictionary<int>();
         utf8Dict.Clear();
         utf8Dict.Count.Should().Be(0);
         utf8Dict.Clear();
@@ -18,8 +18,8 @@ public sealed class Utf8StringDictionaryClearTest
     [Fact]
     public void 要素1の状態_Countが0になる()
     {
-        var utf8Dict = new Utf8StringDictionary<int>();
-        var utf8Key = new Utf8String("abc");
+        var utf8Dict = new Utf8ArrayDictionary<int>();
+        var utf8Key = new Utf8Array("abc");
         utf8Dict.TryAdd(utf8Key, 1);
         utf8Dict.Clear();
 

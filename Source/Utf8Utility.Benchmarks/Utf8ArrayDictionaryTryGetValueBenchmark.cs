@@ -6,30 +6,30 @@ namespace Utf8Utility.Benchmarks;
 
 [SimpleJob(RuntimeMoniker.Net60)]
 [MemoryDiagnoser]
-public class Utf8StringDictionaryTryGetValueBenchmark
+public class Utf8ArrayDictionaryTryGetValueBenchmark
 {
     const int Length = 10;
 
-    readonly Dictionary<Utf8String, int> _dict = new();
-    readonly Utf8StringDictionary<int> _utf8Dict = new();
+    readonly Dictionary<Utf8Array, int> _dict = new();
+    readonly Utf8ArrayDictionary<int> _utf8Dict = new();
 
     [Params(1, 10, 100, 1000)]
     public int Count { get; set; }
 
-    public Utf8String Key { get; set; }
+    public Utf8Array Key { get; set; }
 
     [GlobalSetup]
     public void Setup()
     {
         for (var i = 0; i < Count; i++)
         {
-            var key = new Utf8String(StringHelper.RandomString(Length));
+            var key = new Utf8Array(StringHelper.RandomString(Length));
 
             _dict.Add(key, 1);
             _utf8Dict.TryAdd(key, 1);
         }
 
-        Key = new Utf8String(StringHelper.RandomString(Length));
+        Key = new Utf8Array(StringHelper.RandomString(Length));
         _dict.Add(Key, 1);
         _utf8Dict.TryAdd(Key, 1);
     }
