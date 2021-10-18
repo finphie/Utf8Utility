@@ -3,7 +3,7 @@
 namespace Utf8Utility;
 
 /// <summary>
-/// UTF-8文字列用のDictionary
+/// UTF-8配列用のDictionary
 /// </summary>
 /// <typeparam name="TValue">Dictionary内部の値の型</typeparam>
 [SuppressMessage("Naming", "CA1711:識別子は、不適切なサフィックスを含むことはできません", Justification = "Dictionary")]
