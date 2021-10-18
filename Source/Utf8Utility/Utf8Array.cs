@@ -8,9 +8,9 @@ namespace Utf8Utility;
 /// </summary>
 public readonly struct Utf8Array
 #if NET6_0_OR_GREATER
-        : IEquatable<Utf8Array>, ISpanFormattable
+    : IEquatable<Utf8Array>, ISpanFormattable
 #else
-        : IEquatable<Utf8Array>, IFormattable
+    : IEquatable<Utf8Array>, IFormattable
 #endif
 {
     readonly byte[] _value;
@@ -36,10 +36,10 @@ public readonly struct Utf8Array
     public static Utf8Array Empty { get; }
 
     /// <summary>
-    /// UTF-8バイト数を取得します。
+    /// バイト数を取得します。
     /// </summary>
     /// <value>
-    /// UTF-8バイト数
+    /// バイト数
     /// </value>
     public int Length => _value.Length;
 

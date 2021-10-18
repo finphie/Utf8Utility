@@ -71,7 +71,7 @@ public sealed class Utf8ArrayDictionary<TValue> : IUtf8ArrayDictionary<TValue>, 
 
         do
         {
-            // 境界チェック削除のためにdo-while文の必要がある。
+            // 境界チェック削除のためにdo-while文にする必要がある。
             // https://github.com/dotnet/runtime/issues/9422
             if ((uint)i >= (uint)entries.Length)
             {
@@ -199,7 +199,7 @@ public sealed class Utf8ArrayDictionary<TValue> : IUtf8ArrayDictionary<TValue>, 
 
         do
         {
-            // 境界チェック削除のためにdo-while文の必要がある。
+            // 境界チェック削除のためにdo-while文にする必要がある。
             // https://github.com/dotnet/runtime/issues/9422
             if ((uint)i >= (uint)entries.Length)
             {
