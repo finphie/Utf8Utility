@@ -28,6 +28,47 @@ public readonly struct Utf8Array
     public Utf8Array(string s) => _value = Encoding.UTF8.GetBytes(s);
 
     /// <summary>
+    /// <see cref="Utf8Array"/>構造体の新しいインスタンスを取得します。
+    /// </summary>
+    /// <param name="bytes">UTF-8でエンコードされた<see cref="ReadOnlySpan{T}"/>構造体</param>
+    public Utf8Array(ReadOnlySpan<byte> bytes) => _value = bytes.ToArray();
+
+    /// <summary>
+    /// <see cref="Utf8Array"/>構造体の新しいインスタンスを取得します。
+    /// </summary>
+    /// <param name="chars">UTF-16でエンコードされた<see cref="ReadOnlySpan{T}"/>構造体</param>
+    public Utf8Array(ReadOnlySpan<char> chars)
+    {
+        int count;
+
+#if NET5_0_OR_GREATER
+        count = Encoding.UTF8.GetByteCount(chars);
+        _value = new byte[count];
+        Encoding.UTF8.GetBytes(chars, _value);
+#else
+        if (chars.IsEmpty)
+        {
+            _value = Array.Empty<byte>();
+            return;
+        }
+
+        unsafe
+        {
+            fixed (char* c = chars)
+            {
+                count = Encoding.UTF8.GetByteCount(c, chars.Length);
+                _value = new byte[count];
+
+                fixed (byte* bytes = _value)
+                {
+                    Encoding.UTF8.GetBytes(c, chars.Length, bytes, _value.Length);
+                }
+            }
+        }
+#endif
+    }
+
+    /// <summary>
     /// 空文字列を表す<see cref="Utf8Array"/>インスタンスを取得します。
     /// </summary>
     /// <value>
