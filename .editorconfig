@@ -6,14 +6,14 @@ charset = utf-8
 end_of_line = lf
 indent_style = space
 indent_size = 4
-insert_final_newline = false
+insert_final_newline = true
 trim_trailing_whitespace = true
 
-# ソリューションファイル
+# Visual Studio ソリューションファイル
 [*.sln]
 indent_style = tab
 
-# プロジェクトファイル
+# C# プロジェクトファイル
 [*.csproj]
 indent_size = 2
 
@@ -41,11 +41,11 @@ trim_trailing_whitespace = false
 [*.tt]
 charset = utf-8-bom
 
-# C#ファイル
-[*.cs]
+# C# ファイル
+[*.{cs,razor,cshtml}]
 charset = utf-8-bom
 
 # C# 生成コード
 # https://github.com/dotnet/roslyn/issues/54119
-[**/Generated/**.cs]
+[{*Generated,**/Generated/**}.cs]
 dotnet_diagnostic.CS1591.severity = none
