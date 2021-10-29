@@ -148,8 +148,15 @@ public readonly struct Utf8Array
     public ReadOnlySpan<byte> AsSpan() => _value;
 
     /// <summary>
+    /// 先頭の値を取得します。
+    /// このメソッドは境界チェックを行いません。
+    /// </summary>
+    /// <returns>先頭の値</returns>
+    public byte DangerousGetByte() => _value.DangerousGetReference();
+
+    /// <summary>
     /// 指定されたインデックスの値を取得します。
-    /// このメソッドは、境界チェックを行いません。
+    /// このメソッドは境界チェックを行いません。
     /// </summary>
     /// <param name="index">インデックス</param>
     /// <returns>指定されたインデックスの値</returns>
