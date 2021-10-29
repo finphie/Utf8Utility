@@ -13,10 +13,13 @@ public static class Utf8ArrayExtensions
     /// </summary>
     /// <param name="array">UTF-8配列</param>
     /// <returns>最初の1文字のバイト数</returns>
+    /// <exception cref="ArgumentException">UTF-8配列が空の場合、この例外をスローします。</exception>
     /// <exception cref="InvalidOperationException">バイト数の取得に失敗した場合、この例外をスローします。</exception>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int GetFirstCharByteCount(this Utf8Array array)
     {
+        ThrowHelper.ThrowArgumentExceptionIfEmpty(array);
+
         var first = array.DangerousGetByte();
 
         if (first < 0x80)
