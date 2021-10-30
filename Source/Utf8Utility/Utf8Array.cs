@@ -166,69 +166,8 @@ public readonly struct Utf8Array : IEquatable<Utf8Array>,
     /// <returns>指定された要素への参照</returns>
     public ref byte DangerousGetReferenceAt(int index) => ref _value.DangerousGetReferenceAt(index);
 
-    public int CompareTo2(Utf8Array other)
-    {
-        var xSpan = _value.AsSpan();
-        var ySpan = other.AsSpan();
-
-        do
-        {
-            if (Rune.DecodeFromUtf8(xSpan, out var xRune, out var bytesConsumed) != OperationStatus.Done)
-            {
-                goto Error;
-            }
-
-            if (Rune.DecodeFromUtf8(ySpan, out var yRune, out _) != OperationStatus.Done)
-            {
-                goto Error;
-            }
-
-            var diffUtf8SequenceLength = xRune.Utf8SequenceLength - yRune.Utf8SequenceLength;
-
-            // 最初の要素が異なるバイト数の文字だった場合、バイト数が短い順にする。
-            if (diffUtf8SequenceLength != 0)
-            {
-                return diffUtf8SequenceLength;
-            }
-
-            if (!xRune.IsAscii || !yRune.IsAscii)
-            {
-                goto Utf16Compare;
-            }
-
-            var xStart = DangerousGetReference();
-            var yStart = other.DangerousGetReference();
-            var c = ((char)xStart).CompareTo((char)yStart);
-
-            if (c != 0)
-            {
-                return c;
-            }
-
-            // TODO:
-            xSpan = xSpan[bytesConsumed..];
-            //System.Runtime.InteropServices.MemoryMarshal.CreateSpan
-        }
-        while (true);
-
-    Utf16Compare:
-        var count = Encoding.UTF8.GetCharCount(xSpan);
-        Span<char> buffer = stackalloc char[count];
-
-        if (!TryFormat(buffer, out _, ReadOnlySpan<char>.Empty, null))
-        {
-            goto Error;
-        }
-
-        if (!other.TryFormat(buffer, out _, ReadOnlySpan<char>.Empty, null))
-        {
-            goto Error;
-        }
-
-    Error:
-        throw new ArgumentException();
-    }
-
+    /// <inheritdoc/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public int CompareTo(Utf8Array other)
     {
         var xSpan = _value.AsSpan();
