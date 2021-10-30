@@ -154,6 +154,13 @@ public readonly struct Utf8Array : IEquatable<Utf8Array>,
     public ReadOnlySpan<byte> AsSpan() => _value;
 
     /// <summary>
+    /// <see cref="ReadOnlySpan{Byte}"/>構造体を取得します。
+    /// </summary>
+    /// <param name="start">初期インデックス</param>
+    /// <returns><see cref="ReadOnlySpan{Byte}"/>構造体</returns>
+    public ReadOnlySpan<byte> AsSpan(int start) => AsSpan()[start..];
+
+    /// <summary>
     /// 最初の要素への参照を取得します。
     /// このメソッドは境界チェックを行いません。
     /// </summary>
@@ -174,11 +181,9 @@ public readonly struct Utf8Array : IEquatable<Utf8Array>,
     {
         var xStart = DangerousGetReference();
         var yStart = other.DangerousGetReference();
+        var index = 0;
 
-        ref var xEnd = ref Unsafe.Add(ref xStart, (nint)(uint)(Length - 1));
-        ref var yEnd = ref Unsafe.Add(ref yStart, (nint)(uint)(Length - 1));
-
-        while (!Unsafe.AreSame(ref xStart, ref xEnd) && !Unsafe.AreSame(ref yStart, ref yEnd))
+        while (index < Length && index < other.Length)
         {
             var xByteCount = UnicodeUtility.GetUtf8SequenceLength(xStart);
             var yByteCount = UnicodeUtility.GetUtf8SequenceLength(yStart);
@@ -204,13 +209,15 @@ public readonly struct Utf8Array : IEquatable<Utf8Array>,
 
             xStart = Unsafe.Add(ref xStart, (nint)(uint)xByteCount);
             yStart = Unsafe.Add(ref yStart, (nint)(uint)yByteCount);
+
+            index++;
         }
 
         return Length - other.Length;
 
     Utf16Compare:
-        var xSpan = _value.AsSpan();
-        var ySpan = other.AsSpan();
+        var xSpan = _value.AsSpan(index);
+        var ySpan = other.AsSpan(index);
 
         var xCount = Encoding.UTF8.GetCharCount(xSpan);
         Span<char> xBuffer = stackalloc char[xCount];
