@@ -1,8 +1,10 @@
 ﻿using System.Buffers;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Text;
 using Microsoft.Toolkit.HighPerformance;
 using Utf8Utility.Extensions;
+using Utf8Utility.Helpers;
 
 namespace Utf8Utility;
 
@@ -170,9 +172,6 @@ public readonly struct Utf8Array : IEquatable<Utf8Array>,
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public int CompareTo(Utf8Array other)
     {
-        var xSpan = _value.AsSpan();
-        var ySpan = other.AsSpan();
-
         var xStart = DangerousGetReference();
         var yStart = other.DangerousGetReference();
 
@@ -181,26 +180,19 @@ public readonly struct Utf8Array : IEquatable<Utf8Array>,
 
         while (!Unsafe.AreSame(ref xStart, ref xEnd) && !Unsafe.AreSame(ref yStart, ref yEnd))
         {
-            var xByteCount = xStart.GetFirstCharByteCount();
-
-            if (xByteCount != 1)
-            {
-                goto Utf16Compare;
-            }
-
-            var yByteCount = yStart.GetFirstCharByteCount();
-
-            if (yByteCount != 1)
-            {
-                goto Utf16Compare;
-            }
-
+            var xByteCount = UnicodeUtility.GetUtf8SequenceLength(xStart);
+            var yByteCount = UnicodeUtility.GetUtf8SequenceLength(yStart);
             var diffUtf8SequenceLength = xByteCount - yByteCount;
 
             // 最初の要素が異なるバイト数の文字だった場合、バイト数が短い順にする。
             if (diffUtf8SequenceLength != 0)
             {
                 return diffUtf8SequenceLength;
+            }
+
+            if (xByteCount != 1)
+            {
+                goto Utf16Compare;
             }
 
             var c = ((char)xStart).CompareTo((char)yStart);
@@ -217,6 +209,9 @@ public readonly struct Utf8Array : IEquatable<Utf8Array>,
         return Length - other.Length;
 
     Utf16Compare:
+        var xSpan = _value.AsSpan();
+        var ySpan = other.AsSpan();
+
         var xCount = Encoding.UTF8.GetCharCount(xSpan);
         Span<char> xBuffer = stackalloc char[xCount];
 
