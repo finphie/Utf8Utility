@@ -2,6 +2,7 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Text.Unicode;
 using Microsoft.Toolkit.HighPerformance;
 using Utf8Utility.Extensions;
 using Utf8Utility.Helpers;
@@ -222,7 +223,7 @@ public readonly struct Utf8Array : IEquatable<Utf8Array>,
         var xCount = Encoding.UTF8.GetCharCount(xSpan);
         Span<char> xBuffer = stackalloc char[xCount];
 
-        if (!TryFormat(xBuffer, out _, ReadOnlySpan<char>.Empty, null))
+        if (Utf8.ToUtf16(xSpan, xBuffer, out _, out _) != OperationStatus.Done)
         {
             goto Error;
         }
@@ -230,7 +231,7 @@ public readonly struct Utf8Array : IEquatable<Utf8Array>,
         var yCount = Encoding.UTF8.GetCharCount(ySpan);
         Span<char> yBuffer = stackalloc char[yCount];
 
-        if (!other.TryFormat(yBuffer, out _, ReadOnlySpan<char>.Empty, null))
+        if (Utf8.ToUtf16(ySpan, yBuffer, out _, out _) != OperationStatus.Done)
         {
             goto Error;
         }
