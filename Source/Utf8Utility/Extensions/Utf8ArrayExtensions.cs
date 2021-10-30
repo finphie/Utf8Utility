@@ -16,33 +16,33 @@ public static class Utf8ArrayExtensions
     /// <exception cref="ArgumentException">UTF-8配列が空の場合、この例外をスローします。</exception>
     /// <exception cref="InvalidOperationException">バイト数の取得に失敗した場合、この例外をスローします。</exception>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static int GetFirstCharByteCount(this Utf8Array array)
+    public static int GetFirstCharByteCount(this byte value)
     {
-        ThrowHelper.ThrowArgumentExceptionIfEmpty(array);
+        //ThrowHelper.ThrowArgumentExceptionIfEmpty(array);
 
-        var first = array.DangerousGetByte();
+        //var first = array.DangerousGetReference();
 
-        if (first < 0x80)
+        if (value <= 0x7F)
         {
             return 1;
         }
 
-        if ((first & 0xE0) == 0xC0)
+        if ((value & 0xE0) == 0xC0)
         {
             return 2;
         }
 
-        if ((first & 0xF0) == 0xE0)
+        if ((value & 0xF0) == 0xE0)
         {
             return 3;
         }
 
-        if ((first & 0xF8) == 0xF0)
+        if ((value & 0xF8) == 0xF0)
         {
             return 4;
         }
 
-        ThrowHelper.ThrowInvalidUtf8SequenceException(nameof(array));
+        ThrowHelper.ThrowInvalidUtf8SequenceException(nameof(value));
         return default;
     }
 }

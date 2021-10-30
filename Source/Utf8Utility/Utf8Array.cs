@@ -1,16 +1,20 @@
-﻿using System.Text;
+﻿using System.Buffers;
+using System.Runtime.CompilerServices;
+using System.Text;
 using Microsoft.Toolkit.HighPerformance;
+using Utf8Utility.Extensions;
 
 namespace Utf8Utility;
 
 /// <summary>
 /// UTF-8配列を表す構造体です。
 /// </summary>
-public readonly struct Utf8Array
+[System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1036:比較可能な型でメソッドをオーバーライドします", Justification = "<保留中>")]
+public readonly struct Utf8Array : IEquatable<Utf8Array>,
 #if NET6_0_OR_GREATER
-    : IEquatable<Utf8Array>, ISpanFormattable
+    ISpanFormattable, IComparable<Utf8Array>
 #else
-    : IEquatable<Utf8Array>, IFormattable
+    IFormattable
 #endif
 {
     readonly byte[] _value;
@@ -148,17 +152,151 @@ public readonly struct Utf8Array
     public ReadOnlySpan<byte> AsSpan() => _value;
 
     /// <summary>
-    /// 先頭の値を取得します。
+    /// 最初の要素への参照を取得します。
     /// このメソッドは境界チェックを行いません。
     /// </summary>
-    /// <returns>先頭の値</returns>
-    public byte DangerousGetByte() => _value.DangerousGetReference();
+    /// <returns>最初の要素への参照</returns>
+    public ref byte DangerousGetReference() => ref _value.DangerousGetReference();
 
     /// <summary>
-    /// 指定されたインデックスの値を取得します。
+    /// 指定された要素への参照を取得します。
     /// このメソッドは境界チェックを行いません。
     /// </summary>
     /// <param name="index">インデックス</param>
-    /// <returns>指定されたインデックスの値</returns>
-    public byte DangerousGetByte(int index) => _value.DangerousGetReferenceAt(index);
+    /// <returns>指定された要素への参照</returns>
+    public ref byte DangerousGetReferenceAt(int index) => ref _value.DangerousGetReferenceAt(index);
+
+    public int CompareTo2(Utf8Array other)
+    {
+        var xSpan = _value.AsSpan();
+        var ySpan = other.AsSpan();
+
+        do
+        {
+            if (Rune.DecodeFromUtf8(xSpan, out var xRune, out var bytesConsumed) != OperationStatus.Done)
+            {
+                goto Error;
+            }
+
+            if (Rune.DecodeFromUtf8(ySpan, out var yRune, out _) != OperationStatus.Done)
+            {
+                goto Error;
+            }
+
+            var diffUtf8SequenceLength = xRune.Utf8SequenceLength - yRune.Utf8SequenceLength;
+
+            // 最初の要素が異なるバイト数の文字だった場合、バイト数が短い順にする。
+            if (diffUtf8SequenceLength != 0)
+            {
+                return diffUtf8SequenceLength;
+            }
+
+            if (!xRune.IsAscii || !yRune.IsAscii)
+            {
+                goto Utf16Compare;
+            }
+
+            var xStart = DangerousGetReference();
+            var yStart = other.DangerousGetReference();
+            var c = ((char)xStart).CompareTo((char)yStart);
+
+            if (c != 0)
+            {
+                return c;
+            }
+
+            // TODO:
+            xSpan = xSpan[bytesConsumed..];
+            //System.Runtime.InteropServices.MemoryMarshal.CreateSpan
+        }
+        while (true);
+
+    Utf16Compare:
+        var count = Encoding.UTF8.GetCharCount(xSpan);
+        Span<char> buffer = stackalloc char[count];
+
+        if (!TryFormat(buffer, out _, ReadOnlySpan<char>.Empty, null))
+        {
+            goto Error;
+        }
+
+        if (!other.TryFormat(buffer, out _, ReadOnlySpan<char>.Empty, null))
+        {
+            goto Error;
+        }
+
+    Error:
+        throw new ArgumentException();
+    }
+
+    public int CompareTo(Utf8Array other)
+    {
+        var xSpan = _value.AsSpan();
+        var ySpan = other.AsSpan();
+
+        var xStart = DangerousGetReference();
+        var yStart = other.DangerousGetReference();
+
+        ref var xEnd = ref Unsafe.Add(ref xStart, (nint)(uint)(Length - 1));
+        ref var yEnd = ref Unsafe.Add(ref yStart, (nint)(uint)(Length - 1));
+
+        while (!Unsafe.AreSame(ref xStart, ref xEnd) && !Unsafe.AreSame(ref yStart, ref yEnd))
+        {
+            var xByteCount = xStart.GetFirstCharByteCount();
+
+            if (xByteCount != 1)
+            {
+                goto Utf16Compare;
+            }
+
+            var yByteCount = yStart.GetFirstCharByteCount();
+
+            if (yByteCount != 1)
+            {
+                goto Utf16Compare;
+            }
+
+            var diffUtf8SequenceLength = xByteCount - yByteCount;
+
+            // 最初の要素が異なるバイト数の文字だった場合、バイト数が短い順にする。
+            if (diffUtf8SequenceLength != 0)
+            {
+                return diffUtf8SequenceLength;
+            }
+
+            var c = ((char)xStart).CompareTo((char)yStart);
+
+            if (c != 0)
+            {
+                return c;
+            }
+
+            xStart = Unsafe.Add(ref xStart, (nint)(uint)xByteCount);
+            yStart = Unsafe.Add(ref yStart, (nint)(uint)yByteCount);
+        }
+
+        return Length - other.Length;
+
+    Utf16Compare:
+        var xCount = Encoding.UTF8.GetCharCount(xSpan);
+        Span<char> xBuffer = stackalloc char[xCount];
+
+        if (!TryFormat(xBuffer, out _, ReadOnlySpan<char>.Empty, null))
+        {
+            goto Error;
+        }
+
+        var yCount = Encoding.UTF8.GetCharCount(ySpan);
+        Span<char> yBuffer = stackalloc char[yCount];
+
+        if (!other.TryFormat(yBuffer, out _, ReadOnlySpan<char>.Empty, null))
+        {
+            goto Error;
+        }
+
+        return ((ReadOnlySpan<char>)xBuffer).CompareTo(yBuffer, StringComparison.InvariantCulture);
+
+    Error:
+        throw new ArgumentException();
+    }
 }
