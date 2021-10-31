@@ -4,7 +4,6 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.Unicode;
 using Microsoft.Toolkit.HighPerformance;
-using Utf8Utility.Extensions;
 using Utf8Utility.Helpers;
 
 namespace Utf8Utility;
@@ -183,8 +182,9 @@ public readonly struct Utf8Array : IEquatable<Utf8Array>,
         var xStart = DangerousGetReference();
         var yStart = other.DangerousGetReference();
         var index = 0;
+        var length = Math.Min(Length, other.Length);
 
-        while (index < Length && index < other.Length)
+        while (index < length)
         {
             var xByteCount = UnicodeUtility.GetUtf8SequenceLength(xStart);
             var yByteCount = UnicodeUtility.GetUtf8SequenceLength(yStart);
@@ -211,9 +211,9 @@ public readonly struct Utf8Array : IEquatable<Utf8Array>,
                 return c;
             }
 
-            xStart = Unsafe.Add(ref xStart, (nint)(uint)xByteCount);
-            yStart = Unsafe.Add(ref yStart, (nint)(uint)yByteCount);
-
+            // Ascii文字なのでオフセットに1を加算
+            xStart = Unsafe.Add(ref xStart, 1);
+            yStart = Unsafe.Add(ref yStart, 1);
             index++;
         }
 
