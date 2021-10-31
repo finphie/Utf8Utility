@@ -196,6 +196,9 @@ public readonly struct Utf8Array : IEquatable<Utf8Array>,
                 return diffUtf8SequenceLength;
             }
 
+            // 非Ascii文字の場合、UTF-16に変換して比較する。
+            // 本来は変換せずに比較すべきだが、実装が大変なので妥協している。
+            // xByteCount == yByteCountなのでyByteCountでの条件分岐は不要。
             if (xByteCount != 1)
             {
                 goto Utf16Compare;
