@@ -13,6 +13,8 @@ public static class UnicodeUtility
     /// <summary>
     /// Given a Unicode scalar value, gets the number of UTF-8 code units required to represent this value.
     /// </summary>
+    /// <param name="value">値</param>
+    /// <returns>指定されたUTF-8値のバイト数</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int GetUtf8SequenceLength(uint value)
     {
