@@ -196,27 +196,23 @@ public readonly struct Utf8Array : IEquatable<Utf8Array>,
                 return diffUtf8SequenceLength;
             }
 
-            // 非Ascii文字の場合、UTF-16に変換して比較する。
-            // 本来は変換せずに比較すべきだが、実装が大変なので妥協している。
+            // 非Ascii文字の場合、バイナリを比較する。
             // xByteCount == yByteCountなのでyByteCountでの条件分岐は不要。
             if (xByteCount != 1)
             {
-                goto Utf16Compare;
+                goto SequenceCompare;
             }
 
-            var xc = (char)xStart;
-            var yc = (char)yStart;
+            var xValue = (char)xStart;
+            var yValue = (char)yStart;
 
-            unsafe
+            var xSpanValue = MemoryMarshal.CreateReadOnlySpan(ref xValue, 1);
+            var ySpanValue = MemoryMarshal.CreateReadOnlySpan(ref yValue, 1);
+            var c = xSpanValue.CompareTo(ySpanValue, StringComparison.InvariantCulture);
+
+            if (c != 0)
             {
-                var xs = new ReadOnlySpan<char>(Unsafe.AsPointer(ref xc), 1);
-                var ys = new ReadOnlySpan<char>(Unsafe.AsPointer(ref yc), 1);
-                var c = xs.CompareTo(ys, StringComparison.InvariantCulture);
-
-                if (c != 0)
-                {
-                    return c;
-                }
+                return c;
             }
 
             // Ascii文字なのでオフセットに1を加算
@@ -227,29 +223,10 @@ public readonly struct Utf8Array : IEquatable<Utf8Array>,
 
         return Length - other.Length;
 
-    Utf16Compare:
+    SequenceCompare:
         var xSpan = _value.AsSpan(index);
         var ySpan = other.AsSpan(index);
 
-        var xCount = Encoding.UTF8.GetCharCount(xSpan);
-        Span<char> xBuffer = stackalloc char[xCount];
-
-        if (Utf8.ToUtf16(xSpan, xBuffer, out _, out _) != OperationStatus.Done)
-        {
-            goto Error;
-        }
-
-        var yCount = Encoding.UTF8.GetCharCount(ySpan);
-        Span<char> yBuffer = stackalloc char[yCount];
-
-        if (Utf8.ToUtf16(ySpan, yBuffer, out _, out _) != OperationStatus.Done)
-        {
-            goto Error;
-        }
-
-        return ((ReadOnlySpan<char>)xBuffer).CompareTo(yBuffer, StringComparison.InvariantCulture);
-
-    Error:
-        throw new ArgumentException();
+        return xSpan.SequenceCompareTo(ySpan);
     }
 }
