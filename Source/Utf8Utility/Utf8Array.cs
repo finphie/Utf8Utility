@@ -1,10 +1,12 @@
-﻿using System.Buffers;
+﻿using System.Text;
+using Microsoft.Toolkit.HighPerformance;
+#if NET6_0_OR_GREATER
+using System.Buffers;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Text;
 using System.Text.Unicode;
-using Microsoft.Toolkit.HighPerformance;
 using Utf8Utility.Helpers;
+#endif
 
 namespace Utf8Utility;
 
@@ -47,7 +49,7 @@ public readonly struct Utf8Array : IEquatable<Utf8Array>,
     {
         int count;
 
-#if NET5_0_OR_GREATER
+#if NET6_0_OR_GREATER
         count = Encoding.UTF8.GetByteCount(chars);
         _value = new byte[count];
         Encoding.UTF8.GetBytes(chars, _value);
@@ -144,36 +146,7 @@ public readonly struct Utf8Array : IEquatable<Utf8Array>,
 #if NET6_0_OR_GREATER
     /// <inheritdoc/>
     public bool TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider)
-        => System.Text.Unicode.Utf8.ToUtf16(_value, destination, out _, out charsWritten) == System.Buffers.OperationStatus.Done;
-#endif
-
-    /// <summary>
-    /// <see cref="ReadOnlySpan{Byte}"/>構造体を取得します。
-    /// </summary>
-    /// <returns><see cref="ReadOnlySpan{Byte}"/>構造体</returns>
-    public ReadOnlySpan<byte> AsSpan() => _value;
-
-    /// <summary>
-    /// <see cref="ReadOnlySpan{Byte}"/>構造体を取得します。
-    /// </summary>
-    /// <param name="start">初期インデックス</param>
-    /// <returns><see cref="ReadOnlySpan{Byte}"/>構造体</returns>
-    public ReadOnlySpan<byte> AsSpan(int start) => AsSpan()[start..];
-
-    /// <summary>
-    /// 最初の要素への参照を取得します。
-    /// このメソッドは境界チェックを行いません。
-    /// </summary>
-    /// <returns>最初の要素への参照</returns>
-    public ref byte DangerousGetReference() => ref _value.DangerousGetReference();
-
-    /// <summary>
-    /// 指定された要素への参照を取得します。
-    /// このメソッドは境界チェックを行いません。
-    /// </summary>
-    /// <param name="index">インデックス</param>
-    /// <returns>指定された要素への参照</returns>
-    public ref byte DangerousGetReferenceAt(int index) => ref _value.DangerousGetReferenceAt(index);
+        => Utf8.ToUtf16(_value, destination, out _, out charsWritten) == OperationStatus.Done;
 
     /// <inheritdoc/>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -208,11 +181,11 @@ public readonly struct Utf8Array : IEquatable<Utf8Array>,
 
             var xSpanValue = MemoryMarshal.CreateReadOnlySpan(ref xValue, 1);
             var ySpanValue = MemoryMarshal.CreateReadOnlySpan(ref yValue, 1);
-            var c = xSpanValue.CompareTo(ySpanValue, StringComparison.InvariantCulture);
+            var result = xSpanValue.CompareTo(ySpanValue, StringComparison.InvariantCulture);
 
-            if (c != 0)
+            if (result != 0)
             {
-                return c;
+                return result;
             }
 
             // Ascii文字なのでオフセットに1を加算
@@ -229,4 +202,38 @@ public readonly struct Utf8Array : IEquatable<Utf8Array>,
 
         return xSpan.SequenceCompareTo(ySpan);
     }
+#endif
+
+    /// <summary>
+    /// <see cref="ReadOnlySpan{Byte}"/>構造体を取得します。
+    /// </summary>
+    /// <returns><see cref="ReadOnlySpan{Byte}"/>構造体</returns>
+    public ReadOnlySpan<byte> AsSpan() => _value;
+
+    /// <summary>
+    /// <see cref="ReadOnlySpan{Byte}"/>構造体を取得します。
+    /// </summary>
+    /// <param name="start">初期インデックス</param>
+    /// <returns><see cref="ReadOnlySpan{Byte}"/>構造体</returns>
+    public ReadOnlySpan<byte> AsSpan(int start) =>
+#if NET6_0_OR_GREATER
+        AsSpan()[start..];
+#else
+        AsSpan().Slice(start);
+#endif
+
+    /// <summary>
+    /// 最初の要素への参照を取得します。
+    /// このメソッドは境界チェックを行いません。
+    /// </summary>
+    /// <returns>最初の要素への参照</returns>
+    public ref byte DangerousGetReference() => ref _value.DangerousGetReference();
+
+    /// <summary>
+    /// 指定された要素への参照を取得します。
+    /// このメソッドは境界チェックを行いません。
+    /// </summary>
+    /// <param name="index">インデックス</param>
+    /// <returns>指定された要素への参照</returns>
+    public ref byte DangerousGetReferenceAt(int index) => ref _value.DangerousGetReferenceAt(index);
 }
