@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Text;
 using Microsoft.Toolkit.HighPerformance;
 #if NET6_0_OR_GREATER
 using System.Buffers;
@@ -13,7 +14,7 @@ namespace Utf8Utility;
 /// <summary>
 /// UTF-8配列を表す構造体です。
 /// </summary>
-[System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1036:比較可能な型でメソッドをオーバーライドします", Justification = "<保留中>")]
+[SuppressMessage("Design", "CA1036:比較可能な型でメソッドをオーバーライドします", Justification = "配列")]
 public readonly struct Utf8Array : IEquatable<Utf8Array>,
 #if NET6_0_OR_GREATER
     ISpanFormattable, IComparable<Utf8Array>
