@@ -204,11 +204,19 @@ public readonly struct Utf8Array : IEquatable<Utf8Array>,
                 goto Utf16Compare;
             }
 
-            var c = ((char)xStart).CompareTo((char)yStart);
+            var xc = (char)xStart;
+            var yc = (char)yStart;
 
-            if (c != 0)
+            unsafe
             {
-                return c;
+                var xs = new ReadOnlySpan<char>(Unsafe.AsPointer(ref xc), 1);
+                var ys = new ReadOnlySpan<char>(Unsafe.AsPointer(ref yc), 1);
+                var c = xs.CompareTo(ys, StringComparison.InvariantCulture);
+
+                if (c != 0)
+                {
+                    return c;
+                }
             }
 
             // Ascii文字なのでオフセットに1を加算
