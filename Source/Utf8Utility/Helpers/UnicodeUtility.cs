@@ -9,7 +9,7 @@ namespace Utf8Utility.Helpers;
 /// <summary>
 /// Unicode関連のヘルパークラスです。
 /// </summary>
-public static class UnicodeUtility
+static class UnicodeUtility
 {
     /// <summary>
     /// Given a Unicode scalar value, gets the number of UTF-8 code units required to represent this value.
