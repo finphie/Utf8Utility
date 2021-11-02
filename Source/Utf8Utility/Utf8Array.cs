@@ -170,7 +170,7 @@ public readonly struct Utf8Array : IEquatable<Utf8Array>,
                 return diffUtf8SequenceLength;
             }
 
-            // 非Ascii文字の場合、バイナリを比較する。
+            // 非Ascii文字の場合、UTF-16文字列に変換して比較する。
             // xByteCount == yByteCountなのでyByteCountでの条件分岐は不要。
             if (xByteCount != 1)
             {
@@ -199,26 +199,43 @@ public readonly struct Utf8Array : IEquatable<Utf8Array>,
 
         static int Utf16Compare(ReadOnlySpan<byte> x, ReadOnlySpan<byte> y)
         {
+            const int StackallocThreshold = 256;
+
+            char[]? xPool = null;
             var xCount = Encoding.UTF8.GetCharCount(x);
-            Span<char> xBuffer = stackalloc char[xCount];
+            Span<char> xBuffer = xCount <= StackallocThreshold
+                ? stackalloc char[xCount]
+                : (xPool = ArrayPool<char>.Shared.Rent(xCount));
 
             if (Utf8.ToUtf16(x, xBuffer, out _, out _) != OperationStatus.Done)
             {
-                goto Error;
+                ThrowHelper.ThrowInvalidUtf8SequenceException(nameof(x));
             }
 
+            char[]? yPool = null;
             var yCount = Encoding.UTF8.GetCharCount(y);
-            Span<char> yBuffer = stackalloc char[yCount];
+            Span<char> yBuffer = yCount <= StackallocThreshold
+                ? stackalloc char[yCount]
+                : (yPool = ArrayPool<char>.Shared.Rent(yCount));
 
             if (Utf8.ToUtf16(y, yBuffer, out _, out _) != OperationStatus.Done)
             {
-                goto Error;
+                ThrowHelper.ThrowInvalidUtf8SequenceException(nameof(y));
             }
 
-            return ((ReadOnlySpan<char>)xBuffer).CompareTo(yBuffer, StringComparison.InvariantCulture);
+            var result = ((ReadOnlySpan<char>)xBuffer).CompareTo(yBuffer, StringComparison.InvariantCulture);
 
-        Error:
-            throw new ArgumentException();
+            if (xPool is not null)
+            {
+                ArrayPool<char>.Shared.Return(xPool);
+            }
+
+            if (yPool is not null)
+            {
+                ArrayPool<char>.Shared.Return(yPool);
+            }
+
+            return result;
         }
     }
 #endif
