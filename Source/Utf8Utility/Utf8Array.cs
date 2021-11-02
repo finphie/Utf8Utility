@@ -207,23 +207,15 @@ public readonly struct Utf8Array : IEquatable<Utf8Array>,
                 ? stackalloc char[xCount]
                 : (xPool = ArrayPool<char>.Shared.Rent(xCount));
 
-            if (Utf8.ToUtf16(x, xBuffer, out _, out _) != OperationStatus.Done)
-            {
-                ThrowHelper.ThrowInvalidUtf8SequenceException(nameof(x));
-            }
-
             char[]? yPool = null;
             var yCount = Encoding.UTF8.GetCharCount(y);
             Span<char> yBuffer = yCount <= StackallocThreshold
                 ? stackalloc char[yCount]
                 : (yPool = ArrayPool<char>.Shared.Rent(yCount));
 
-            if (Utf8.ToUtf16(y, yBuffer, out _, out _) != OperationStatus.Done)
-            {
-                ThrowHelper.ThrowInvalidUtf8SequenceException(nameof(y));
-            }
-
-            var result = ((ReadOnlySpan<char>)xBuffer).CompareTo(yBuffer, StringComparison.InvariantCulture);
+            var result = ToUtf16(x, xBuffer) && ToUtf16(y, yBuffer)
+                ? ((ReadOnlySpan<char>)xBuffer).CompareTo(yBuffer, StringComparison.InvariantCulture)
+                : 0;
 
             if (xPool is not null)
             {
@@ -237,6 +229,10 @@ public readonly struct Utf8Array : IEquatable<Utf8Array>,
 
             return result;
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        static bool ToUtf16(ReadOnlySpan<byte> source, Span<char> destination)
+            => Utf8.ToUtf16(source, destination, out _, out _) == OperationStatus.Done;
     }
 #endif
 
