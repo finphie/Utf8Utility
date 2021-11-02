@@ -174,7 +174,7 @@ public readonly struct Utf8Array : IEquatable<Utf8Array>,
             // xByteCount == yByteCountなのでyByteCountでの条件分岐は不要。
             if (xByteCount != 1)
             {
-                goto Utf16Compare;
+                return Utf16Compare(_value.AsSpan(index), other.AsSpan(index));
             }
 
             var xValue = (char)xStart;
@@ -197,30 +197,29 @@ public readonly struct Utf8Array : IEquatable<Utf8Array>,
 
         return Length - other.Length;
 
-    Utf16Compare:
-        var xSpan = _value.AsSpan(index);
-        var ySpan = other.AsSpan(index);
-
-        var xCount = Encoding.UTF8.GetCharCount(xSpan);
-        Span<char> xBuffer = stackalloc char[xCount];
-
-        if (Utf8.ToUtf16(xSpan, xBuffer, out _, out _) != OperationStatus.Done)
+        static int Utf16Compare(ReadOnlySpan<byte> x, ReadOnlySpan<byte> y)
         {
-            goto Error;
+            var xCount = Encoding.UTF8.GetCharCount(x);
+            Span<char> xBuffer = stackalloc char[xCount];
+
+            if (Utf8.ToUtf16(x, xBuffer, out _, out _) != OperationStatus.Done)
+            {
+                goto Error;
+            }
+
+            var yCount = Encoding.UTF8.GetCharCount(y);
+            Span<char> yBuffer = stackalloc char[yCount];
+
+            if (Utf8.ToUtf16(y, yBuffer, out _, out _) != OperationStatus.Done)
+            {
+                goto Error;
+            }
+
+            return ((ReadOnlySpan<char>)xBuffer).CompareTo(yBuffer, StringComparison.InvariantCulture);
+
+        Error:
+            throw new ArgumentException();
         }
-
-        var yCount = Encoding.UTF8.GetCharCount(ySpan);
-        Span<char> yBuffer = stackalloc char[yCount];
-
-        if (Utf8.ToUtf16(ySpan, yBuffer, out _, out _) != OperationStatus.Done)
-        {
-            goto Error;
-        }
-
-        return ((ReadOnlySpan<char>)xBuffer).CompareTo(yBuffer, StringComparison.InvariantCulture);
-
-    Error:
-        throw new ArgumentException();
     }
 #endif
 
