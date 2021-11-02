@@ -215,7 +215,7 @@ public readonly struct Utf8Array : IEquatable<Utf8Array>,
 
             var result = ToUtf16(x, xBuffer) && ToUtf16(y, yBuffer)
                 ? ((ReadOnlySpan<char>)xBuffer).CompareTo(yBuffer, StringComparison.InvariantCulture)
-                : 0;
+                : x.SequenceCompareTo(y);
 
             if (xPool is not null)
             {
