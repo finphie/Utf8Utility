@@ -136,7 +136,7 @@ public readonly partial struct Utf8Array : IEquatable<Utf8Array>,
     [SuppressMessage("Style", "IDE0075:条件式を簡略化する", Justification = "最適化のため")]
     public bool IsEmpty
     {
-        // インライン化された場合の最適化のため、三項演算子でtrue/falseとの比較を行う。
+        // インライン化された場合の最適化のため、三項演算子でtrue/falseを返す。
         // https://github.com/dotnet/runtime/issues/4207
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         get => (_value is null || _value.Length == 0) ? true : false;
