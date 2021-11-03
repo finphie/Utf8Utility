@@ -29,6 +29,17 @@ public sealed class Utf8ArrayCompareTest
         x1.CompareTo(x2).Should().Be(0);
     }
 
+    [Fact]
+    public void 空文字列同士_0を返す()
+    {
+        var x1 = new Utf8Array(string.Empty);
+        var x2 = Utf8Array.Empty;
+
+        Utf8Array.Compare(x1, x2).Should().Be(0);
+        Utf8Array.CompareOrdinal(x1, x2).Should().Be(0);
+        x1.CompareTo(x2).Should().Be(0);
+    }
+
     [Theory]
     [InlineData("", "a")]
     [InlineData("", "α")]
