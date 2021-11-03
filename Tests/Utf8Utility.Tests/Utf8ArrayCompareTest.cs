@@ -4,7 +4,7 @@ using Xunit;
 
 namespace Utf8Utility.Tests;
 
-public sealed class Utf8ArrayCompareToTest
+public sealed class Utf8ArrayCompareTest
 {
     [Theory]
     [InlineData("")]
@@ -19,11 +19,12 @@ public sealed class Utf8ArrayCompareToTest
     [InlineData("aα")]
     [InlineData("aあ")]
     [InlineData("a𩸽")]
-    public void 同じ文字列_0を返す(string value)
+    public void 同じ文字列_CurrentCulture_0を返す(string value)
     {
         var x1 = new Utf8Array(value);
         var x2 = new Utf8Array(value);
 
+        Utf8Array.Compare(x1, x2).Should().Be(0);
         x1.CompareTo(x2).Should().Be(0);
     }
 
@@ -47,11 +48,12 @@ public sealed class Utf8ArrayCompareToTest
     [InlineData("{", "0")]
     [InlineData("0", "a")]
     [InlineData("a", "A")]
-    public void 異なる文字列_0より小さい数値を返す(string value1, string value2)
+    public void 異なる文字列_CurrentCulture_0より小さい数値を返す(string value1, string value2)
     {
         var x1 = new Utf8Array(value1);
         var x2 = new Utf8Array(value2);
 
+        Utf8Array.Compare(x1, x2).Should().BeNegative();
         x1.CompareTo(x2).Should().BeNegative();
     }
 }
