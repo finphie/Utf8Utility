@@ -45,7 +45,7 @@ public sealed class Utf8ArrayCompareToTest
     [InlineData("ab", "aα")]
     [InlineData("!", "0")]
     [InlineData("{", "0")]
-    [InlineData("0", "A")]
+    [InlineData("0", "a")]
     [InlineData("a", "A")]
     public void 異なる文字列_0より小さい数値を返す(string value1, string value2)
     {
