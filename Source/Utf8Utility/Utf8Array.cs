@@ -1,16 +1,23 @@
-﻿using System.Text;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Text;
 using Microsoft.Toolkit.HighPerformance;
+#if NET6_0_OR_GREATER
+using System.Buffers;
+using System.Runtime.CompilerServices;
+using System.Text.Unicode;
+#endif
 
 namespace Utf8Utility;
 
 /// <summary>
 /// UTF-8配列を表す構造体です。
 /// </summary>
-public readonly struct Utf8Array
+[SuppressMessage("Design", "CA1036:比較可能な型でメソッドをオーバーライドします", Justification = "配列")]
+public readonly partial struct Utf8Array : IEquatable<Utf8Array>,
 #if NET6_0_OR_GREATER
-    : IEquatable<Utf8Array>, ISpanFormattable
+    ISpanFormattable, IComparable<Utf8Array>
 #else
-    : IEquatable<Utf8Array>, IFormattable
+    IFormattable
 #endif
 {
     readonly byte[] _value;
@@ -41,7 +48,7 @@ public readonly struct Utf8Array
     {
         int count;
 
-#if NET5_0_OR_GREATER
+#if NET6_0_OR_GREATER
         count = Encoding.UTF8.GetByteCount(chars);
         _value = new byte[count];
         Encoding.UTF8.GetBytes(chars, _value);
@@ -138,7 +145,11 @@ public readonly struct Utf8Array
 #if NET6_0_OR_GREATER
     /// <inheritdoc/>
     public bool TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider)
-        => System.Text.Unicode.Utf8.ToUtf16(_value, destination, out _, out charsWritten) == System.Buffers.OperationStatus.Done;
+        => Utf8.ToUtf16(_value, destination, out _, out charsWritten) == OperationStatus.Done;
+
+    /// <inheritdoc/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public int CompareTo(Utf8Array other) => Compare(this, other);
 #endif
 
     /// <summary>
@@ -148,10 +159,29 @@ public readonly struct Utf8Array
     public ReadOnlySpan<byte> AsSpan() => _value;
 
     /// <summary>
-    /// 指定されたインデックスの値を取得します。
-    /// このメソッドは、境界チェックを行いません。
+    /// <see cref="ReadOnlySpan{Byte}"/>構造体を取得します。
+    /// </summary>
+    /// <param name="start">初期インデックス</param>
+    /// <returns><see cref="ReadOnlySpan{Byte}"/>構造体</returns>
+    public ReadOnlySpan<byte> AsSpan(int start) =>
+#if NET6_0_OR_GREATER
+        AsSpan()[start..];
+#else
+        AsSpan().Slice(start);
+#endif
+
+    /// <summary>
+    /// 最初の要素への参照を取得します。
+    /// このメソッドは境界チェックを行いません。
+    /// </summary>
+    /// <returns>最初の要素への参照</returns>
+    public ref byte DangerousGetReference() => ref _value.DangerousGetReference();
+
+    /// <summary>
+    /// 指定された要素への参照を取得します。
+    /// このメソッドは境界チェックを行いません。
     /// </summary>
     /// <param name="index">インデックス</param>
-    /// <returns>指定されたインデックスの値</returns>
-    public byte DangerousGetByte(int index) => _value.DangerousGetReferenceAt(index);
+    /// <returns>指定された要素への参照</returns>
+    public ref byte DangerousGetReferenceAt(int index) => ref _value.DangerousGetReferenceAt(index);
 }
