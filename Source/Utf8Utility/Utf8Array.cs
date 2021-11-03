@@ -1,9 +1,9 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using System.Text;
 using Microsoft.Toolkit.HighPerformance;
 #if NET6_0_OR_GREATER
 using System.Buffers;
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using System.Text.Unicode;
 #else
@@ -127,6 +127,22 @@ public readonly partial struct Utf8Array : IEquatable<Utf8Array>,
     public int Length => _value.Length;
 
     /// <summary>
+    /// UTF-8配列が空かどうかを判定します。
+    /// </summary>
+    /// <returns>
+    /// UTF-8配列が空の場合は<see langword="true"/>、
+    /// それ以外は<see langword="false"/>。
+    /// </returns>
+    [SuppressMessage("Style", "IDE0075:条件式を簡略化する", Justification = "最適化のため")]
+    public bool IsEmpty
+    {
+        // インライン化された場合の最適化のため、三項演算子でtrue/falseとの比較を行う。
+        // https://github.com/dotnet/runtime/issues/4207
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        get => (_value is null || _value.Length == 0) ? true : false;
+    }
+
+    /// <summary>
     /// <see cref="Utf8Array"/>構造体の新しいインスタンスを取得します。
     /// </summary>
     /// <param name="bytes">UTF-8でエンコードされた<see cref="byte"/>配列</param>
@@ -159,16 +175,6 @@ public readonly partial struct Utf8Array : IEquatable<Utf8Array>,
     /// 同じ場合は<see langword="false"/>。
     /// </returns>
     public static bool operator !=(Utf8Array left, Utf8Array right) => !(left == right);
-
-    /// <summary>
-    /// UTF-8配列が空かどうかを判定します。
-    /// </summary>
-    /// <returns>
-    /// UTF-8配列が空の場合は<see langword="true"/>、
-    /// それ以外は<see langword="false"/>。
-    /// </returns>
-    // [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public bool IsEmpty => this == Empty;
 
     /// <inheritdoc/>
     public override bool Equals(object? obj)
