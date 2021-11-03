@@ -110,7 +110,11 @@ public readonly partial struct Utf8Array : IEquatable<Utf8Array>,
     /// <value>
     /// 空文字列を表す<see cref="Utf8Array"/>インスタンス
     /// </value>
-    public static Utf8Array Empty { get; }
+    public static Utf8Array Empty
+    {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        get => EmptyArray.Value;
+    }
 
     /// <summary>
     /// バイト数を取得します。
@@ -230,4 +234,23 @@ public readonly partial struct Utf8Array : IEquatable<Utf8Array>,
     /// <param name="index">インデックス</param>
     /// <returns>指定された要素への参照</returns>
     public ref byte DangerousGetReferenceAt(int index) => ref _value.DangerousGetReferenceAt(index);
+
+    /// <summary>
+    /// <see cref="Utf8Array"/>構造体の新しいインスタンスを取得します。
+    /// このメソッドは引数チェックを行いません。
+    /// </summary>
+    /// <param name="bytes">UTF-8でエンコードされた<see cref="byte"/>配列</param>
+    /// <returns><see cref="Utf8Array"/>構造体の新しいインスタンス</returns>
+    internal static Utf8Array UnsafeCreate(byte[] bytes)
+    {
+        Utf8Array array = default;
+        Unsafe.AsRef(array._value) = bytes;
+
+        return array;
+    }
+
+    static class EmptyArray
+    {
+        public static readonly Utf8Array Value = UnsafeCreate(Array.Empty<byte>());
+    }
 }

@@ -30,7 +30,7 @@ public sealed class Utf8ArrayEqualsTest
     public void 空文字列同士_trueを返す()
     {
         var x1 = new Utf8Array(string.Empty);
-        var x2 = new Utf8Array(string.Empty);
+        var x2 = Utf8Array.Empty;
 
         x1.Equals(x2).Should().BeTrue();
         x1.Equals(Utf8Array.Empty).Should().BeTrue();
@@ -67,7 +67,7 @@ public sealed class Utf8ArrayEqualsTest
     public void Boxing_空文字列同士_trueを返す()
     {
         var x1 = new Utf8Array(string.Empty);
-        var x2 = (object)new Utf8Array(string.Empty);
+        var x2 = (object)Utf8Array.Empty;
 
         x1.Equals(x2).Should().BeTrue();
         x1.Equals((object)Utf8Array.Empty).Should().BeTrue();
