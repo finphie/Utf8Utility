@@ -160,6 +160,16 @@ public readonly partial struct Utf8Array : IEquatable<Utf8Array>,
     /// </returns>
     public static bool operator !=(Utf8Array left, Utf8Array right) => !(left == right);
 
+    /// <summary>
+    /// UTF-8配列が空かどうかを判定します。
+    /// </summary>
+    /// <returns>
+    /// UTF-8配列が空の場合は<see langword="true"/>、
+    /// それ以外は<see langword="false"/>。
+    /// </returns>
+    // [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public bool IsEmpty => this == Empty;
+
     /// <inheritdoc/>
     public override bool Equals(object? obj)
         => obj is Utf8Array x && Equals(x);
