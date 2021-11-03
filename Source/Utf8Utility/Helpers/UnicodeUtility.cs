@@ -6,7 +6,7 @@ namespace Utf8Utility.Helpers;
 /// <summary>
 /// Unicode関連のヘルパークラスです。
 /// </summary>
-static class UnicodeUtility
+public static class UnicodeUtility
 {
     /// <summary>
     /// 指定されたUTF-8値のバイト数を取得します。
