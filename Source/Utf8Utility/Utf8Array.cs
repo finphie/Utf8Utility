@@ -6,6 +6,8 @@ using Microsoft.Toolkit.HighPerformance;
 using System.Buffers;
 using System.Runtime.InteropServices;
 using System.Text.Unicode;
+#else
+using Utf8Utility.Helpers;
 #endif
 
 namespace Utf8Utility;
@@ -27,13 +29,39 @@ public readonly partial struct Utf8Array : IEquatable<Utf8Array>,
     /// <see cref="Utf8Array"/>構造体の新しいインスタンスを取得します。
     /// </summary>
     /// <param name="bytes">UTF-8でエンコードされた<see cref="byte"/>配列</param>
-    public Utf8Array(byte[] bytes) => _value = bytes;
+    /// <exception cref="ArgumentNullException">引数がnullの場合、この例外をスローします。</exception>
+    public Utf8Array(byte[] bytes)
+    {
+#if NET6_0_OR_GREATER
+        ArgumentNullException.ThrowIfNull(bytes);
+#else
+        if (bytes is null)
+        {
+            ThrowHelper.ThrowArgumentNullException(nameof(bytes));
+        }
+#endif
+
+        _value = bytes;
+    }
 
     /// <summary>
     /// <see cref="Utf8Array"/>構造体の新しいインスタンスを取得します。
     /// </summary>
     /// <param name="s">文字列</param>
-    public Utf8Array(string s) => _value = Encoding.UTF8.GetBytes(s);
+    /// <exception cref="ArgumentNullException">引数がnullの場合、この例外をスローします。</exception>
+    public Utf8Array(string s)
+    {
+#if NET6_0_OR_GREATER
+        ArgumentNullException.ThrowIfNull(s);
+#else
+        if (s is null)
+        {
+            ThrowHelper.ThrowArgumentNullException(nameof(s));
+        }
+#endif
+
+        _value = Encoding.UTF8.GetBytes(s);
+    }
 
     /// <summary>
     /// <see cref="Utf8Array"/>構造体の新しいインスタンスを取得します。
