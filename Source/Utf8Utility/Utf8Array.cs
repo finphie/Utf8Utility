@@ -1,9 +1,10 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using System.Text;
 using Microsoft.Toolkit.HighPerformance;
 #if NET6_0_OR_GREATER
 using System.Buffers;
-using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Text.Unicode;
 #endif
 
@@ -156,19 +157,36 @@ public readonly partial struct Utf8Array : IEquatable<Utf8Array>,
     /// <see cref="ReadOnlySpan{Byte}"/>構造体を取得します。
     /// </summary>
     /// <returns><see cref="ReadOnlySpan{Byte}"/>構造体</returns>
-    public ReadOnlySpan<byte> AsSpan() => _value;
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public ReadOnlySpan<byte> AsSpan()
+    {
+        // 引数の検証をスキップするために、手動でReadOnlySpanを作成する。
+#if NET6_0_OR_GREATER
+        ref var valueStart = ref DangerousGetReference();
+        return MemoryMarshal.CreateReadOnlySpan(ref valueStart, _value.Length);
+#else
+        var span = new ReadOnlySpan<byte>(_value, 0, _value.Length);
+        return span;
+#endif
+    }
 
     /// <summary>
     /// <see cref="ReadOnlySpan{Byte}"/>構造体を取得します。
     /// </summary>
     /// <param name="start">初期インデックス</param>
     /// <returns><see cref="ReadOnlySpan{Byte}"/>構造体</returns>
-    public ReadOnlySpan<byte> AsSpan(int start) =>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public ReadOnlySpan<byte> AsSpan(int start)
+    {
+        // 引数の検証をスキップするために、手動でReadOnlySpanを作成する。
 #if NET6_0_OR_GREATER
-        AsSpan()[start..];
+        ref var valueStart = ref DangerousGetReferenceAt(start);
+        return MemoryMarshal.CreateReadOnlySpan(ref valueStart, _value.Length);
 #else
-        AsSpan().Slice(start);
+        var span = new ReadOnlySpan<byte>(_value, start, _value.Length);
+        return span;
 #endif
+    }
 
     /// <summary>
     /// 最初の要素への参照を取得します。
