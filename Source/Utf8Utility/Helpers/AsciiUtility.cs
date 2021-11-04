@@ -28,6 +28,14 @@ public static class AsciiUtility
         0x41, 0x41, 0x41, 0x41, 0x41, 0x41, 0x41, 0x41, 0x41, 0x41, 0x41, 0x14, 0x19, 0x15, 0x19, 0x0E, // U+0070..U+007F
     };
 
+    /// <summary>
+    /// 値が空または空白かどうかを判定します。
+    /// </summary>
+    /// <param name="value">値</param>
+    /// <returns>
+    /// 値が空または空白の場合は<see langword="true"/>、
+    /// それ以外は<see langword="false"/>。
+    /// </returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static bool IsWhiteSpace(byte value)
     {
