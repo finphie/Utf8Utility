@@ -24,8 +24,6 @@ public readonly partial struct Utf8Array : IEquatable<Utf8Array>,
     IFormattable
 #endif
 {
-    const byte IsWhiteSpaceFlag = 0x80;
-
     readonly byte[] _value;
 
     /// <summary>
@@ -260,18 +258,23 @@ public readonly partial struct Utf8Array : IEquatable<Utf8Array>,
             ref var valueStart = ref DangerousGetReference();
             ref var value = ref Unsafe.AddByteOffset(ref valueStart, i);
 
-            // 文字コードが[0x21..0x7F]にあるか
+            // 文字コードが[0x21..0x7F]の範囲にあるか
             if ((sbyte)value > (sbyte)' ')
             {
                 break;
             }
 
-            // 空白確認には、{Rune|char}.IsWhiteSpaceを利用できる。
             // Ascii文字の場合のみ、処理を最適化する。
+            // 空白確認には、{Rune|char}.IsWhiteSpaceを利用できる。
+            // Rune.DecodeFromUtf8は引数チェックなどがあるので遅く、
+            // 回避するためにUnsafe.Asでvalueを直接書き換える必要があるが、Ascii文字限定。
+            // charにキャストして比較する方法もAscii文字限定。
+            // したがって、最適化を行う場合はAscii文字かどうかでの分岐は必須。
             if (UnicodeUtility.IsAsciiCodePoint(value))
             {
                 // 直前の処理でAscii文字であることは確定しているため、
-                // {Rune|char}.IsWhiteSpaceを使用せず、最適化のため自前実装で比較を行う。
+                // {Rune|char}.IsWhiteSpaceを使用せず、自前実装で比較を行う。
+                // 上記メソッドではAscii文字かどうかで判定が入ってしまうため。
                 // https://github.com/dotnet/runtime/blob/cebe877f6d1b3d668370f9c6ea068bd1534b8227/src/libraries/System.Private.CoreLib/src/System/Text/Rune.cs#L1350-L1366
                 // https://github.com/dotnet/runtime/blob/cebe877f6d1b3d668370f9c6ea068bd1534b8227/src/libraries/System.Private.CoreLib/src/System/Char.cs#L274-L287
                 if (AsciiUtility.IsWhiteSpace(value))
@@ -292,6 +295,7 @@ public readonly partial struct Utf8Array : IEquatable<Utf8Array>,
                 }
             }
 
+            // ここに到達した場合、空白以外の文字のはず。
             break;
         }
 
