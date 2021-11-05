@@ -4,7 +4,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.Unicode;
-using Utf8Utility.Helpers;
+using Utf8Utility.Text;
 
 namespace Utf8Utility;
 

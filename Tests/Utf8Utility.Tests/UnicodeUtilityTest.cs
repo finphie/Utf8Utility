@@ -1,5 +1,5 @@
 ﻿using FluentAssertions;
-using Utf8Utility.Helpers;
+using Utf8Utility.Text;
 using Xunit;
 
 namespace Utf8Utility.Tests;
