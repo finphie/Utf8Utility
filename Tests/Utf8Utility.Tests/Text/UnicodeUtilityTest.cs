@@ -2,7 +2,7 @@
 using Utf8Utility.Text;
 using Xunit;
 
-namespace Utf8Utility.Tests;
+namespace Utf8Utility.Tests.Text;
 
 public sealed class UnicodeUtilityTest
 {
