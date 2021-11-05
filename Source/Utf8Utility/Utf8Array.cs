@@ -125,7 +125,7 @@ public readonly partial struct Utf8Array : IEquatable<Utf8Array>,
     /// <value>
     /// バイト数
     /// </value>
-    public int Length => _value.Length;
+    public int ByteCount => _value.Length;
 
     /// <summary>
     /// UTF-8配列が空かどうかを判定します。

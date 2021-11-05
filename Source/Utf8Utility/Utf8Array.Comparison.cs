@@ -53,7 +53,7 @@ partial struct Utf8Array
         var xStart = x.DangerousGetReference();
         var yStart = y.DangerousGetReference();
         var index = 0;
-        var length = Math.Min(x.Length, y.Length);
+        var length = Math.Min(x.ByteCount, y.ByteCount);
 
         while (index < length)
         {
@@ -93,7 +93,7 @@ partial struct Utf8Array
             index++;
         }
 
-        return x.Length - y.Length;
+        return x.ByteCount - y.ByteCount;
 
         static int Utf16Compare(ReadOnlySpan<byte> x, ReadOnlySpan<byte> y, StringComparison comparisonType)
         {
