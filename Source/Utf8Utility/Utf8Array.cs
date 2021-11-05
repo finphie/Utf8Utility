@@ -231,10 +231,11 @@ public readonly partial struct Utf8Array : IEquatable<Utf8Array>,
     {
         // 引数の検証をスキップするために、手動でReadOnlySpanを作成する。
 #if NET6_0_OR_GREATER
+        var length = _value.Length - start;
         ref var valueStart = ref DangerousGetReferenceAt(start);
-        return MemoryMarshal.CreateReadOnlySpan(ref valueStart, _value.Length);
+        return MemoryMarshal.CreateReadOnlySpan(ref valueStart, length);
 #else
-        var span = new ReadOnlySpan<byte>(_value, start, _value.Length);
+        var span = new ReadOnlySpan<byte>(_value, start, _value.Length - start);
         return span;
 #endif
     }
