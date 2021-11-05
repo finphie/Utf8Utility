@@ -259,11 +259,7 @@ public readonly partial struct Utf8Array : IEquatable<Utf8Array>,
 #if NET6_0_OR_GREATER
             var value = Unsafe.AddByteOffset(ref valueStart, i);
 #else
-            byte value;
-            unsafe
-            {
-                value = Unsafe.AddByteOffset(ref valueStart, (IntPtr)(void*)i);
-            }
+            var value = Unsafe.AddByteOffset(ref valueStart, (nint)i);
 #endif
             i += (uint)UnicodeUtility.GetUtf8SequenceLength(value);
             count++;
