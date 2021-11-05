@@ -2,11 +2,13 @@
 using System.Runtime.CompilerServices;
 using System.Text;
 using Microsoft.Toolkit.HighPerformance;
-using Utf8Utility.Helpers;
 #if NET6_0_OR_GREATER
 using System.Buffers;
 using System.Runtime.InteropServices;
 using System.Text.Unicode;
+using Utf8Utility.Text;
+#else
+using Utf8Utility.Helpers;
 #endif
 
 namespace Utf8Utility;

@@ -1,10 +1,10 @@
 ﻿using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-namespace Utf8Utility.Helpers;
+namespace Utf8Utility.Text;
 
 /// <summary>
-/// Unicode関連のヘルパークラスです。
+/// Unicode関連のユーティリティクラスです。
 /// </summary>
 public static class UnicodeUtility
 {

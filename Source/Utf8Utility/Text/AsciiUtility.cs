@@ -1,10 +1,10 @@
 ﻿using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-namespace Utf8Utility.Helpers;
+namespace Utf8Utility.Text;
 
 /// <summary>
-/// Ascii関連のヘルパークラスです。
+/// Ascii関連のユーティリティクラスです。
 /// </summary>
 public static class AsciiUtility
 {
@@ -40,6 +40,6 @@ public static class AsciiUtility
     internal static bool IsWhiteSpace(byte value)
     {
         ref var table = ref MemoryMarshal.GetReference(AsciiCharInfo);
-        return (Unsafe.Add(ref table, (nint)(uint)value) & IsWhiteSpaceFlag) != 0;
+        return (Unsafe.Add(ref table, (nint)value) & IsWhiteSpaceFlag) != 0;
     }
 }
