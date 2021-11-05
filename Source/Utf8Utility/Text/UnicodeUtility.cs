@@ -37,7 +37,7 @@ public static class UnicodeUtility
         };
 
         ref var table = ref MemoryMarshal.GetReference(trailingBytesForUTF8);
-        return Unsafe.Add(ref table, (nint)value);
+        return Unsafe.AddByteOffset(ref table, (nint)value);
     }
 
     /// <summary>
