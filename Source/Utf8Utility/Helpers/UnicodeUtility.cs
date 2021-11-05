@@ -39,4 +39,15 @@ public static class UnicodeUtility
         ref var table = ref MemoryMarshal.GetReference(trailingBytesForUTF8);
         return Unsafe.Add(ref table, (nint)value);
     }
+
+    /// <summary>
+    /// 指定された値がAscii文字かどうかを判定します。
+    /// </summary>
+    /// <param name="value">値</param>
+    /// <returns>
+    /// Ascii文字の場合は<see langword="true"/>、
+    /// それ以外は<see langword="false"/>。
+    /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool IsAsciiCodePoint(byte value) => value <= 0x7Fu;
 }
