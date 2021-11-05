@@ -2,11 +2,11 @@
 using System.Runtime.CompilerServices;
 using System.Text;
 using Microsoft.Toolkit.HighPerformance;
+using Utf8Utility.Text;
 #if NET6_0_OR_GREATER
 using System.Buffers;
 using System.Runtime.InteropServices;
 using System.Text.Unicode;
-using Utf8Utility.Text;
 #else
 using Utf8Utility.Helpers;
 #endif
@@ -238,6 +238,38 @@ public readonly partial struct Utf8Array : IEquatable<Utf8Array>,
         var span = new ReadOnlySpan<byte>(_value, start, _value.Length - start);
         return span;
 #endif
+    }
+
+    /// <summary>
+    /// UTF-8文字数を取得します。
+    /// </summary>
+    /// <returns>UTF-8文字数</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public int GetLength()
+    {
+        // 最適化の関係でcount,iの順番で宣言する必要あり。
+        var count = 0;
+        nuint i = 0;
+
+        while ((int)i < _value.Length)
+        {
+            ref var valueStart = ref DangerousGetReference();
+
+            // 最適化の関係でrefローカル変数にしてはいけない。
+#if NET6_0_OR_GREATER
+            var value = Unsafe.AddByteOffset(ref valueStart, i);
+#else
+            byte value;
+            unsafe
+            {
+                value = Unsafe.AddByteOffset(ref valueStart, (IntPtr)(void*)i);
+            }
+#endif
+            i += (uint)UnicodeUtility.GetUtf8SequenceLength(value);
+            count++;
+        }
+
+        return count;
     }
 
 #if NET6_0_OR_GREATER
