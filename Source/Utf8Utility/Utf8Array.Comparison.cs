@@ -94,11 +94,11 @@ partial struct Utf8Array
             Rune.DecodeFromUtf8(xSpan, out var xRune, out _);
             Rune.DecodeFromUtf8(ySpan, out var yRune, out _);
 
-            Unsafe.SkipInit(out long xBuffer);
-            Unsafe.SkipInit(out long yBuffer);
+            Unsafe.SkipInit(out nint xBuffer);
+            Unsafe.SkipInit(out nint yBuffer);
 
-            var xBufferSpan = MemoryMarshal.CreateSpan(ref Unsafe.As<long, char>(ref xBuffer), 2);
-            var yBufferSpan = MemoryMarshal.CreateSpan(ref Unsafe.As<long, char>(ref yBuffer), 2);
+            var xBufferSpan = MemoryMarshal.CreateSpan(ref Unsafe.As<nint, char>(ref xBuffer), 2);
+            var yBufferSpan = MemoryMarshal.CreateSpan(ref Unsafe.As<nint, char>(ref yBuffer), 2);
 
             var xNonAsciiSpan = MemoryMarshal.CreateReadOnlySpan(ref MemoryMarshal.GetReference(xBufferSpan), xRune.EncodeToUtf16(xBufferSpan));
             var yNonAsciiSpan = MemoryMarshal.CreateReadOnlySpan(ref MemoryMarshal.GetReference(yBufferSpan), yRune.EncodeToUtf16(yBufferSpan));
