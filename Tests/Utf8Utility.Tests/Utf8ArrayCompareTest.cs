@@ -67,9 +67,7 @@ public sealed class Utf8ArrayCompareTest
         var x1 = new Utf8Array(value1);
         var x2 = new Utf8Array(value2);
 
-        Utf8Array.Compare(x1, x2).Should().BeNegative();
         Utf8Array.Compare(x1, x2, StringComparison.InvariantCulture).Should().BeNegative();
-        x1.CompareTo(x2).Should().BeNegative();
     }
 
     [Theory]
