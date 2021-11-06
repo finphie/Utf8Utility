@@ -103,8 +103,13 @@ partial struct Utf8Array
             var xBufferSpan = MemoryMarshal.CreateSpan(ref Unsafe.As<nint, char>(ref xBuffer), 2);
             var yBufferSpan = MemoryMarshal.CreateSpan(ref Unsafe.As<nint, char>(ref yBuffer), 2);
 
-            var xNonAsciiSpan = MemoryMarshal.CreateReadOnlySpan(ref MemoryMarshal.GetReference(xBufferSpan), xRune.EncodeToUtf16(xBufferSpan));
-            var yNonAsciiSpan = MemoryMarshal.CreateReadOnlySpan(ref MemoryMarshal.GetReference(yBufferSpan), yRune.EncodeToUtf16(yBufferSpan));
+            // UTF-16にエンコードできないことはないはず。
+            // https://github.com/dotnet/runtime/blob/v6.0.0/src/libraries/System.Private.CoreLib/src/System/Text/Rune.cs#L997-L1039
+            xRune.TryEncodeToUtf16(xBufferSpan, out var xCharsWritten);
+            yRune.TryEncodeToUtf16(yBufferSpan, out var yCharsWritten);
+
+            var xNonAsciiSpan = MemoryMarshal.CreateReadOnlySpan(ref MemoryMarshal.GetReference(xBufferSpan), xCharsWritten);
+            var yNonAsciiSpan = MemoryMarshal.CreateReadOnlySpan(ref MemoryMarshal.GetReference(yBufferSpan), yCharsWritten);
 
             var nonAsciiResult = xNonAsciiSpan.CompareTo(yNonAsciiSpan, comparisonType);
 
