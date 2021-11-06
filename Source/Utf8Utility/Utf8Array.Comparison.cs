@@ -108,7 +108,7 @@ partial struct Utf8Array
 
             Rune.DecodeFromUtf8(span, out var rune, out bytesConsumed);
 
-            // 非Ascii文字は、char1つまたは2つで表現できる。
+            // UTF-16文字は、char1つまたは2つで表現できる。
             // したがって、バッファはchar2つ分（4バイト）以上必要なのでnintで定義する。
             Unsafe.SkipInit(out nint buffer);
             var bufferSpan = MemoryMarshal.CreateSpan(ref Unsafe.As<nint, char>(ref buffer), 2);
