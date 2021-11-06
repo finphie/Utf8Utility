@@ -90,6 +90,8 @@ partial struct Utf8Array
             }
         }
 
+        return x.ByteCount - y.ByteCount;
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static ReadOnlySpan<char> GetAsciiSpan(ref byte valueStart)
         {
@@ -118,8 +120,6 @@ partial struct Utf8Array
 
             return MemoryMarshal.CreateReadOnlySpan(ref MemoryMarshal.GetReference(bufferSpan), charsWritten);
         }
-
-        return x.ByteCount - y.ByteCount;
     }
 }
 #endif
