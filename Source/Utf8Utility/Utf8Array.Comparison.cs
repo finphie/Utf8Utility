@@ -58,12 +58,30 @@ partial struct Utf8Array
             ref var yValueStart = ref Unsafe.AddByteOffset(ref y.DangerousGetReference(), yIndex);
 
             // Ascii文字の場合のみ、処理を最適化する。
-            var xSpan = UnicodeUtility.IsAsciiCodePoint(xValueStart)
-                ? GetAsciiSpan(ref xValueStart, out var xw)
-                : GetUtf16String(ref xValueStart, x.ByteCount, (int)xIndex, out xw);
-            var ySpan = UnicodeUtility.IsAsciiCodePoint(yValueStart)
-                ? GetAsciiSpan(ref yValueStart, out var yw)
-                : GetUtf16String(ref yValueStart, y.ByteCount, (int)yIndex, out yw);
+
+            ReadOnlySpan<char> xSpan;
+            if (UnicodeUtility.IsAsciiCodePoint(xValueStart))
+            {
+                xSpan = GetAsciiSpan(ref xValueStart);
+                xIndex++;
+            }
+            else
+            {
+                xSpan = GetUtf16String(ref xValueStart, x.ByteCount, (int)xIndex, out var bytesConsumed);
+                xIndex += (uint)bytesConsumed;
+            }
+
+            ReadOnlySpan<char> ySpan;
+            if (UnicodeUtility.IsAsciiCodePoint(yValueStart))
+            {
+                ySpan = GetAsciiSpan(ref yValueStart);
+                yIndex++;
+            }
+            else
+            {
+                ySpan = GetUtf16String(ref yValueStart, y.ByteCount, (int)yIndex, out var bytesConsumed);
+                yIndex += (uint)bytesConsumed;
+            }
 
             var result = xSpan.CompareTo(ySpan, comparisonType);
 
@@ -73,16 +91,13 @@ partial struct Utf8Array
             }
 
             // 非Ascii文字なので2～4を加算する。
-            xIndex += (uint)xw;
-            yIndex += (uint)yw;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        static ReadOnlySpan<char> GetAsciiSpan(ref byte valueStart, out int w)
+        static ReadOnlySpan<char> GetAsciiSpan(ref byte valueStart)
         {
             // Ascii文字なのでbyte型からchar型への変換を行っても問題ない。
             var asciiCode = (char)valueStart;
-            w = 1;
 
             // Ascii文字は1バイト。
             return MemoryMarshal.CreateReadOnlySpan(ref asciiCode, 1);
