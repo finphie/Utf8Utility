@@ -90,6 +90,10 @@ partial struct Utf8Array
             }
         }
 
+        // 到達条件
+        // 1. 比較対象の片方または両方のUTF-8配列が空。
+        // 2. 途中まで文字が一致しており、片方または両方のUTF-8配列の末尾に到達。
+        // したがって、バイト数の差を比較すれば良い。
         return x.ByteCount - y.ByteCount;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
