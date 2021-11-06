@@ -118,7 +118,7 @@ partial struct Utf8Array
                 return nonAsciiResult;
             }
 
-            // 非Ascii文字なので2～4を加算
+            // 非Ascii文字なので2～4を加算する。
             index += (uint)xFirstPointByteCount;
         }
 
