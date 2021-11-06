@@ -50,9 +50,8 @@ partial struct Utf8Array
     {
         nuint xIndex = 0;
         nuint yIndex = 0;
-        nuint length = (uint)Math.Min(x.ByteCount, y.ByteCount);
 
-        while (xIndex < length && yIndex < length)
+        while ((int)xIndex < x.ByteCount && (int)yIndex < y.ByteCount)
         {
             ref var xValueStart = ref Unsafe.AddByteOffset(ref x.DangerousGetReference(), xIndex);
             ref var yValueStart = ref Unsafe.AddByteOffset(ref y.DangerousGetReference(), yIndex);
