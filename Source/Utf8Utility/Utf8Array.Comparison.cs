@@ -50,8 +50,8 @@ partial struct Utf8Array
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int Compare(Utf8Array x, Utf8Array y, StringComparison comparisonType)
     {
-        var index = 0;
-        var length = Math.Min(x.ByteCount, y.ByteCount);
+        nuint index = 0;
+        nuint length = (uint)Math.Min(x.ByteCount, y.ByteCount);
 
         while (index < length)
         {
@@ -75,7 +75,7 @@ partial struct Utf8Array
             // xByteCount == yByteCountなのでyByteCountでの条件分岐は不要。
             if (xByteCount != 1)
             {
-                return Utf16Compare(x.AsSpan(index), y.AsSpan(index), comparisonType);
+                return Utf16Compare(x.AsSpan((int)index), y.AsSpan((int)index), comparisonType);
             }
 
             // Ascii文字なのでbyte型からchar型への変換を行っても問題ない。
