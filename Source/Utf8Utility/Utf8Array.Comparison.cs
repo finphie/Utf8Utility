@@ -51,9 +51,6 @@ partial struct Utf8Array
         nuint index = 0;
         nuint length = (uint)Math.Min(x.ByteCount, y.ByteCount);
 
-        Span<char> xBuffer = stackalloc char[2];
-        Span<char> yBuffer = stackalloc char[2];
-
         while (index < length)
         {
             ref var xStart = ref x.DangerousGetReference();
@@ -100,10 +97,16 @@ partial struct Utf8Array
             Rune.DecodeFromUtf8(xSpan, out var xRune, out _);
             Rune.DecodeFromUtf8(ySpan, out var yRune, out _);
 
-            var xLength = xRune.EncodeToUtf16(xBuffer);
-            var yLength = yRune.EncodeToUtf16(yBuffer);
+            Unsafe.SkipInit(out long xBuffer);
+            Unsafe.SkipInit(out long yBuffer);
 
-            var result2 = ((ReadOnlySpan<char>)xBuffer.Slice(0, xLength)).CompareTo(yBuffer.Slice(0, yLength), comparisonType);
+            var xBufferSpan = MemoryMarshal.CreateSpan(ref Unsafe.As<long, char>(ref xBuffer), 2);
+            var yBufferSpan = MemoryMarshal.CreateSpan(ref Unsafe.As<long, char>(ref yBuffer), 2);
+
+            var xLength = xRune.EncodeToUtf16(xBufferSpan);
+            var yLength = yRune.EncodeToUtf16(yBufferSpan);
+
+            var result2 = ((ReadOnlySpan<char>)xBufferSpan.Slice(0, xLength)).CompareTo(yBufferSpan.Slice(0, yLength), comparisonType);
 
             if (result2 != 0)
             {
