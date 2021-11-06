@@ -282,14 +282,14 @@ public readonly partial struct Utf8Array : IEquatable<Utf8Array>,
         // Utf8Spanを参考に実装
         // https://github.com/dotnet/runtimelab/blob/84564a0e033114a1b2316c7bfb9953e4e3255cd3/src/libraries/System.Private.CoreLib/src/System/Text/Utf8Span.cs#L124
         // https://github.com/dotnet/runtimelab/blob/84564a0e033114a1b2316c7bfb9953e4e3255cd3/src/libraries/System.Private.CoreLib/src/System/Text/Unicode/Utf8Utility.WhiteSpace.CoreLib.cs#L11-L68
-        nuint i = 0;
+        nuint index = 0;
 
-        while ((int)i < _value.Length)
+        while ((int)index < _value.Length)
         {
             ref var valueStart = ref DangerousGetReference();
-            ref var value = ref Unsafe.AddByteOffset(ref valueStart, i);
+            ref var value = ref Unsafe.AddByteOffset(ref valueStart, index);
 
-            // 文字コードが[0x21..0x7F]の範囲にあるか
+            // 文字コードが[0x21..0x7F]の範囲にあるか。
             if ((sbyte)value > (sbyte)' ')
             {
                 break;
@@ -306,22 +306,22 @@ public readonly partial struct Utf8Array : IEquatable<Utf8Array>,
                 // 直前の処理でAscii文字であることは確定しているため、
                 // {Rune|char}.IsWhiteSpaceを使用せず、自前実装で比較を行う。
                 // 上記メソッドではAscii文字かどうかで判定が入ってしまうため。
-                // https://github.com/dotnet/runtime/blob/cebe877f6d1b3d668370f9c6ea068bd1534b8227/src/libraries/System.Private.CoreLib/src/System/Text/Rune.cs#L1350-L1366
-                // https://github.com/dotnet/runtime/blob/cebe877f6d1b3d668370f9c6ea068bd1534b8227/src/libraries/System.Private.CoreLib/src/System/Char.cs#L274-L287
+                // https://github.com/dotnet/runtime/blob/v6.0.0/src/libraries/System.Private.CoreLib/src/System/Text/Rune.cs#L1350-L1366
+                // https://github.com/dotnet/runtime/blob/v6.0.0/src/libraries/System.Private.CoreLib/src/System/Char.cs#L274-L287
                 if (AsciiUtility.IsWhiteSpace(value))
                 {
-                    i++;
+                    index++;
                     continue;
                 }
             }
             else
             {
-                var span = MemoryMarshal.CreateReadOnlySpan(ref value, _value.Length - (int)i);
+                var span = MemoryMarshal.CreateReadOnlySpan(ref value, _value.Length - (int)index);
                 Rune.DecodeFromUtf8(span, out var rune, out var bytesConsumed);
 
                 if (Rune.IsWhiteSpace(rune))
                 {
-                    i += (uint)bytesConsumed;
+                    index += (uint)bytesConsumed;
                     continue;
                 }
             }
@@ -330,7 +330,7 @@ public readonly partial struct Utf8Array : IEquatable<Utf8Array>,
             break;
         }
 
-        return (int)i == _value.Length;
+        return (int)index == _value.Length;
     }
 #endif
 
