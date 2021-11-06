@@ -53,11 +53,8 @@ partial struct Utf8Array
 
         while (index < length)
         {
-            ref var xStart = ref x.DangerousGetReference();
-            ref var yStart = ref y.DangerousGetReference();
-
-            ref var xValue = ref Unsafe.AddByteOffset(ref xStart, (nint)index);
-            ref var yValue = ref Unsafe.AddByteOffset(ref yStart, (nint)index);
+            ref var xValue = ref Unsafe.AddByteOffset(ref x.DangerousGetReference(), (nint)index);
+            ref var yValue = ref Unsafe.AddByteOffset(ref y.DangerousGetReference(), (nint)index);
 
             var xByteCount = UnicodeUtility.GetUtf8SequenceLength(xValue);
             var yByteCount = UnicodeUtility.GetUtf8SequenceLength(yValue);
@@ -103,11 +100,10 @@ partial struct Utf8Array
             var xBufferSpan = MemoryMarshal.CreateSpan(ref Unsafe.As<long, char>(ref xBuffer), 2);
             var yBufferSpan = MemoryMarshal.CreateSpan(ref Unsafe.As<long, char>(ref yBuffer), 2);
 
-            var xLength = xRune.EncodeToUtf16(xBufferSpan);
-            var yLength = yRune.EncodeToUtf16(yBufferSpan);
+            var a = MemoryMarshal.CreateReadOnlySpan(ref MemoryMarshal.GetReference(xBufferSpan), xRune.EncodeToUtf16(xBufferSpan));
+            var b = MemoryMarshal.CreateReadOnlySpan(ref MemoryMarshal.GetReference(yBufferSpan), yRune.EncodeToUtf16(yBufferSpan));
 
-            var result2 = MemoryMarshal.CreateReadOnlySpan(ref MemoryMarshal.GetReference(xBufferSpan), xLength)
-                .CompareTo(MemoryMarshal.CreateReadOnlySpan(ref MemoryMarshal.GetReference(yBufferSpan), yLength), comparisonType);
+            var result2 = a.CompareTo(b, comparisonType);
 
             if (result2 != 0)
             {
@@ -128,11 +124,8 @@ partial struct Utf8Array
 
         while (index < length)
         {
-            ref var xStart = ref x.DangerousGetReference();
-            ref var yStart = ref y.DangerousGetReference();
-
-            ref var xValue = ref Unsafe.AddByteOffset(ref xStart, (nint)index);
-            ref var yValue = ref Unsafe.AddByteOffset(ref yStart, (nint)index);
+            ref var xValue = ref Unsafe.AddByteOffset(ref x.DangerousGetReference(), (nint)index);
+            ref var yValue = ref Unsafe.AddByteOffset(ref y.DangerousGetReference(), (nint)index);
 
             var xByteCount = UnicodeUtility.GetUtf8SequenceLength(xValue);
             var yByteCount = UnicodeUtility.GetUtf8SequenceLength(yValue);
@@ -142,6 +135,28 @@ partial struct Utf8Array
             if (diffUtf8SequenceLength != 0)
             {
                 return diffUtf8SequenceLength;
+            }
+
+            // Ascii文字の場合のみ、処理を最適化する。
+            // xByteCount == yByteCountなのでyByteCountでの条件分岐は不要。
+            if (xByteCount == 1)
+            {
+                // Ascii文字なのでbyte型からchar型への変換を行っても問題ない。
+                var xCharValue = (char)xValue;
+                var yCharValue = (char)yValue;
+
+                var xSpanValue = MemoryMarshal.CreateReadOnlySpan(ref xCharValue, 1);
+                var ySpanValue = MemoryMarshal.CreateReadOnlySpan(ref yCharValue, 1);
+                var result = xSpanValue.CompareTo(ySpanValue, comparisonType);
+
+                if (result != 0)
+                {
+                    return result;
+                }
+
+                // Ascii文字なので1を加算
+                index++;
+                continue;
             }
 
             var xSpan = MemoryMarshal.CreateReadOnlySpan(ref xValue, x.ByteCount - (int)index);
@@ -156,11 +171,13 @@ partial struct Utf8Array
             var xBufferSpan = MemoryMarshal.CreateSpan(ref Unsafe.As<long, char>(ref xBuffer), 2);
             var yBufferSpan = MemoryMarshal.CreateSpan(ref Unsafe.As<long, char>(ref yBuffer), 2);
 
-            var xLength = xRune.EncodeToUtf16(xBufferSpan);
-            var yLength = yRune.EncodeToUtf16(yBufferSpan);
+            //var xLength = xRune.EncodeToUtf16(xBufferSpan);
+            //var yLength = yRune.EncodeToUtf16(yBufferSpan);
 
-            var result2 = MemoryMarshal.CreateReadOnlySpan(ref MemoryMarshal.GetReference(xBufferSpan), xLength)
-                .CompareTo(MemoryMarshal.CreateReadOnlySpan(ref MemoryMarshal.GetReference(yBufferSpan), yLength), comparisonType);
+            var a = MemoryMarshal.CreateReadOnlySpan(ref MemoryMarshal.GetReference(xBufferSpan), xRune.EncodeToUtf16(xBufferSpan));
+            var b = MemoryMarshal.CreateReadOnlySpan(ref MemoryMarshal.GetReference(yBufferSpan), yRune.EncodeToUtf16(yBufferSpan));
+
+            var result2 = a.CompareTo(b, comparisonType);
 
             if (result2 != 0)
             {
