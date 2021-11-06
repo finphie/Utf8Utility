@@ -50,15 +50,19 @@ partial struct Utf8Array
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int Compare(Utf8Array x, Utf8Array y, StringComparison comparisonType)
     {
-        var xStart = x.DangerousGetReference();
-        var yStart = y.DangerousGetReference();
         var index = 0;
         var length = Math.Min(x.ByteCount, y.ByteCount);
 
         while (index < length)
         {
-            var xByteCount = UnicodeUtility.GetUtf8SequenceLength(xStart);
-            var yByteCount = UnicodeUtility.GetUtf8SequenceLength(yStart);
+            ref var xStart = ref x.DangerousGetReference();
+            ref var yStart = ref y.DangerousGetReference();
+
+            var xValue = Unsafe.AddByteOffset(ref xStart, (nint)(uint)index);
+            var yValue = Unsafe.AddByteOffset(ref yStart, (nint)(uint)index);
+
+            var xByteCount = UnicodeUtility.GetUtf8SequenceLength(xValue);
+            var yByteCount = UnicodeUtility.GetUtf8SequenceLength(yValue);
             var diffUtf8SequenceLength = xByteCount - yByteCount;
 
             // 最初の要素が異なるバイト数の文字だった場合、バイト数が短い順にする。
@@ -75,11 +79,11 @@ partial struct Utf8Array
             }
 
             // Ascii文字なのでbyte型からchar型への変換を行っても問題ない。
-            var xValue = (char)xStart;
-            var yValue = (char)yStart;
+            var xCharValue = (char)xStart;
+            var yCharValue = (char)yStart;
 
-            var xSpanValue = MemoryMarshal.CreateReadOnlySpan(ref xValue, 1);
-            var ySpanValue = MemoryMarshal.CreateReadOnlySpan(ref yValue, 1);
+            var xSpanValue = MemoryMarshal.CreateReadOnlySpan(ref xCharValue, 1);
+            var ySpanValue = MemoryMarshal.CreateReadOnlySpan(ref yCharValue, 1);
             var result = xSpanValue.CompareTo(ySpanValue, comparisonType);
 
             if (result != 0)
@@ -87,9 +91,7 @@ partial struct Utf8Array
                 return result;
             }
 
-            // Ascii文字なのでオフセットに1を加算
-            xStart = Unsafe.Add(ref xStart, 1);
-            yStart = Unsafe.Add(ref yStart, 1);
+            // Ascii文字なので1を加算
             index++;
         }
 
