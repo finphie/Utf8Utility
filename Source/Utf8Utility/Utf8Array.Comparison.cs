@@ -74,8 +74,10 @@ partial struct Utf8Array
                 var xAsciiCode = (char)xValueStart;
                 var yAsciiCode = (char)yValueStart;
 
+                // Ascii文字は1バイト。
                 var xAsciiSpan = MemoryMarshal.CreateReadOnlySpan(ref xAsciiCode, 1);
                 var yAsciiSpan = MemoryMarshal.CreateReadOnlySpan(ref yAsciiCode, 1);
+
                 var asciiResult = xAsciiSpan.CompareTo(yAsciiSpan, comparisonType);
 
                 if (asciiResult != 0)
@@ -83,7 +85,7 @@ partial struct Utf8Array
                     return asciiResult;
                 }
 
-                // Ascii文字なので1を加算
+                // Ascii文字なので1を加算する。
                 index++;
                 continue;
             }
@@ -94,9 +96,10 @@ partial struct Utf8Array
             Rune.DecodeFromUtf8(xSpan, out var xRune, out _);
             Rune.DecodeFromUtf8(ySpan, out var yRune, out _);
 
+            // 非Ascii文字は、char1つまたは2つで表現できる。
+            // したがって、バッファはchar2つ分（4バイト）以上必要なのでnintで定義する。
             Unsafe.SkipInit(out nint xBuffer);
             Unsafe.SkipInit(out nint yBuffer);
-
             var xBufferSpan = MemoryMarshal.CreateSpan(ref Unsafe.As<nint, char>(ref xBuffer), 2);
             var yBufferSpan = MemoryMarshal.CreateSpan(ref Unsafe.As<nint, char>(ref yBuffer), 2);
 
