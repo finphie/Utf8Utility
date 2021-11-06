@@ -232,7 +232,7 @@ public readonly partial struct Utf8Array : IEquatable<Utf8Array>,
         // 引数の検証をスキップするために、手動でReadOnlySpanを作成する。
 #if NET6_0_OR_GREATER
         var length = _value.Length - start;
-        ref var valueStart = ref DangerousGetReferenceAt(start);
+        ref var valueStart = ref Unsafe.AddByteOffset(ref DangerousGetReference(), (nint)(uint)length);
         return MemoryMarshal.CreateReadOnlySpan(ref valueStart, length);
 #else
         var span = new ReadOnlySpan<byte>(_value, start, _value.Length - start);
@@ -340,14 +340,6 @@ public readonly partial struct Utf8Array : IEquatable<Utf8Array>,
     /// </summary>
     /// <returns>最初の要素への参照</returns>
     public ref byte DangerousGetReference() => ref _value.DangerousGetReference();
-
-    /// <summary>
-    /// 指定された要素への参照を取得します。
-    /// このメソッドは境界チェックを行いません。
-    /// </summary>
-    /// <param name="index">インデックス</param>
-    /// <returns>指定された要素への参照</returns>
-    public ref byte DangerousGetReferenceAt(int index) => ref _value.DangerousGetReferenceAt(index);
 
     /// <summary>
     /// <see cref="Utf8Array"/>構造体の新しいインスタンスを取得します。
