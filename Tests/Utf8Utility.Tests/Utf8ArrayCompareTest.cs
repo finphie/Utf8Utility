@@ -56,6 +56,8 @@ public sealed class Utf8ArrayCompareTest
     [InlineData("あ", "𩸽")]
     [InlineData("a", "ab")]
     [InlineData("ab", "aα")]
+    [InlineData("abc", "abd")]
+    [InlineData("あいう", "あいえ")]
     [InlineData("!", "0")]
     [InlineData("{", "0")]
     [InlineData("0", "a")]
