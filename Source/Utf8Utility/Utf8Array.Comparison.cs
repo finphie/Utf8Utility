@@ -1,9 +1,7 @@
 ﻿#if NET6_0_OR_GREATER
-using System.Buffers;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Text.Unicode;
 using Utf8Utility.Text;
 
 namespace Utf8Utility;
@@ -50,87 +48,82 @@ partial struct Utf8Array
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int Compare(Utf8Array x, Utf8Array y, StringComparison comparisonType)
     {
-        var xStart = x.DangerousGetReference();
-        var yStart = y.DangerousGetReference();
-        var index = 0;
-        var length = Math.Min(x.ByteCount, y.ByteCount);
+        nuint xIndex = 0;
+        nuint yIndex = 0;
 
-        while (index < length)
+        while ((int)xIndex < x.ByteCount && (int)yIndex < y.ByteCount)
         {
-            var xByteCount = UnicodeUtility.GetUtf8SequenceLength(xStart);
-            var yByteCount = UnicodeUtility.GetUtf8SequenceLength(yStart);
-            var diffUtf8SequenceLength = xByteCount - yByteCount;
+            ref var xValueStart = ref Unsafe.AddByteOffset(ref x.DangerousGetReference(), xIndex);
+            ref var yValueStart = ref Unsafe.AddByteOffset(ref y.DangerousGetReference(), yIndex);
 
-            // 最初の要素が異なるバイト数の文字だった場合、バイト数が短い順にする。
-            if (diffUtf8SequenceLength != 0)
+            // Ascii文字の場合のみ、処理を最適化する。
+            ReadOnlySpan<char> xSpan;
+            if (UnicodeUtility.IsAsciiCodePoint(xValueStart))
             {
-                return diffUtf8SequenceLength;
+                xSpan = GetAsciiSpan(ref xValueStart);
+                xIndex++;
+            }
+            else
+            {
+                xSpan = GetUtf16Span(ref xValueStart, x.ByteCount - (int)xIndex, out var bytesConsumed);
+                xIndex += (uint)bytesConsumed;
             }
 
-            // 非Ascii文字の場合、UTF-16文字列に変換して比較する。
-            // xByteCount == yByteCountなのでyByteCountでの条件分岐は不要。
-            if (xByteCount != 1)
+            // Ascii文字の場合のみ、処理を最適化する。
+            ReadOnlySpan<char> ySpan;
+            if (UnicodeUtility.IsAsciiCodePoint(yValueStart))
             {
-                return Utf16Compare(x.AsSpan(index), y.AsSpan(index), comparisonType);
+                ySpan = GetAsciiSpan(ref yValueStart);
+                yIndex++;
+            }
+            else
+            {
+                ySpan = GetUtf16Span(ref yValueStart, y.ByteCount - (int)yIndex, out var bytesConsumed);
+                yIndex += (uint)bytesConsumed;
             }
 
-            // Ascii文字なのでbyte型からchar型への変換を行っても問題ない。
-            var xValue = (char)xStart;
-            var yValue = (char)yStart;
-
-            var xSpanValue = MemoryMarshal.CreateReadOnlySpan(ref xValue, 1);
-            var ySpanValue = MemoryMarshal.CreateReadOnlySpan(ref yValue, 1);
-            var result = xSpanValue.CompareTo(ySpanValue, comparisonType);
+            var result = xSpan.CompareTo(ySpan, comparisonType);
 
             if (result != 0)
             {
                 return result;
             }
-
-            // Ascii文字なのでオフセットに1を加算
-            xStart = Unsafe.Add(ref xStart, 1);
-            yStart = Unsafe.Add(ref yStart, 1);
-            index++;
         }
 
+        // 到達条件
+        // 1. 比較対象の片方または両方のUTF-8配列が空。
+        // 2. 途中まで文字が一致しており、片方または両方のUTF-8配列の末尾に到達。
+        // したがって、バイト数の差を比較すれば良い。
         return x.ByteCount - y.ByteCount;
 
-        static int Utf16Compare(ReadOnlySpan<byte> x, ReadOnlySpan<byte> y, StringComparison comparisonType)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        static ReadOnlySpan<char> GetAsciiSpan(ref byte valueStart)
         {
-            const int StackallocThreshold = 256;
+            // Ascii文字なのでbyte型からchar型への変換を行っても問題ない。
+            var asciiCode = (char)valueStart;
 
-            char[]? xPool = null;
-            var xCount = Encoding.UTF8.GetCharCount(x);
-            Span<char> xBuffer = xCount <= StackallocThreshold
-                ? stackalloc char[xCount]
-                : (xPool = ArrayPool<char>.Shared.Rent(xCount));
-
-            char[]? yPool = null;
-            var yCount = Encoding.UTF8.GetCharCount(y);
-            Span<char> yBuffer = yCount <= StackallocThreshold
-                ? stackalloc char[yCount]
-                : (yPool = ArrayPool<char>.Shared.Rent(yCount));
-
-            var result = ToUtf16(x, xBuffer) && ToUtf16(y, yBuffer)
-                ? ((ReadOnlySpan<char>)xBuffer).CompareTo(yBuffer, comparisonType)
-                : x.SequenceCompareTo(y);
-
-            if (xPool is not null)
-            {
-                ArrayPool<char>.Shared.Return(xPool);
-            }
-
-            if (yPool is not null)
-            {
-                ArrayPool<char>.Shared.Return(yPool);
-            }
-
-            return result;
+            // Ascii文字は1バイト。
+            return MemoryMarshal.CreateReadOnlySpan(ref asciiCode, 1);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        static bool ToUtf16(ReadOnlySpan<byte> source, Span<char> destination)
-            => Utf8.ToUtf16(source, destination, out _, out _) == OperationStatus.Done;
+        static ReadOnlySpan<char> GetUtf16Span(ref byte valueStart, int length, out int bytesConsumed)
+        {
+            var span = MemoryMarshal.CreateReadOnlySpan(ref valueStart, length);
+
+            Rune.DecodeFromUtf8(span, out var rune, out bytesConsumed);
+
+            // UTF-16文字は、char1つまたは2つで表現できる。
+            // したがって、バッファはchar2つ分（4バイト）以上必要なのでnintで定義する。
+            Unsafe.SkipInit(out nint buffer);
+            var bufferSpan = MemoryMarshal.CreateSpan(ref Unsafe.As<nint, char>(ref buffer), 2);
+
+            // UTF-16にエンコードできないことはないはず。
+            // https://github.com/dotnet/runtime/blob/v6.0.0/src/libraries/System.Private.CoreLib/src/System/Text/Rune.cs#L997-L1039
+            rune.TryEncodeToUtf16(bufferSpan, out var charsWritten);
+
+            return MemoryMarshal.CreateReadOnlySpan(ref MemoryMarshal.GetReference(bufferSpan), charsWritten);
+        }
     }
 }
 #endif
