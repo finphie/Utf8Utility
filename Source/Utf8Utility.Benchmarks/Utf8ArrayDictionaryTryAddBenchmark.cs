@@ -80,31 +80,3 @@ public class Utf8ArrayDictionaryTryAddBenchmark
         return utf8Dict;
     }
 }
-
-[SimpleJob(RuntimeMoniker.Net60)]
-[MemoryDiagnoser]
-public class A
-{
-    Utf8Array _array;
-
-    [Params("αβあいうえお𩸽𩸽𩸽")]
-    public string Value { get; set; }
-
-    [GlobalSetup]
-    public void Setup()
-    {
-        _array = new(Value);
-    }
-
-    [Benchmark]
-    public int Compare1()
-    {
-        return Utf8Array.Compare(_array, _array, StringComparison.CurrentCulture);
-    }
-
-    [Benchmark]
-    public int Compare2()
-    {
-        return Utf8Array.Compare2(_array, _array, StringComparison.CurrentCulture);
-    }
-}
