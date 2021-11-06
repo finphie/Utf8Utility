@@ -1,8 +1,6 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Jobs;
-using Utf8Utility.Benchmarks.Helpers;
 
 namespace Utf8Utility.Benchmarks;
 
@@ -17,6 +15,27 @@ public class Utf8ArrayGetLengthBenchmark
 
     [GlobalSetup]
     public void Setup() => _value = new(Value!);
+
+    [Benchmark]
+    public int GetLength_Loop()
+    {
+        var count = 0;
+        nuint i = 0;
+
+        while ((int)i < _value.ByteCount)
+        {
+            var value = Unsafe.AddByteOffset(ref _value.DangerousGetReference(), i);
+
+            if ((value & 0xC0) != 0x80)
+            {
+                count++;
+            }
+
+            i++;
+        }
+
+        return count;
+    }
 
     [Benchmark]
     public int GetLength_Table() => _value.GetLength();
