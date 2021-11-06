@@ -58,7 +58,6 @@ partial struct Utf8Array
             ref var yValueStart = ref Unsafe.AddByteOffset(ref y.DangerousGetReference(), yIndex);
 
             // Ascii文字の場合のみ、処理を最適化する。
-
             ReadOnlySpan<char> xSpan;
             if (UnicodeUtility.IsAsciiCodePoint(xValueStart))
             {
@@ -67,10 +66,11 @@ partial struct Utf8Array
             }
             else
             {
-                xSpan = GetUtf16String(ref xValueStart, x.ByteCount, (int)xIndex, out var bytesConsumed);
+                xSpan = GetUtf16Span(ref xValueStart, x.ByteCount - (int)xIndex, out var bytesConsumed);
                 xIndex += (uint)bytesConsumed;
             }
 
+            // Ascii文字の場合のみ、処理を最適化する。
             ReadOnlySpan<char> ySpan;
             if (UnicodeUtility.IsAsciiCodePoint(yValueStart))
             {
@@ -79,7 +79,7 @@ partial struct Utf8Array
             }
             else
             {
-                ySpan = GetUtf16String(ref yValueStart, y.ByteCount, (int)yIndex, out var bytesConsumed);
+                ySpan = GetUtf16Span(ref yValueStart, y.ByteCount - (int)yIndex, out var bytesConsumed);
                 yIndex += (uint)bytesConsumed;
             }
 
@@ -89,8 +89,6 @@ partial struct Utf8Array
             {
                 return result;
             }
-
-            // 非Ascii文字なので2～4を加算する。
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -104,11 +102,11 @@ partial struct Utf8Array
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        static ReadOnlySpan<char> GetUtf16String(ref byte valueStart, int byteCount, int index, out int w)
+        static ReadOnlySpan<char> GetUtf16Span(ref byte valueStart, int length, out int bytesConsumed)
         {
-            var span = MemoryMarshal.CreateReadOnlySpan(ref valueStart, byteCount - index);
+            var span = MemoryMarshal.CreateReadOnlySpan(ref valueStart, length);
 
-            Rune.DecodeFromUtf8(span, out var rune, out w);
+            Rune.DecodeFromUtf8(span, out var rune, out bytesConsumed);
 
             // 非Ascii文字は、char1つまたは2つで表現できる。
             // したがって、バッファはchar2つ分（4バイト）以上必要なのでnintで定義する。
