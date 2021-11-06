@@ -106,81 +106,8 @@ partial struct Utf8Array
             var xLength = xRune.EncodeToUtf16(xBufferSpan);
             var yLength = yRune.EncodeToUtf16(yBufferSpan);
 
-            var result2 = ((ReadOnlySpan<char>)xBufferSpan.Slice(0, xLength)).CompareTo(yBufferSpan.Slice(0, yLength), comparisonType);
-
-            if (result2 != 0)
-            {
-                return result2;
-            }
-
-            index += (uint)xByteCount;
-        }
-
-        return x.ByteCount - y.ByteCount;
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static int Compare2(Utf8Array x, Utf8Array y, StringComparison comparisonType)
-    {
-        nuint index = 0;
-        nuint length = (uint)Math.Min(x.ByteCount, y.ByteCount);
-
-        Unsafe.SkipInit(out long xBuffer);
-        Unsafe.SkipInit(out long yBuffer);
-
-        var xBufferSpan = MemoryMarshal.CreateSpan(ref Unsafe.As<long, char>(ref xBuffer), 2);
-        var yBufferSpan = MemoryMarshal.CreateSpan(ref Unsafe.As<long, char>(ref yBuffer), 2);
-
-        while (index < length)
-        {
-            ref var xStart = ref x.DangerousGetReference();
-            ref var yStart = ref y.DangerousGetReference();
-
-            ref var xValue = ref Unsafe.AddByteOffset(ref xStart, (nint)index);
-            ref var yValue = ref Unsafe.AddByteOffset(ref yStart, (nint)index);
-
-            var xByteCount = UnicodeUtility.GetUtf8SequenceLength(xValue);
-            var yByteCount = UnicodeUtility.GetUtf8SequenceLength(yValue);
-            var diffUtf8SequenceLength = xByteCount - yByteCount;
-
-            // 最初の要素が異なるバイト数の文字だった場合、バイト数が短い順にする。
-            if (diffUtf8SequenceLength != 0)
-            {
-                return diffUtf8SequenceLength;
-            }
-
-            // Ascii文字の場合のみ、処理を最適化する。
-            // xByteCount == yByteCountなのでyByteCountでの条件分岐は不要。
-            if (xByteCount == 1)
-            {
-                // Ascii文字なのでbyte型からchar型への変換を行っても問題ない。
-                var xCharValue = (char)xValue;
-                var yCharValue = (char)yValue;
-
-                var xSpanValue = MemoryMarshal.CreateReadOnlySpan(ref xCharValue, 1);
-                var ySpanValue = MemoryMarshal.CreateReadOnlySpan(ref yCharValue, 1);
-                var result = xSpanValue.CompareTo(ySpanValue, comparisonType);
-
-                if (result != 0)
-                {
-                    return result;
-                }
-
-                // Ascii文字なので1を加算
-                index++;
-                continue;
-            }
-
-            var xSpan = MemoryMarshal.CreateReadOnlySpan(ref xValue, x.ByteCount - (int)index);
-            var ySpan = MemoryMarshal.CreateReadOnlySpan(ref yValue, y.ByteCount - (int)index);
-
-            Rune.DecodeFromUtf8(xSpan, out var xRune, out _);
-            Rune.DecodeFromUtf8(ySpan, out var yRune, out _);
-
-            var xLength = xRune.EncodeToUtf16(xBufferSpan);
-            var yLength = yRune.EncodeToUtf16(yBufferSpan);
-
-            var result2 = ((ReadOnlySpan<char>)xBufferSpan.Slice(0, xLength)).CompareTo(yBufferSpan.Slice(0, yLength), comparisonType);
+            var result2 = MemoryMarshal.CreateReadOnlySpan(ref MemoryMarshal.GetReference(xBufferSpan), xLength)
+                .CompareTo(MemoryMarshal.CreateReadOnlySpan(ref MemoryMarshal.GetReference(yBufferSpan), yLength), comparisonType);
 
             if (result2 != 0)
             {
