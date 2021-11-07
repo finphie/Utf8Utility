@@ -272,7 +272,7 @@ public readonly partial struct Utf8Array : IEquatable<Utf8Array>,
         {
             // 最適化の関係でrefローカル変数にしてはいけない。
 #if NET6_0_OR_GREATER
-            var value = Unsafe.AddByteOffset(ref _value.DangerousGetReference(), (nint)index);
+            var value = Unsafe.AddByteOffset(ref _value.DangerousGetReference(), index);
 #else
             var value = Unsafe.AddByteOffset(ref _value.DangerousGetReference(), (nint)index);
 #endif
