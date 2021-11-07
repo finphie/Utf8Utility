@@ -12,7 +12,7 @@ public class Utf8ArrayGetLengthBenchmark
     [Params("abcd", "あいうえお", "あaαβaあααいうazzαああαabc")]
     public string? Value { get; set; }
 
-    [Params(1, 32, 1000)]
+    [Params(1, 1000)]
     public int Count { get; set; }
 
     [GlobalSetup]

@@ -21,13 +21,6 @@ public sealed class BenchmarkConfig : ManualConfig
 
         AddJob(Job.Default.WithRuntime(CoreRuntime.Core60)
             .WithEnvironmentVariables(
-                new EnvironmentVariable("COMPlus_ReadyToRun", "0"),
-                new EnvironmentVariable("COMPlus_TC_QuickJitForLoops", "1"),
-                new EnvironmentVariable("COMPlus_TieredPGO", "1"))
-            .WithId("NoReadyToRun, QuickJitForLoops, TieredPGO"));
-
-        AddJob(Job.Default.WithRuntime(CoreRuntime.Core60)
-            .WithEnvironmentVariables(
                 new EnvironmentVariable("COMPlus_EnableHWIntrinsic", "0"))
             .WithId("DisableHWIntrinsic"));
     }
