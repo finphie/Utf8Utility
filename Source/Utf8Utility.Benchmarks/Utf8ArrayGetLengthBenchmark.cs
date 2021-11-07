@@ -1,6 +1,6 @@
-﻿using System.Numerics;
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 using BenchmarkDotNet.Attributes;
+using Utf8Utility.Text;
 
 namespace Utf8Utility.Benchmarks;
 
@@ -40,37 +40,26 @@ public class Utf8ArrayGetLengthBenchmark
     }
 
     [Benchmark]
-    public int GetLength_Table() => _value.GetLength();
-
-    [Benchmark]
-    public int GetLength_Long()
+    public int GetLength_Table()
     {
-        const ulong Mask = 0x8080808080808080 >> 7;
-
+        // 最適化の関係でcount,iの順番で宣言する必要あり。
         var count = 0;
         nuint index = 0;
-        var length = _value.ByteCount - sizeof(ulong);
-
-        while ((int)index <= length)
-        {
-            var value = Unsafe.As<byte, ulong>(ref Unsafe.AddByteOffset(ref _value.DangerousGetReference(), index));
-            var x = ((value >> 6) | (~value >> 7)) & Mask;
-            count += BitOperations.PopCount(x);
-            index += sizeof(ulong);
-        }
 
         while ((int)index < _value.ByteCount)
         {
-            var value = Unsafe.AddByteOffset(ref _value.DangerousGetReference(), index);
+            ref var valueStart = ref _value.DangerousGetReference();
 
-            if ((value & 0xC0) != 0x80)
-            {
-                count++;
-            }
+            // 最適化の関係でrefローカル変数にしてはいけない。
+            var value = Unsafe.AddByteOffset(ref valueStart, index);
 
-            index++;
+            index += (uint)UnicodeUtility.GetUtf8SequenceLength(value);
+            count++;
         }
 
         return count;
     }
+
+    [Benchmark]
+    public int GetLength_Long() => _value.GetLength();
 }
