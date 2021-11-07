@@ -11,11 +11,14 @@ public class Utf8ArrayGetLengthBenchmark
 {
     Utf8Array _value;
 
-    [Params("aα𩸽あbaα𩸽あbaα𩸽あbaα𩸽あbaα𩸽あb")]
+    [Params("abcd", "あいうえお", "あaαβaあααいうazzαああαabc")]
     public string? Value { get; set; }
 
+    [Params(1, 32, 1000)]
+    public int Count { get; set; }
+
     [GlobalSetup]
-    public void Setup() => _value = new(Value!);
+    public void Setup() => _value = new(string.Concat(Enumerable.Repeat(Value, Count)));
 
     [Benchmark]
     public int GetLength_Loop()
