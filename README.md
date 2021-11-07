@@ -27,13 +27,48 @@ dotnet add package Utf8Utility -s https://pkgs.dev.azure.com/finphie/Main/_packa
 ## 使い方
 
 ```csharp
+using System;
 using Utf8Utility;
 
+// stringまたはUTF-8のバイト配列、ReadOnlySpan{char|byte}を指定できます。
 var array = new Utf8Array("abc");
+
+// バイト数
+var byteCount = array.ByteCount;
+
+// 空かどうか
+var isEmpty = array.IsEmpty;
+
+// 文字数
+var length = array.GetLength();
+
+// 空か空白文字列かどうか
+var isEmptyOrWhiteSpace = array.IsEmptyOrWhiteSpace();
+
+// 内部配列への参照
+ref var start = ref DangerousGetReference();
+
+// 比較
+var compareTo = array.CompareTo();
+Utf8Array.CompareOrdinal(array, array);
+Utf8Array.Compare(array, array, StringComparison.CurrentCulture);
+
+var empty = Utf8Array.Empty;
+var equals = array.Equals(array);
+var hash = array.GetHashCode();
+var utf16 = array.ToString();
+var span = array.AsSpan();
+array.TryFormat(stackalloc char[256], out var charsWritten, ReadOnlySpan<char>.Empty, null);
+
+// Utf8ArrayをキーとしたDictionaryです。
 var dict = new Utf8ArrayDictionary<int>();
 
-dict.TryAdd(array, 1);
+// キー指定にはUtf8Arrayの他にReadOnlySpan{char|byte}を指定できます。
 dict.TryGetValue(array, out var result);
+ref var dictStart = ref dict.GetValueRefOrNullRef(array);
+
+dict.TryAdd(array, 1);
+dict.Clear();
 ```
 
 ## サポートフレームワーク
