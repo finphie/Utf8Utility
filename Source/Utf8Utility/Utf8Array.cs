@@ -1,7 +1,9 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Text;
 using Microsoft.Toolkit.HighPerformance;
+using Microsoft.Toolkit.HighPerformance.Helpers;
 using Utf8Utility.Text;
 #if NET6_0_OR_GREATER
 using System.Buffers;
@@ -269,6 +271,96 @@ public readonly partial struct Utf8Array : IEquatable<Utf8Array>,
     }
 
 #if NET6_0_OR_GREATER
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public int GetLength_Long2()
+    {
+        const ulong Mask = 0x8080808080808080;
+
+        var count = 0;
+        nuint i = 0;
+        var length = ByteCount - (8 * 4);
+
+        while ((int)i <= length)
+        {
+            ref var value = ref Unsafe.As<byte, ulong>(ref Unsafe.AddByteOffset(ref _value.DangerousGetReference(), i));
+            var value0 = value;
+            var value1 = Unsafe.Add(ref value, 1);
+            var value2 = Unsafe.Add(ref value, 2);
+            var value3 = Unsafe.Add(ref value, 3);
+
+            count += System.Numerics.BitOperations.PopCount(((value0 >> 6) | (~value0 >> 7)) & (Mask >> 7));
+            count += System.Numerics.BitOperations.PopCount(((value1 >> 6) | (~value1 >> 7)) & (Mask >> 7));
+            count += System.Numerics.BitOperations.PopCount(((value2 >> 6) | (~value2 >> 7)) & (Mask >> 7));
+            count += System.Numerics.BitOperations.PopCount(((value3 >> 6) | (~value3 >> 7)) & (Mask >> 7));
+            i += 8 * 4;
+        }
+
+        length = ByteCount - 8;
+
+        while ((int)i <= length)
+        {
+            var value = Unsafe.As<byte, ulong>(ref Unsafe.AddByteOffset(ref _value.DangerousGetReference(), i));
+            var x = ((value >> 6) | (~value >> 7)) & (Mask >> 7);
+            count += System.Numerics.BitOperations.PopCount(x);
+            i += 8;
+        }
+
+        while ((int)i < ByteCount)
+        {
+            var value = Unsafe.AddByteOffset(ref _value.DangerousGetReference(), i);
+
+            if ((value & 0xC0) != 0x80)
+            {
+                count++;
+            }
+
+            i++;
+        }
+
+        return count;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public unsafe int GetLength_Parallel()
+    {
+        var count = 0;
+        var length = ByteCount / 8;
+
+        var array = Unsafe.As<ulong[]>(_value);
+        ParallelHelper.ForEach<ulong, Calc>(new Memory<ulong>(array, 0, length), new Calc(&count));
+
+        nuint i = (uint)length * 8;
+
+        while ((int)i < ByteCount)
+        {
+            var value = Unsafe.AddByteOffset(ref _value.DangerousGetReference(), i);
+
+            if ((value & 0xC0) != 0x80)
+            {
+                count++;
+            }
+
+            i++;
+        }
+
+        return count;
+    }
+
+    readonly unsafe struct Calc : IInAction<ulong>
+    {
+        readonly int* _ptr;
+
+        public Calc(int* ptr) => _ptr = ptr;
+
+        public void Invoke(in ulong item)
+        {
+            const ulong Mask = 0x8080808080808080;
+
+            var x = ((item >> 6) | (~item >> 7)) & (Mask >> 7);
+            Interlocked.Add(ref Unsafe.AsRef<int>(_ptr), BitOperations.PopCount(x));
+        }
+    }
+
     /// <summary>
     /// UTF-8配列が空または空白かどうかを判定します。
     /// </summary>
