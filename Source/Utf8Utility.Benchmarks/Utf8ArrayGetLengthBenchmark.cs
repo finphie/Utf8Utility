@@ -1,12 +1,10 @@
 ﻿using System.Numerics;
 using System.Runtime.CompilerServices;
 using BenchmarkDotNet.Attributes;
-using BenchmarkDotNet.Jobs;
 
 namespace Utf8Utility.Benchmarks;
 
-[SimpleJob(RuntimeMoniker.Net60)]
-[MemoryDiagnoser]
+[Config(typeof(BenchmarkConfig)]
 public class Utf8ArrayGetLengthBenchmark
 {
     Utf8Array _value;
@@ -47,7 +45,7 @@ public class Utf8ArrayGetLengthBenchmark
     [Benchmark]
     public int GetLength_Long()
     {
-        const ulong Mask = 0x8080808080808080;
+        const ulong Mask = 0x8080808080808080 >> 7;
 
         var count = 0;
         nuint index = 0;
@@ -56,7 +54,7 @@ public class Utf8ArrayGetLengthBenchmark
         while ((int)index <= length)
         {
             var value = Unsafe.As<byte, ulong>(ref Unsafe.AddByteOffset(ref _value.DangerousGetReference(), index));
-            var x = ((value >> 6) | (~value >> 7)) & (Mask >> 7);
+            var x = ((value >> 6) | (~value >> 7)) & Mask;
             count += BitOperations.PopCount(x);
             index += sizeof(ulong);
         }
