@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
+using System.Numerics;
 using System.Text;
 using Microsoft.Toolkit.HighPerformance;
 using Utf8Utility.Text;
@@ -249,24 +250,117 @@ public readonly partial struct Utf8Array : IEquatable<Utf8Array>,
     {
         // 最適化の関係でcount,iの順番で宣言する必要あり。
         var count = 0;
-        nuint i = 0;
+        nuint index = 0;
 
-        while ((int)i < _value.Length)
+#if NET6_0_OR_GREATER
+        const ulong Mask = 0x8080808080808080 >> 7;
+        var length = ByteCount - sizeof(ulong);
+
+        while ((int)index <= length)
+        {
+            var value = Unsafe.As<byte, ulong>(ref Unsafe.AddByteOffset(ref _value.DangerousGetReference(), index));
+            var x = ((value >> 6) | (~value >> 7)) & Mask;
+            count += BitOperations.PopCount(x);
+            index += sizeof(ulong);
+        }
+
+        //while ((int)index < ByteCount)
+        //{
+        //    var value = Unsafe.AddByteOffset(ref _value.DangerousGetReference(), index);
+
+        //    if ((value & 0xC0) != 0x80)
+        //    {
+        //        count++;
+        //    }
+
+        //    index++;
+        //}
+
+        if ((int)index < ByteCount - Vector<int>.Count)
+        {
+            ref var start = ref Unsafe.AddByteOffset(ref _value.DangerousGetReference(), index);
+
+            for (var i = 0; i < Vector<int>.Count; i++)
+            {
+                var value = Unsafe.AddByteOffset(ref start, (nint)(uint)i);
+
+                if ((value & 0xC0) != 0x80)
+                {
+                    count++;
+                }
+            }
+
+            index += (uint)Vector<int>.Count;
+        }
+
+        while ((int)index < ByteCount)
+        {
+            var value = Unsafe.AddByteOffset(ref _value.DangerousGetReference(), index);
+
+            if ((value & 0xC0) != 0x80)
+            {
+                count++;
+            }
+
+            index++;
+        }
+#else
+        while ((int)index < _value.Length)
         {
             ref var valueStart = ref DangerousGetReference();
 
             // 最適化の関係でrefローカル変数にしてはいけない。
 #if NET6_0_OR_GREATER
-            var value = Unsafe.AddByteOffset(ref valueStart, i);
+            var value = Unsafe.AddByteOffset(ref valueStart, index);
 #else
-            var value = Unsafe.AddByteOffset(ref valueStart, (nint)i);
+            var value = Unsafe.AddByteOffset(ref valueStart, (nint)index);
 #endif
-            i += (uint)UnicodeUtility.GetUtf8SequenceLength(value);
+            index += (uint)UnicodeUtility.GetUtf8SequenceLength(value);
             count++;
+        }
+#endif
+
+        return count;
+    }
+
+#if NET6_0_OR_GREATER
+    public int GetLength2()
+    {
+        var count = 0;
+        nuint index = 0;
+
+        var x = ByteCount / Vector<int>.Count;
+
+        for (; (int)index < x; index += (uint)Vector<int>.Count)
+        {
+            ref var start = ref Unsafe.AddByteOffset(ref _value.DangerousGetReference(), (nint)(uint)index);
+
+            for (var i = 0; i < Vector<int>.Count; i++)
+            {
+                var value = Unsafe.AddByteOffset(ref start, (nint)(uint)i);
+
+                if ((value & 0xC0) != 0x80)
+                {
+                    count++;
+                }
+            }
+        }
+
+        while ((int)index < ByteCount)
+        {
+            var value = Unsafe.AddByteOffset(ref _value.DangerousGetReference(), index);
+
+            if ((value & 0xC0) != 0x80)
+            {
+                count++;
+            }
+
+            index++;
         }
 
         return count;
     }
+#endif
 
 #if NET6_0_OR_GREATER
     /// <summary>

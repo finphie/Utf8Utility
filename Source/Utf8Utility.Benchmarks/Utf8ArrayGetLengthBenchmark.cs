@@ -4,7 +4,7 @@ using BenchmarkDotNet.Attributes;
 
 namespace Utf8Utility.Benchmarks;
 
-[Config(typeof(BenchmarkConfig)]
+[Config(typeof(BenchmarkConfig))]
 public class Utf8ArrayGetLengthBenchmark
 {
     Utf8Array _value;
