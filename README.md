@@ -46,7 +46,7 @@ var length = array.GetLength();
 var isEmptyOrWhiteSpace = array.IsEmptyOrWhiteSpace();
 
 // 内部配列への参照
-ref var start = ref DangerousGetReference();
+ref var start = ref array.DangerousGetReference();
 
 // 比較
 var compareTo = array.CompareTo();
