@@ -2,11 +2,12 @@
 using System.Runtime.CompilerServices;
 using System.Text;
 using Microsoft.Toolkit.HighPerformance;
-using Utf8Utility.Text;
 #if NET6_0_OR_GREATER
 using System.Buffers;
+using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Text.Unicode;
+using Utf8Utility.Text;
 #else
 using Utf8Utility.Helpers;
 #endif
@@ -247,22 +248,41 @@ public readonly partial struct Utf8Array : IEquatable<Utf8Array>,
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public int GetLength()
     {
-        // 最適化の関係でcount,iの順番で宣言する必要あり。
         var count = 0;
-        nuint i = 0;
+        nuint index = 0;
 
-        while ((int)i < _value.Length)
+#if NET6_0_OR_GREATER
+        const ulong Mask = 0x8080808080808080 >> 7;
+        var length = ByteCount - sizeof(ulong);
+
+        // 8バイト単位でカウントする。
+        while ((int)index <= length)
         {
-            ref var valueStart = ref DangerousGetReference();
+            // 最適化の関係でrefローカル変数にしてはいけない。
+            var value = Unsafe.As<byte, ulong>(ref Unsafe.AddByteOffset(ref _value.DangerousGetReference(), index));
 
+            var x = ((value >> 6) | (~value >> 7)) & Mask;
+            count += BitOperations.PopCount(x);
+            index += sizeof(ulong);
+        }
+#endif
+
+        // 1バイト単位でカウントする。
+        while ((int)index < ByteCount)
+        {
             // 最適化の関係でrefローカル変数にしてはいけない。
 #if NET6_0_OR_GREATER
-            var value = Unsafe.AddByteOffset(ref valueStart, i);
+            var value = Unsafe.AddByteOffset(ref _value.DangerousGetReference(), index);
 #else
-            var value = Unsafe.AddByteOffset(ref valueStart, (nint)i);
+            var value = Unsafe.AddByteOffset(ref _value.DangerousGetReference(), (nint)index);
 #endif
-            i += (uint)UnicodeUtility.GetUtf8SequenceLength(value);
-            count++;
+
+            if ((value & 0xC0) != 0x80)
+            {
+                count++;
+            }
+
+            index++;
         }
 
         return count;
