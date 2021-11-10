@@ -432,7 +432,37 @@ public readonly partial struct Utf8Array : IEquatable<Utf8Array>,
         return ((mask1 | mask2 | mask3 | mask4 | mask5) & 0x8080808080808080) == 0;
     }
 
- 
+    public unsafe bool IsAscii3()
+    {
+        var index = 0;
+        var mask1 = Vector128<byte>.Zero;
+
+        if (_value.Length >= 16)
+        {
+            fixed (byte* ptr = &DangerousGetReference())
+            {
+                for (; index <= _value.Length - 16; index += 16)
+                {
+                    var currentBytes = Sse2.LoadVector128(ptr + index);
+                    mask1 = Sse2.Or(mask1, currentBytes);
+                }
+            }
+        }
+
+        var result = Sse2.MoveMask(mask1);
+        sbyte mask2 = 0;
+
+        for (; index < _value.Length; index++)
+        {
+            mask2 |= (sbyte)Unsafe.AddByteOffset(ref DangerousGetReference(), (nint)(uint)index);
+        }
+
+        result |= mask2 & 0x80;
+
+        return result != 0;
+        // return !*(bool*)&errorMask;
+        // Unsafe.As<int, bool>(ref errorMask);
+    }
 #endif
 
     /// <summary>
