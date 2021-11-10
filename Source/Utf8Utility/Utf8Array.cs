@@ -425,14 +425,14 @@ public readonly partial struct Utf8Array : IEquatable<Utf8Array>,
 
         while ((int)index < _value.Length)
         {
-            mask2 |= Unsafe.AddByteOffset(ref DangerousGetReference(), index);
+            mask5 |= Unsafe.AddByteOffset(ref DangerousGetReference(), index);
             index++;
         }
 
         return ((mask1 | mask2 | mask3 | mask4 | mask5) & 0x8080808080808080) == 0;
     }
 
-
+ 
 #endif
 
     /// <summary>
