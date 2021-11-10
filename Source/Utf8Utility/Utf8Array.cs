@@ -6,6 +6,8 @@ using Microsoft.Toolkit.HighPerformance;
 using System.Buffers;
 using System.Numerics;
 using System.Runtime.InteropServices;
+using System.Runtime.Intrinsics;
+using System.Runtime.Intrinsics.X86;
 using System.Text.Unicode;
 using Utf8Utility.Text;
 #else
@@ -352,6 +354,47 @@ public readonly partial struct Utf8Array : IEquatable<Utf8Array>,
 
         return (int)index == _value.Length;
     }
+#endif
+
+#if NET6_0_OR_GREATER
+    public bool IsAscii()
+    {
+        for (nuint index = 0; (int)index < _value.Length; index++)
+        {
+            if ((sbyte)Unsafe.AddByteOffset(ref DangerousGetReference(), index) < 0)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public bool IsAscii2()
+    {
+        nuint index = 0;
+        var mask1 = 0UL;
+
+        while ((int)index < _value.Length - sizeof(ulong))
+        {
+            var value = Unsafe.As<byte, ulong>(ref Unsafe.AddByteOffset(ref _value.DangerousGetReference(), index));
+
+            mask1 |= value;
+            index += sizeof(ulong);
+        }
+
+        byte mask2 = 0;
+
+        while ((int)index < _value.Length)
+        {
+            mask2 |= Unsafe.AddByteOffset(ref _value.DangerousGetReference(), index);
+            index++;
+        }
+
+        return ((mask1 | mask2) & 0x8080808080808080) == 0;
+    }
+
+  
 #endif
 
     /// <summary>
