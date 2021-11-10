@@ -394,7 +394,45 @@ public readonly partial struct Utf8Array : IEquatable<Utf8Array>,
         return ((mask1 | mask2) & 0x8080808080808080) == 0;
     }
 
-  
+    public bool IsAscii5()
+    {
+        nuint index = 0;
+        var mask1 = 0UL;
+        var mask2 = 0UL;
+        var mask3 = 0UL;
+        var mask4 = 0UL;
+
+        while ((int)index < _value.Length - (sizeof(ulong) * 4))
+        {
+            ref var valueStart = ref Unsafe.As<byte, ulong>(ref Unsafe.AddByteOffset(ref DangerousGetReference(), index));
+            mask1 |= valueStart;
+            mask2 |= Unsafe.Add(ref valueStart, 1);
+            mask3 |= Unsafe.Add(ref valueStart, 2);
+            mask4 |= Unsafe.Add(ref valueStart, 3);
+
+            index += sizeof(ulong) * 4;
+        }
+
+        while ((int)index < _value.Length - sizeof(ulong))
+        {
+            var value = Unsafe.As<byte, ulong>(ref Unsafe.AddByteOffset(ref DangerousGetReference(), index));
+
+            mask1 |= value;
+            index += sizeof(ulong);
+        }
+
+        byte mask5 = 0;
+
+        while ((int)index < _value.Length)
+        {
+            mask2 |= Unsafe.AddByteOffset(ref DangerousGetReference(), index);
+            index++;
+        }
+
+        return ((mask1 | mask2 | mask3 | mask4 | mask5) & 0x8080808080808080) == 0;
+    }
+
+
 #endif
 
     /// <summary>
