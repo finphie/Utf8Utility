@@ -24,7 +24,7 @@ public class Utf8ArrayDictionaryTryAddBenchmark
 
         for (var i = 0; i < Keys.Length; i++)
         {
-            Keys[i] = new Utf8Array(StringHelper.RandomString(Length));
+            Keys[i] = new Utf8Array(StringHelper.GetAsciiRandomString(Length));
         }
     }
 

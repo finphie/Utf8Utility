@@ -23,13 +23,13 @@ public class Utf8ArrayDictionaryTryGetValueBenchmark
     {
         for (var i = 0; i < Count; i++)
         {
-            var key = new Utf8Array(StringHelper.RandomString(Length));
+            var key = new Utf8Array(StringHelper.GetAsciiRandomString(Length));
 
             _dict.Add(key, 1);
             _utf8Dict.TryAdd(key, 1);
         }
 
-        Key = new Utf8Array(StringHelper.RandomString(Length));
+        Key = new Utf8Array(StringHelper.GetAsciiRandomString(Length));
         _dict.Add(Key, 1);
         _utf8Dict.TryAdd(Key, 1);
     }
