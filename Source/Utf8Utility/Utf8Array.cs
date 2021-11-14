@@ -3,12 +3,11 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using Microsoft.Toolkit.HighPerformance;
 using Utf8Utility.Helpers;
+using Utf8Utility.Text;
 #if NET6_0_OR_GREATER
 using System.Buffers;
-using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Text.Unicode;
-using Utf8Utility.Text;
 #endif
 
 namespace Utf8Utility;
