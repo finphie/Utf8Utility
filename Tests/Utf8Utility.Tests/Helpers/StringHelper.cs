@@ -1,12 +1,16 @@
 ﻿using System.Text;
 
-namespace Utf8Utility.Benchmarks.Helpers;
+namespace Utf8Utility.Tests.Helpers;
 
 /// <summary>
 /// <see cref="string"/>関連のヘルパークラス。
 /// </summary>
-static class StringHelper
+sealed class StringHelper
 {
+    const int Seed = 20221106;
+
+    static readonly Random Random = new(Seed);
+
     /// <summary>
     /// ランダムなAscii文字列を取得します。
     /// </summary>
@@ -24,7 +28,7 @@ static class StringHelper
 
         for (var i = 0; i < buffer.Length; i++)
         {
-            buffer[i] = (byte)Random.Shared.Next(0, 0x7F);
+            buffer[i] = (byte)Random.Next(0, 0x7F);
         }
 
         return Encoding.ASCII.GetString(buffer);

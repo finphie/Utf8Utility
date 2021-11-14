@@ -2,14 +2,12 @@
 using System.Runtime.CompilerServices;
 using System.Text;
 using Microsoft.Toolkit.HighPerformance;
+using Utf8Utility.Helpers;
+using Utf8Utility.Text;
 #if NET6_0_OR_GREATER
 using System.Buffers;
-using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Text.Unicode;
-using Utf8Utility.Text;
-#else
-using Utf8Utility.Helpers;
 #endif
 
 namespace Utf8Utility;
@@ -353,6 +351,16 @@ public readonly partial struct Utf8Array : IEquatable<Utf8Array>,
         return (int)index == _value.Length;
     }
 #endif
+
+    /// <summary>
+    /// UTF-8配列が、Ascii文字のみで構成されているかどうかを判定します。
+    /// </summary>
+    /// <returns>
+    /// UTF-8配列が、Ascii文字のみで構成されている場合は<see langword="true"/>、
+    /// それ以外は<see langword="false"/>。
+    /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public bool IsAscii() => UnicodeUtility.IsAscii(AsSpan());
 
     /// <summary>
     /// 最初の要素への参照を取得します。
