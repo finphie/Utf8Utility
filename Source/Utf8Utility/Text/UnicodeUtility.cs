@@ -6,7 +6,7 @@ namespace Utf8Utility.Text;
 /// <summary>
 /// Unicode関連のユーティリティクラスです。
 /// </summary>
-public static class UnicodeUtility
+public static partial class UnicodeUtility
 {
     /// <summary>
     /// 指定されたUTF-8値のバイト数を取得します。
