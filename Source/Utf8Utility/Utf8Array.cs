@@ -7,6 +7,7 @@ using System.Buffers;
 using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Runtime.Intrinsics;
+using System.Runtime.Intrinsics.Arm;
 using System.Runtime.Intrinsics.X86;
 using System.Text.Unicode;
 using Utf8Utility.Text;
@@ -463,28 +464,29 @@ public readonly partial struct Utf8Array : IEquatable<Utf8Array>,
         // Unsafe.As<int, bool>(ref errorMask);
     }
 
-    public unsafe bool IsAsciiAvx()
+    public bool IsAsciiAvx()
     {
-        var index = 0;
+        nuint index = 0;
         var mask1 = Vector256<byte>.Zero;
 
-        if (_value.Length >= 32)
+        if (_value.Length >= Vector256<byte>.Count)
         {
-            fixed (byte* ptr = &DangerousGetReference())
+            var endIndex = _value.Length - Vector256<byte>.Count;
+
+            do
             {
-                for (; index <= _value.Length - 32; index += 32)
-                {
-                    mask1 = Avx2.Or(mask1, Avx.LoadVector256(ptr + index));
-                }
+                mask1 = Avx2.Or(mask1, Unsafe.As<byte, Vector256<byte>>(ref Unsafe.AddByteOffset(ref DangerousGetReference(), index)));
+                index += (uint)Vector256<byte>.Count;
             }
+            while ((int)index <= endIndex);
         }
 
         var result = Avx2.MoveMask(mask1);
         var mask2 = 0;
 
-        for (; index < _value.Length; index++)
+        for (; (int)index < _value.Length; index++)
         {
-            mask2 |= Unsafe.AddByteOffset(ref DangerousGetReference(), (nint)(uint)index);
+            mask2 |= Unsafe.AddByteOffset(ref DangerousGetReference(), index);
         }
 
         result |= mask2 & 0x80;
