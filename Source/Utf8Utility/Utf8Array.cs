@@ -407,9 +407,8 @@ public readonly partial struct Utf8Array : IEquatable<Utf8Array>,
 
         if (_value.Length >= sizeof(ulong) * 4)
         {
-            const int Ulong4Size = sizeof(ulong) * 4;
             ref var current = ref Unsafe.As<byte, ulong>(ref first);
-            var endIndex = _value.Length - Ulong4Size;
+            var endIndex = _value.Length - (sizeof(ulong) * 4);
 
             do
             {
@@ -417,7 +416,7 @@ public readonly partial struct Utf8Array : IEquatable<Utf8Array>,
                 maskB |= Unsafe.AddByteOffset(ref current, index + sizeof(ulong));
                 maskC |= Unsafe.AddByteOffset(ref current, index + (sizeof(ulong) * 2));
                 maskD |= Unsafe.AddByteOffset(ref current, index + (sizeof(ulong) * 3));
-                index += Ulong4Size;
+                index += sizeof(ulong) * 4;
             }
             while ((int)index < endIndex);
         }
