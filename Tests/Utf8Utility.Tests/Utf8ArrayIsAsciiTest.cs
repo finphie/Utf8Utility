@@ -1,5 +1,4 @@
-﻿#if NET6_0_OR_GREATER
-using FluentAssertions;
+﻿using FluentAssertions;
 using Utf8Utility.Tests.Helpers;
 using Xunit;
 
@@ -31,4 +30,3 @@ public sealed class Utf8ArrayIsAsciiTest
         }
     }
 }
-#endif
