@@ -398,46 +398,63 @@ public readonly partial struct Utf8Array : IEquatable<Utf8Array>,
     public bool IsAscii5()
     {
         nuint index = 0;
-        var mask1 = 0UL;
-        var mask2 = 0UL;
-        var mask3 = 0UL;
-        var mask4 = 0UL;
+        var maskA = 0UL;
+        var maskB = 0UL;
+        var maskC = 0UL;
+        var maskD = 0UL;
+
+        ref var first = ref DangerousGetReference();
 
         if (_value.Length >= sizeof(ulong) * 4)
         {
             const int Ulong4Size = sizeof(ulong) * 4;
-            ref var first = ref Unsafe.As<byte, ulong>(ref DangerousGetReference());
+            ref var current = ref Unsafe.As<byte, ulong>(ref first);
             var endIndex = _value.Length - Ulong4Size;
 
             do
             {
-                mask1 |= first;
-                mask2 |= Unsafe.Add(ref first, 1);
-                mask3 |= Unsafe.Add(ref first, 2);
-                mask4 |= Unsafe.Add(ref first, 3);
+                maskA |= Unsafe.AddByteOffset(ref current, index);
+                maskB |= Unsafe.AddByteOffset(ref current, index + sizeof(ulong));
+                maskC |= Unsafe.AddByteOffset(ref current, index + (sizeof(ulong) * 2));
+                maskD |= Unsafe.AddByteOffset(ref current, index + (sizeof(ulong) * 3));
                 index += Ulong4Size;
             }
             while ((int)index < endIndex);
         }
 
+        if (_value.Length - (int)index >= sizeof(ulong) * 2)
+        {
+            ref var current = ref Unsafe.As<byte, ulong>(ref Unsafe.AddByteOffset(ref first, index));
+
+            maskA |= current;
+            maskA |= Unsafe.Add(ref current, 1);
+            index += sizeof(ulong) * 2;
+        }
+
         if (_value.Length - (int)index >= sizeof(ulong))
         {
-            ref var first = ref Unsafe.As<byte, ulong>(ref Unsafe.AddByteOffset(ref DangerousGetReference(), index));
-
-            mask1 |= first;
+            maskA |= Unsafe.As<byte, ulong>(ref Unsafe.AddByteOffset(ref first, index));
             index += sizeof(ulong);
         }
 
-      
-        byte mask5 = 0;
-
-        while ((int)index < _value.Length)
+        if (_value.Length - (int)index >= sizeof(uint))
         {
-            mask5 |= Unsafe.AddByteOffset(ref DangerousGetReference(), index);
-            index++;
+            maskA |= Unsafe.As<byte, uint>(ref Unsafe.AddByteOffset(ref first, index));
+            index += sizeof(uint);
         }
 
-        return ((mask1 | mask2 | mask3 | mask4 | mask5) & 0x8080808080808080) == 0;
+        if (_value.Length - (int)index >= sizeof(ushort))
+        {
+            maskA |= Unsafe.As<byte, ushort>(ref Unsafe.AddByteOffset(ref first, index));
+            index += sizeof(ushort);
+        }
+
+        if ((int)index < _value.Length)
+        {
+            maskA |= Unsafe.AddByteOffset(ref first, index);
+        }
+
+        return ((maskA | maskB | maskC | maskD) & 0x8080808080808080) == 0;
     }
 
     public unsafe bool IsAsciiSse2()
