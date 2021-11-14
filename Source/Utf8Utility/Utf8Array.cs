@@ -435,24 +435,26 @@ public readonly partial struct Utf8Array : IEquatable<Utf8Array>,
 
     public unsafe bool IsAsciiSse2()
     {
-        var index = 0;
+        nuint index = 0;
         var mask1 = Vector128<byte>.Zero;
 
-        if (_value.Length >= 16)
+        if (_value.Length >= Vector128<byte>.Count)
         {
-            fixed (byte* ptr = &DangerousGetReference())
+            var endIndex = _value.Length - Vector128<byte>.Count;
+            ref var first = ref Unsafe.As<byte, Vector128<byte>>(ref DangerousGetReference());
+
+            do
             {
-                for (; index <= _value.Length - 16; index += 16)
-                {
-                    mask1 = Sse2.Or(mask1, Sse2.LoadVector128(ptr + index));
-                }
+                mask1 = Sse2.Or(mask1, Unsafe.AddByteOffset(ref first, index));
+                index += (uint)Vector128<byte>.Count;
             }
+            while ((int)index <= endIndex);
         }
 
         var result = Sse2.MoveMask(mask1);
         sbyte mask2 = 0;
 
-        for (; index < _value.Length; index++)
+        for (; (int)index < _value.Length; index++)
         {
             mask2 |= (sbyte)Unsafe.AddByteOffset(ref DangerousGetReference(), (nint)(uint)index);
         }
@@ -460,8 +462,6 @@ public readonly partial struct Utf8Array : IEquatable<Utf8Array>,
         result |= mask2 & 0x80;
 
         return result == 0;
-        // return !*(bool*)&errorMask;
-        // Unsafe.As<int, bool>(ref errorMask);
     }
 
     public bool IsAsciiAvx()
@@ -472,10 +472,11 @@ public readonly partial struct Utf8Array : IEquatable<Utf8Array>,
         if (_value.Length >= Vector256<byte>.Count)
         {
             var endIndex = _value.Length - Vector256<byte>.Count;
+            ref var first = ref Unsafe.As<byte, Vector256<byte>>(ref DangerousGetReference());
 
             do
             {
-                mask1 = Avx2.Or(mask1, Unsafe.As<byte, Vector256<byte>>(ref Unsafe.AddByteOffset(ref DangerousGetReference(), index)));
+                mask1 = Avx2.Or(mask1, Unsafe.AddByteOffset(ref first, index));
                 index += (uint)Vector256<byte>.Count;
             }
             while ((int)index <= endIndex);
@@ -484,9 +485,16 @@ public readonly partial struct Utf8Array : IEquatable<Utf8Array>,
         var result = Avx2.MoveMask(mask1);
         var mask2 = 0;
 
-        for (; (int)index < _value.Length; index++)
+        if ((int)index < _value.Length)
         {
-            mask2 |= Unsafe.AddByteOffset(ref DangerousGetReference(), index);
+            ref var first = ref DangerousGetReference();
+
+            do
+            {
+                mask2 |= Unsafe.AddByteOffset(ref first, index);
+                index++;
+            }
+            while ((int)index < _value.Length);
         }
 
         result |= mask2 & 0x80;
