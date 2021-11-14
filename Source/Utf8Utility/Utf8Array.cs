@@ -547,7 +547,7 @@ public readonly partial struct Utf8Array : IEquatable<Utf8Array>,
             index += sizeof(ushort);
         }
 
-        if (_value.Length - (int)index >= sizeof(byte))
+        if ((int)index < _value.Length)
         {
             mask8 |= Unsafe.AddByteOffset(ref DangerousGetReference(), index);
         }
