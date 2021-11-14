@@ -374,25 +374,41 @@ public readonly partial struct Utf8Array : IEquatable<Utf8Array>,
     public bool IsAscii2()
     {
         nuint index = 0;
-        var mask1 = 0UL;
+        var mask8 = 0UL;
 
-        while ((int)index < _value.Length - sizeof(ulong))
+        ref var first = ref DangerousGetReference();
+
+        if (_value.Length - (int)index >= sizeof(ulong))
         {
-            var value = Unsafe.As<byte, ulong>(ref Unsafe.AddByteOffset(ref _value.DangerousGetReference(), index));
+            ref var current = ref Unsafe.As<byte, ulong>(ref first);
+            var endIndex = _value.Length - sizeof(ulong);
 
-            mask1 |= value;
-            index += sizeof(ulong);
+            do
+            {
+                mask8 |= Unsafe.AddByteOffset(ref current, index);
+                index += sizeof(ulong);
+            }
+            while ((int)index < endIndex);
         }
 
-        byte mask2 = 0;
-
-        while ((int)index < _value.Length)
+        if (_value.Length - (int)index >= sizeof(uint))
         {
-            mask2 |= Unsafe.AddByteOffset(ref _value.DangerousGetReference(), index);
-            index++;
+            mask8 |= Unsafe.As<byte, uint>(ref Unsafe.AddByteOffset(ref first, index));
+            index += sizeof(uint);
         }
 
-        return ((mask1 | mask2) & 0x8080808080808080) == 0;
+        if (_value.Length - (int)index >= sizeof(ushort))
+        {
+            mask8 |= Unsafe.As<byte, ushort>(ref Unsafe.AddByteOffset(ref first, index));
+            index += sizeof(ushort);
+        }
+
+        if ((int)index < _value.Length)
+        {
+            mask8 |= Unsafe.AddByteOffset(ref first, index);
+        }
+
+        return (mask8 & 0x8080808080808080) == 0;
     }
 
     public bool IsAscii5()
