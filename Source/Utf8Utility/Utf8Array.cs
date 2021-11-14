@@ -444,59 +444,49 @@ public readonly partial struct Utf8Array : IEquatable<Utf8Array>,
     {
         nuint index = 0;
         var mask16 = Vector128<byte>.Zero;
-        var result = 0UL;
+
+        ref var first = ref DangerousGetReference();
 
         if (_value.Length >= Vector128<byte>.Count)
         {
             var endIndex = _value.Length - Vector128<byte>.Count;
-            ref var first = ref Unsafe.As<byte, Vector128<byte>>(ref DangerousGetReference());
+            ref var current = ref Unsafe.As<byte, Vector128<byte>>(ref first);
 
             do
             {
-                mask16 = Sse2.Or(mask16, Unsafe.AddByteOffset(ref first, index));
+                mask16 = Sse2.Or(mask16, Unsafe.AddByteOffset(ref current, index));
                 index += (uint)Vector128<byte>.Count;
             }
             while ((int)index <= endIndex);
-
-            result = (ulong)Sse2.MoveMask(mask16);
         }
+
+        var result = Sse2.MoveMask(mask16);
+        var mask8 = 0UL;
 
         if (_value.Length - (int)index >= sizeof(ulong))
         {
-            ref var first = ref Unsafe.As<byte, ulong>(ref DangerousGetReference());
-
-            var mask8 = Unsafe.AddByteOffset(ref first, index);
-            result |= mask8 & 0x8080808080808080;
+            mask8 |= Unsafe.As<byte, ulong>(ref Unsafe.AddByteOffset(ref first, index));
             index += sizeof(ulong);
         }
 
         if (_value.Length - (int)index >= sizeof(uint))
         {
-            ref var first = ref Unsafe.As<byte, uint>(ref DangerousGetReference());
-
-            var mask4 = Unsafe.AddByteOffset(ref first, index);
-            result |= mask4 & 0x80808080;
+            mask8 |= Unsafe.As<byte, uint>(ref Unsafe.AddByteOffset(ref first, index));
             index += sizeof(uint);
         }
 
         if (_value.Length - (int)index >= sizeof(ushort))
         {
-            ref var first = ref Unsafe.As<byte, ushort>(ref DangerousGetReference());
-
-            var mask2 = Unsafe.AddByteOffset(ref first, index);
-            result |= (ushort)(mask2 & 0x8080);
+            mask8 |= Unsafe.As<byte, ushort>(ref Unsafe.AddByteOffset(ref first, index));
             index += sizeof(ushort);
         }
 
-        if (_value.Length - (int)index >= sizeof(byte))
+        if ((int)index < _value.Length)
         {
-            ref var first = ref DangerousGetReference();
-
-            var mask1 = Unsafe.AddByteOffset(ref first, index);
-            result |= (byte)(mask1 & 0x80);
+            mask8 |= Unsafe.AddByteOffset(ref first, index);
         }
 
-        return result == 0;
+        return ((uint)result | (mask8 & 0x8080808080808080)) == 0;
     }
 
     public bool IsAsciiAvx_2()
