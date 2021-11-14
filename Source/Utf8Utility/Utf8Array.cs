@@ -360,7 +360,7 @@ public readonly partial struct Utf8Array : IEquatable<Utf8Array>,
     /// それ以外は<see langword="false"/>。
     /// </returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public bool IsAscii() => UnicodeUtility.IsAscii(_value);
+    public bool IsAscii() => UnicodeUtility.IsAscii(AsSpan());
 
     /// <summary>
     /// 最初の要素への参照を取得します。

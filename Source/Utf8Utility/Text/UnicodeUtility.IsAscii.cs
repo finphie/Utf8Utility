@@ -1,5 +1,5 @@
 ﻿using System.Runtime.CompilerServices;
-using Microsoft.Toolkit.HighPerformance;
+using System.Runtime.InteropServices;
 #if NET6_0_OR_GREATER
 using System.Runtime.Intrinsics;
 using System.Runtime.Intrinsics.X86;
@@ -21,9 +21,9 @@ partial class UnicodeUtility
     /// それ以外は<see langword="false"/>。
     /// </returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static bool IsAscii(byte[] value)
+    public static bool IsAscii(ReadOnlySpan<byte> value)
     {
-        if (value is null)
+        if (value.IsEmpty)
         {
             return false;
         }
@@ -45,12 +45,12 @@ partial class UnicodeUtility
 
 #if NET6_0_OR_GREATER
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    static bool IsAsciiAvx2(byte[] value)
+    static bool IsAsciiAvx2(ReadOnlySpan<byte> value)
     {
         nuint index = 0;
         var mask32 = Vector256<byte>.Zero;
 
-        ref var first = ref value.DangerousGetReference();
+        ref var first = ref MemoryMarshal.GetReference(value);
 
         if (value.Length >= Vector256<byte>.Count)
         {
@@ -104,12 +104,12 @@ partial class UnicodeUtility
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    static bool IsAsciiSse2(byte[] value)
+    static bool IsAsciiSse2(ReadOnlySpan<byte> value)
     {
         nuint index = 0;
         var mask16 = Vector128<byte>.Zero;
 
-        ref var first = ref value.DangerousGetReference();
+        ref var first = ref MemoryMarshal.GetReference(value);
 
         if (value.Length >= Vector128<byte>.Count)
         {
@@ -155,7 +155,7 @@ partial class UnicodeUtility
 #endif
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    static bool IsAsciiUlong(byte[] value)
+    static bool IsAsciiUlong(ReadOnlySpan<byte> value)
     {
         nuint index = 0;
         var maskA = 0UL;
@@ -163,7 +163,7 @@ partial class UnicodeUtility
         var maskC = 0UL;
         var maskD = 0UL;
 
-        ref var first = ref value.DangerousGetReference();
+        ref var first = ref MemoryMarshal.GetReference(value);
 
         if (value.Length >= sizeof(ulong) * 4)
         {
