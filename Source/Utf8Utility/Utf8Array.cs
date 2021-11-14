@@ -503,7 +503,6 @@ public readonly partial struct Utf8Array : IEquatable<Utf8Array>,
     {
         nuint index = 0;
         var mask32 = Vector256<byte>.Zero;
-        var result = 0;
 
         if (_value.Length >= Vector256<byte>.Count)
         {
@@ -516,45 +515,44 @@ public readonly partial struct Utf8Array : IEquatable<Utf8Array>,
                 index += (uint)Vector256<byte>.Count;
             }
             while ((int)index <= endIndex);
-
-            result = Avx2.MoveMask(mask32);
         }
 
-        var res = 0UL;
+        var result = Avx2.MoveMask(mask32);
+        var mask8 = 0UL;
 
         if (_value.Length - (int)index >= sizeof(ulong) * 2)
         {
             ref var first = ref Unsafe.As<byte, ulong>(ref Unsafe.AddByteOffset(ref DangerousGetReference(), index));
 
-            res = first;
-            res |= Unsafe.Add(ref first, 1);
+            mask8 = first;
+            mask8 |= Unsafe.Add(ref first, 1);
             index += sizeof(ulong) * 2;
         }
 
         if (_value.Length - (int)index >= sizeof(ulong))
         {
-            res |= Unsafe.As<byte, ulong>(ref Unsafe.AddByteOffset(ref DangerousGetReference(), index));
+            mask8 |= Unsafe.As<byte, ulong>(ref Unsafe.AddByteOffset(ref DangerousGetReference(), index));
             index += sizeof(ulong);
         }
 
         if (_value.Length - (int)index >= sizeof(uint))
         {
-            res |= Unsafe.As<byte, uint>(ref Unsafe.AddByteOffset(ref DangerousGetReference(), index));
+            mask8 |= Unsafe.As<byte, uint>(ref Unsafe.AddByteOffset(ref DangerousGetReference(), index));
             index += sizeof(uint);
         }
 
         if (_value.Length - (int)index >= sizeof(ushort))
         {
-            res |= Unsafe.As<byte, ushort>(ref Unsafe.AddByteOffset(ref DangerousGetReference(), index));
+            mask8 |= Unsafe.As<byte, ushort>(ref Unsafe.AddByteOffset(ref DangerousGetReference(), index));
             index += sizeof(ushort);
         }
 
         if (_value.Length - (int)index >= sizeof(byte))
         {
-            res |= Unsafe.AddByteOffset(ref DangerousGetReference(), index);
+            mask8 |= Unsafe.AddByteOffset(ref DangerousGetReference(), index);
         }
 
-        return ((uint)result | (res & 0x8080808080808080)) == 0;
+        return ((uint)result | (mask8 & 0x8080808080808080)) == 0;
     }
 #endif
 
