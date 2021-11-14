@@ -36,14 +36,17 @@ var array = new Utf8Array("abc");
 // バイト数
 var byteCount = array.ByteCount;
 
-// 空かどうか
-var isEmpty = array.IsEmpty;
-
 // 文字数
 var length = array.GetLength();
 
+// 空かどうか
+var isEmpty = array.IsEmpty;
+
 // 空か空白文字列かどうか
 var isEmptyOrWhiteSpace = array.IsEmptyOrWhiteSpace();
+
+// Ascii文字列かどうか
+var isAscii = array.IsAscii();
 
 // 内部配列への参照
 ref var start = ref array.DangerousGetReference();
@@ -69,6 +72,10 @@ ref var dictStart = ref dict.GetValueRefOrNullRef(array);
 
 dict.TryAdd(array, 1);
 dict.Clear();
+
+// Ascii文字列かどうか
+var span = array.AsSpan();
+var isAscii = UnicodeUtility.IsAscii(span);
 ```
 
 ## サポートフレームワーク
