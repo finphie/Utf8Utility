@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Text;
 using Microsoft.Toolkit.HighPerformance;
@@ -26,6 +27,12 @@ public readonly partial struct Utf8Array : IEquatable<Utf8Array>,
 #endif
 {
     readonly byte[] _value;
+
+    [Obsolete("Do not use default constructor.", true)]
+    [EditorBrowsable(EditorBrowsableState.Never)]
+#pragma warning disable
+    public Utf8Array() => throw new NotSupportedException();
+#pragma warning restore
 
     /// <summary>
     /// <see cref="Utf8Array"/>構造体の新しいインスタンスを取得します。
