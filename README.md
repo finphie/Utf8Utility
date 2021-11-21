@@ -29,6 +29,7 @@ dotnet add package Utf8Utility -s https://pkgs.dev.azure.com/finphie/Main/_packa
 ```csharp
 using System;
 using Utf8Utility;
+using Utf8Utility.Text;
 
 // stringまたはUTF-8のバイト配列、ReadOnlySpan{char|byte}を指定できます。
 var array = new Utf8Array("abc");
