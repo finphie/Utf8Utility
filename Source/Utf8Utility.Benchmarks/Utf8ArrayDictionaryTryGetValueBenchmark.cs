@@ -51,7 +51,7 @@ public class Utf8ArrayDictionaryTryGetValueBenchmark
     [Benchmark]
     public int Utf8Dictionary_Span()
     {
-        _utf8Dict.TryGetValue(Key.AsSpan(), out var value);
+        _utf8Dict.TryGetValue(Key.DangerousAsSpan(), out var value);
         return value;
     }
 }

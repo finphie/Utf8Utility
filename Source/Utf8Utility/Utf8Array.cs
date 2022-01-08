@@ -215,7 +215,7 @@ public readonly partial struct Utf8Array : IEquatable<Utf8Array>,
     /// </summary>
     /// <returns><see cref="ReadOnlySpan{Byte}"/>構造体</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public ReadOnlySpan<byte> AsSpan()
+    public ReadOnlySpan<byte> DangerousAsSpan()
     {
         // 引数の検証をスキップするために、手動でReadOnlySpanを作成する。
 #if NET6_0_OR_GREATER
@@ -233,7 +233,7 @@ public readonly partial struct Utf8Array : IEquatable<Utf8Array>,
     /// <param name="start">初期インデックス</param>
     /// <returns><see cref="ReadOnlySpan{Byte}"/>構造体</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public ReadOnlySpan<byte> AsSpan(int start)
+    public ReadOnlySpan<byte> DangerousAsSpan(int start)
     {
         // 引数の検証をスキップするために、手動でReadOnlySpanを作成する。
 #if NET6_0_OR_GREATER
@@ -367,7 +367,7 @@ public readonly partial struct Utf8Array : IEquatable<Utf8Array>,
     /// それ以外は<see langword="false"/>。
     /// </returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public bool IsAscii() => UnicodeUtility.IsAscii(AsSpan());
+    public bool IsAscii() => UnicodeUtility.IsAscii(DangerousAsSpan());
 
     /// <summary>
     /// 最初の要素への参照を取得します。

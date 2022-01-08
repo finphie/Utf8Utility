@@ -10,7 +10,7 @@ public sealed class Utf8ArrayAsSpanTest
     [InlineData("abc")]
     public void 初期インデックス0(string value)
     {
-        var span = new Utf8Array(value).AsSpan();
+        var span = new Utf8Array(value).DangerousAsSpan();
         var array = Encoding.UTF8.GetBytes(value);
 
         span.SequenceEqual(array).Should().BeTrue();
@@ -20,7 +20,7 @@ public sealed class Utf8ArrayAsSpanTest
     [InlineData("abcdef")]
     public void 初期インデックス3(string value)
     {
-        var span = new Utf8Array(value).AsSpan(3);
+        var span = new Utf8Array(value).DangerousAsSpan(3);
         var array = Encoding.UTF8.GetBytes(value).AsSpan(3);
 
         span.SequenceEqual(array).Should().BeTrue();
