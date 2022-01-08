@@ -251,6 +251,14 @@ public readonly partial struct Utf8Array : IEquatable<Utf8Array>,
     public ReadOnlySpan<byte> AsSpan(int start) => new(_value, start, _value.Length - start);
 
     /// <summary>
+    /// UTF-8でエンコードされた<see cref="byte"/>配列を取得します。
+    /// 内部の配列をそのまま返すため、書き換えは行わないでください。
+    /// </summary>
+    /// <returns>UTF-8でエンコードされた<see cref="byte"/>配列</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public byte[] DangerousAsByteArray() => _value;
+
+    /// <summary>
     /// UTF-8文字数を取得します。
     /// </summary>
     /// <returns>UTF-8文字数</returns>
