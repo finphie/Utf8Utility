@@ -189,7 +189,7 @@ public readonly partial struct Utf8Array : IEquatable<Utf8Array>,
 
     /// <inheritdoc/>
     public bool Equals(Utf8Array other)
-        => _value.AsSpan().SequenceEqual(other._value);
+        => AsSpan().SequenceEqual(other.AsSpan());
 
     /// <inheritdoc/>
     public override int GetHashCode() => _value.GetDjb2HashCode();
