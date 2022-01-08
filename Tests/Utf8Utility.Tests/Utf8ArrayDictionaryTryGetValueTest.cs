@@ -18,7 +18,7 @@ public sealed class Utf8ArrayDictionaryTryGetValueTest
         utf8Dict.TryGetValue(utf8Key, out var utf8DictValue).Should().BeTrue();
         utf8DictValue.Should().Be(1);
 
-        utf8Dict.TryGetValue(utf8Key.DangerousAsSpan(), out utf8DictValue).Should().BeTrue();
+        utf8Dict.TryGetValue(utf8Key.AsSpan(), out utf8DictValue).Should().BeTrue();
         utf8DictValue.Should().Be(1);
 
         utf8Dict.TryGetValue(key.AsSpan(), out utf8DictValue).Should().BeTrue();
@@ -40,7 +40,7 @@ public sealed class Utf8ArrayDictionaryTryGetValueTest
         utf8DictValue!.A.Should().Be(value.A);
         utf8DictValue.B.Should().Be(value.B);
 
-        utf8Dict.TryGetValue(utf8Key.DangerousAsSpan(), out utf8DictValue).Should().BeTrue();
+        utf8Dict.TryGetValue(utf8Key.AsSpan(), out utf8DictValue).Should().BeTrue();
         utf8DictValue!.A.Should().Be(value.A);
         utf8DictValue.B.Should().Be(value.B);
 
@@ -101,7 +101,7 @@ public sealed class Utf8ArrayDictionaryTryGetValueTest
         utf8Dict.TryGetValue(utf8Key, out var utf8DictValue).Should().BeFalse();
         utf8DictValue.Should().Be(default);
 
-        utf8Dict.TryGetValue(utf8Key.DangerousAsSpan(), out utf8DictValue).Should().BeFalse();
+        utf8Dict.TryGetValue(utf8Key.AsSpan(), out utf8DictValue).Should().BeFalse();
         utf8DictValue.Should().Be(default);
 
         utf8Dict.TryGetValue(key.AsSpan(), out utf8DictValue).Should().BeFalse();

@@ -96,7 +96,7 @@ public sealed class Utf8ArrayDictionary<TValue> : IUtf8ArrayDictionary<TValue>, 
     /// <inheritdoc/>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public bool TryGetValue(Utf8Array key, [MaybeNullWhen(false)] out TValue value)
-        => TryGetValue(key.DangerousAsSpan(), out value);
+        => TryGetValue(key.AsSpan(), out value);
 
     /// <inheritdoc/>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -180,7 +180,7 @@ public sealed class Utf8ArrayDictionary<TValue> : IUtf8ArrayDictionary<TValue>, 
     /// </returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public ref TValue GetValueRefOrNullRef(Utf8Array key)
-        => ref GetValueRefOrNullRef(key.DangerousAsSpan());
+        => ref GetValueRefOrNullRef(key.AsSpan());
 
     /// <summary>
     /// キーが存在する場合は<typeparamref name="TValue"/>への参照、存在しない場合はnull参照を返します。
@@ -208,7 +208,7 @@ public sealed class Utf8ArrayDictionary<TValue> : IUtf8ArrayDictionary<TValue>, 
 
             ref var entry = ref entries[i];
 
-            if (key.SequenceEqual(entry.Key.DangerousAsSpan()))
+            if (key.SequenceEqual(entry.Key.AsSpan()))
             {
                 return ref entry.Value;
             }

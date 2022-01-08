@@ -20,7 +20,7 @@ public sealed class Utf8ArrayDictionaryGetValueRefOrNullRefTest
         itemRef = 2;
         itemRef.Should().Be(2);
 
-        itemRef = ref utf8Dict.GetValueRefOrNullRef(utf8Key.DangerousAsSpan());
+        itemRef = ref utf8Dict.GetValueRefOrNullRef(utf8Key.AsSpan());
         itemRef.Should().Be(2);
 
         itemRef = 3;
@@ -48,7 +48,7 @@ public sealed class Utf8ArrayDictionaryGetValueRefOrNullRefTest
         itemRef.A.Should().Be(3);
         itemRef.B.Should().Be("c");
 
-        itemRef = ref utf8Dict.GetValueRefOrNullRef(utf8Key.DangerousAsSpan())!;
+        itemRef = ref utf8Dict.GetValueRefOrNullRef(utf8Key.AsSpan())!;
         itemRef.A.Should().Be(3);
         itemRef.B.Should().Be("c");
 
@@ -69,7 +69,7 @@ public sealed class Utf8ArrayDictionaryGetValueRefOrNullRefTest
         var utf8Key = new Utf8Array("abc");
 
         Unsafe.IsNullRef(ref utf8Dict.GetValueRefOrNullRef(utf8Key)).Should().BeTrue();
-        Unsafe.IsNullRef(ref utf8Dict.GetValueRefOrNullRef(utf8Key.DangerousAsSpan())).Should().BeTrue();
+        Unsafe.IsNullRef(ref utf8Dict.GetValueRefOrNullRef(utf8Key.AsSpan())).Should().BeTrue();
     }
 
     [Fact]
@@ -79,7 +79,7 @@ public sealed class Utf8ArrayDictionaryGetValueRefOrNullRefTest
         var utf8Key = new Utf8Array("abc");
 
         Unsafe.IsNullRef(ref utf8Dict.GetValueRefOrNullRef(utf8Key)).Should().BeTrue();
-        Unsafe.IsNullRef(ref utf8Dict.GetValueRefOrNullRef(utf8Key.DangerousAsSpan())).Should().BeTrue();
+        Unsafe.IsNullRef(ref utf8Dict.GetValueRefOrNullRef(utf8Key.AsSpan())).Should().BeTrue();
     }
 
     class Test

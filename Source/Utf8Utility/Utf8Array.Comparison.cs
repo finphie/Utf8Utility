@@ -21,7 +21,7 @@ partial struct Utf8Array
     /// 負の整数か0または正の整数を返します。
     /// </returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static int CompareOrdinal(Utf8Array x, Utf8Array y) => x.DangerousAsSpan().SequenceCompareTo(y.DangerousAsSpan());
+    public static int CompareOrdinal(Utf8Array x, Utf8Array y) => x.AsSpan().SequenceCompareTo(y.AsSpan());
 
     /// <summary>
     /// 比較を行います。
