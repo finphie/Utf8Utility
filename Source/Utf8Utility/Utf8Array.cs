@@ -189,7 +189,7 @@ public readonly partial struct Utf8Array : IEquatable<Utf8Array>,
 
     /// <inheritdoc/>
     public bool Equals(Utf8Array other)
-        => _value.AsSpan().SequenceEqual(other._value);
+        => AsSpan().SequenceEqual(other.AsSpan());
 
     /// <inheritdoc/>
     public override int GetHashCode() => _value.GetDjb2HashCode();
@@ -208,6 +208,21 @@ public readonly partial struct Utf8Array : IEquatable<Utf8Array>,
     /// <inheritdoc/>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public int CompareTo(Utf8Array other) => Compare(this, other);
+
+    /// <summary>
+    /// <see cref="ReadOnlySpan{Byte}"/>構造体を取得します。
+    /// このメソッドは引数チェックを行いません。
+    /// </summary>
+    /// <param name="start">初期インデックス</param>
+    /// <returns><see cref="ReadOnlySpan{Byte}"/>構造体</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public ReadOnlySpan<byte> DangerousAsSpan(int start)
+    {
+        // 引数の検証をスキップするために、手動でReadOnlySpanを作成する。
+        var length = _value.Length - start;
+        ref var valueStart = ref Unsafe.AddByteOffset(ref DangerousGetReference(), (nint)(uint)start);
+        return MemoryMarshal.CreateReadOnlySpan(ref valueStart, length);
+    }
 #endif
 
     /// <summary>
@@ -217,8 +232,8 @@ public readonly partial struct Utf8Array : IEquatable<Utf8Array>,
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public ReadOnlySpan<byte> AsSpan()
     {
-        // 引数の検証をスキップするために、手動でReadOnlySpanを作成する。
 #if NET6_0_OR_GREATER
+        // 引数の検証をスキップするために、手動でReadOnlySpanを作成する。
         ref var valueStart = ref DangerousGetReference();
         return MemoryMarshal.CreateReadOnlySpan(ref valueStart, _value.Length);
 #else
@@ -233,18 +248,7 @@ public readonly partial struct Utf8Array : IEquatable<Utf8Array>,
     /// <param name="start">初期インデックス</param>
     /// <returns><see cref="ReadOnlySpan{Byte}"/>構造体</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public ReadOnlySpan<byte> AsSpan(int start)
-    {
-        // 引数の検証をスキップするために、手動でReadOnlySpanを作成する。
-#if NET6_0_OR_GREATER
-        var length = _value.Length - start;
-        ref var valueStart = ref Unsafe.AddByteOffset(ref DangerousGetReference(), (nint)(uint)length);
-        return MemoryMarshal.CreateReadOnlySpan(ref valueStart, length);
-#else
-        var span = new ReadOnlySpan<byte>(_value, start, _value.Length - start);
-        return span;
-#endif
-    }
+    public ReadOnlySpan<byte> AsSpan(int start) => new(_value, start, _value.Length - start);
 
     /// <summary>
     /// UTF-8文字数を取得します。

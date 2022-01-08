@@ -1,21 +1,12 @@
-﻿using System.Text;
+﻿#if NET6_0_OR_GREATER
+using System.Text;
 using FluentAssertions;
 using Xunit;
 
 namespace Utf8Utility.Tests;
 
-public sealed class Utf8ArrayAsSpanTest
+public sealed class Utf8ArrayDangerousAsSpanTest
 {
-    [Theory]
-    [InlineData("abc")]
-    public void 初期インデックス0(string value)
-    {
-        var span = new Utf8Array(value).AsSpan();
-        var array = Encoding.UTF8.GetBytes(value);
-
-        span.SequenceEqual(array).Should().BeTrue();
-    }
-
     [Theory]
     [InlineData("abcdef")]
     public void 初期インデックス設定(string value)
@@ -24,10 +15,11 @@ public sealed class Utf8ArrayAsSpanTest
 
         for (var i = 0; i < value.Length; i++)
         {
-            var span = new Utf8Array(utf8Value).AsSpan(i);
+            var span = new Utf8Array(utf8Value).DangerousAsSpan(i);
             var array = utf8Value.AsSpan(i);
 
             span.SequenceEqual(array).Should().BeTrue();
         }
     }
 }
+#endif
