@@ -212,6 +212,7 @@ public readonly partial struct Utf8Array : IEquatable<Utf8Array>,
 
     /// <summary>
     /// <see cref="ReadOnlySpan{Byte}"/>構造体を取得します。
+    /// このメソッドは引数チェックを行いません。
     /// </summary>
     /// <returns><see cref="ReadOnlySpan{Byte}"/>構造体</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -229,6 +230,7 @@ public readonly partial struct Utf8Array : IEquatable<Utf8Array>,
 
     /// <summary>
     /// <see cref="ReadOnlySpan{Byte}"/>構造体を取得します。
+    /// このメソッドは引数チェックを行いません。
     /// </summary>
     /// <param name="start">初期インデックス</param>
     /// <returns><see cref="ReadOnlySpan{Byte}"/>構造体</returns>
@@ -245,6 +247,21 @@ public readonly partial struct Utf8Array : IEquatable<Utf8Array>,
         return span;
 #endif
     }
+
+    /// <summary>
+    /// <see cref="ReadOnlySpan{Byte}"/>構造体を取得します。
+    /// </summary>
+    /// <returns><see cref="ReadOnlySpan{Byte}"/>構造体</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public ReadOnlySpan<byte> AsSpan() => new(_value, 0, _value.Length);
+
+    /// <summary>
+    /// <see cref="ReadOnlySpan{Byte}"/>構造体を取得します。
+    /// </summary>
+    /// <param name="start">初期インデックス</param>
+    /// <returns><see cref="ReadOnlySpan{Byte}"/>構造体</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public ReadOnlySpan<byte> AsSpan(int start) => new(_value, start, _value.Length - start);
 
     /// <summary>
     /// UTF-8文字数を取得します。
