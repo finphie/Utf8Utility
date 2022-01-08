@@ -220,7 +220,7 @@ public readonly partial struct Utf8Array : IEquatable<Utf8Array>,
     {
         // 引数の検証をスキップするために、手動でReadOnlySpanを作成する。
         var length = _value.Length - start;
-        ref var valueStart = ref Unsafe.AddByteOffset(ref DangerousGetReference(), (nint)(uint)length);
+        ref var valueStart = ref Unsafe.AddByteOffset(ref DangerousGetReference(), (nint)(uint)start);
         return MemoryMarshal.CreateReadOnlySpan(ref valueStart, length);
     }
 #endif
