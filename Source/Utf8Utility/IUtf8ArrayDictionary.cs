@@ -16,7 +16,7 @@ public interface IUtf8ArrayDictionary<TValue>
     /// <param name="value">値</param>
     /// <returns>
     /// 要素の追加に成功した場合は<see langword="true"/>、
-    /// それ以外の場合は<see langword="false"/>。
+    /// それ以外の場合は<see langword="false"/>を返します。
     /// </returns>
     bool TryAdd(Utf8Array key, TValue value);
 
@@ -27,7 +27,7 @@ public interface IUtf8ArrayDictionary<TValue>
     /// <param name="value">値</param>
     /// <returns>
     /// 指定されたキーが存在した場合は<see langword="true"/>、
-    /// それ以外の場合は<see langword="false"/>。
+    /// それ以外の場合は<see langword="false"/>を返します。
     /// </returns>
     bool TryGetValue(Utf8Array key, [MaybeNullWhen(false)] out TValue value);
 
@@ -38,7 +38,7 @@ public interface IUtf8ArrayDictionary<TValue>
     /// <param name="value">値</param>
     /// <returns>
     /// 指定されたキーが存在した場合は<see langword="true"/>、
-    /// それ以外の場合は<see langword="false"/>。
+    /// それ以外の場合は<see langword="false"/>を返します。
     /// </returns>
     bool TryGetValue(ReadOnlySpan<byte> key, [MaybeNullWhen(false)] out TValue value);
 
@@ -49,7 +49,7 @@ public interface IUtf8ArrayDictionary<TValue>
     /// <param name="value">値</param>
     /// <returns>
     /// 指定されたキーが存在した場合は<see langword="true"/>、
-    /// それ以外の場合は<see langword="false"/>。
+    /// それ以外の場合は<see langword="false"/>を返します。
     /// </returns>
     bool TryGetValue(ReadOnlySpan<char> key, [MaybeNullWhen(false)] out TValue value);
 }

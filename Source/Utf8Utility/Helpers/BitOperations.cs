@@ -11,7 +11,7 @@ static class BitOperations
     /// 指定された数値を2の累乗になるように繰り上げます。
     /// </summary>
     /// <param name="value">数値</param>
-    /// <returns>2の累乗</returns>
+    /// <returns>2の累乗を返します。</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int RoundUpToPowerOf2(int value)
 #if NET6_0_OR_GREATER
@@ -33,7 +33,7 @@ static class BitOperations
     /// 立っているビット数を取得します。
     /// </summary>
     /// <param name="value">数値</param>
-    /// <returns>立っているビット数</returns>
+    /// <returns>立っているビット数を返します。</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int PopCount(ulong value) => System.Numerics.BitOperations.PopCount(value);
 #endif

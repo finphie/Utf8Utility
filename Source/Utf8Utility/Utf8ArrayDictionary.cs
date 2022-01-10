@@ -173,10 +173,10 @@ public sealed class Utf8ArrayDictionary<TValue> : IUtf8ArrayDictionary<TValue>, 
     /// <summary>
     /// キーが存在する場合は<typeparamref name="TValue"/>への参照、存在しない場合はnull参照を返します。
     /// </summary>
-    /// <param name="key">ルックアップに使用されるキー。</param>
+    /// <param name="key">ルックアップに使用されるキー</param>
     /// <returns>
     /// キーが存在する場合は<typeparamref name="TValue"/>への参照、
-    /// それ以外の場合はNull参照。
+    /// それ以外の場合はNull参照を返します。
     /// </returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public ref TValue GetValueRefOrNullRef(Utf8Array key)
@@ -185,10 +185,10 @@ public sealed class Utf8ArrayDictionary<TValue> : IUtf8ArrayDictionary<TValue>, 
     /// <summary>
     /// キーが存在する場合は<typeparamref name="TValue"/>への参照、存在しない場合はnull参照を返します。
     /// </summary>
-    /// <param name="key">ルックアップに使用されるキー。</param>
+    /// <param name="key">ルックアップに使用されるキー</param>
     /// <returns>
     /// キーが存在する場合は<typeparamref name="TValue"/>への参照、
-    /// それ以外の場合はNull参照。
+    /// それ以外の場合はNull参照を返します。
     /// </returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public ref TValue GetValueRefOrNullRef(ReadOnlySpan<byte> key)
