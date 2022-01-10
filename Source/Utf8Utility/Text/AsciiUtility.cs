@@ -34,7 +34,7 @@ public static class AsciiUtility
     /// <param name="value">値</param>
     /// <returns>
     /// 値が空または空白の場合は<see langword="true"/>、
-    /// それ以外は<see langword="false"/>。
+    /// それ以外は<see langword="false"/>を返します。
     /// </returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static bool IsWhiteSpace(byte value)

@@ -138,7 +138,7 @@ public readonly partial struct Utf8Array : IEquatable<Utf8Array>,
     /// </summary>
     /// <returns>
     /// UTF-8配列が空の場合は<see langword="true"/>、
-    /// それ以外は<see langword="false"/>。
+    /// それ以外は<see langword="false"/>を返します。
     /// </returns>
     [SuppressMessage("Style", "IDE0075:条件式を簡略化する", Justification = "最適化のため")]
     public bool IsEmpty
@@ -168,7 +168,7 @@ public readonly partial struct Utf8Array : IEquatable<Utf8Array>,
     /// <param name="right">比較対象の><see cref="Utf8Array"/>インスタンス</param>
     /// <returns>
     /// 同じ文字列を表す場合は<see langword="true"/>、
-    /// 異なる場合は<see langword="false"/>。
+    /// 異なる場合は<see langword="false"/>を返します。
     /// </returns>
     public static bool operator ==(Utf8Array left, Utf8Array right) => left.Equals(right);
 
@@ -179,7 +179,7 @@ public readonly partial struct Utf8Array : IEquatable<Utf8Array>,
     /// <param name="right">比較対象の><see cref="Utf8Array"/>インスタンス</param>
     /// <returns>
     /// 異なる文字列を表す場合は<see langword="true"/>、
-    /// 同じ場合は<see langword="false"/>。
+    /// 同じ場合は<see langword="false"/>を返します。
     /// </returns>
     public static bool operator !=(Utf8Array left, Utf8Array right) => !(left == right);
 
@@ -214,7 +214,7 @@ public readonly partial struct Utf8Array : IEquatable<Utf8Array>,
     /// このメソッドは引数チェックを行いません。
     /// </summary>
     /// <param name="start">初期インデックス</param>
-    /// <returns><see cref="ReadOnlySpan{Byte}"/>構造体</returns>
+    /// <returns><see cref="ReadOnlySpan{Byte}"/>構造体を返します。</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public ReadOnlySpan<byte> DangerousAsSpan(int start)
     {
@@ -228,7 +228,7 @@ public readonly partial struct Utf8Array : IEquatable<Utf8Array>,
     /// <summary>
     /// <see cref="ReadOnlySpan{Byte}"/>構造体を取得します。
     /// </summary>
-    /// <returns><see cref="ReadOnlySpan{Byte}"/>構造体</returns>
+    /// <returns><see cref="ReadOnlySpan{Byte}"/>構造体を返します。</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public ReadOnlySpan<byte> AsSpan()
     {
@@ -246,7 +246,7 @@ public readonly partial struct Utf8Array : IEquatable<Utf8Array>,
     /// <see cref="ReadOnlySpan{Byte}"/>構造体を取得します。
     /// </summary>
     /// <param name="start">初期インデックス</param>
-    /// <returns><see cref="ReadOnlySpan{Byte}"/>構造体</returns>
+    /// <returns><see cref="ReadOnlySpan{Byte}"/>構造体を返します。</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public ReadOnlySpan<byte> AsSpan(int start) => new(_value, start, _value.Length - start);
 
@@ -254,14 +254,14 @@ public readonly partial struct Utf8Array : IEquatable<Utf8Array>,
     /// UTF-8でエンコードされた<see cref="byte"/>配列を取得します。
     /// 内部の配列をそのまま返すため、書き換えは行わないでください。
     /// </summary>
-    /// <returns>UTF-8でエンコードされた<see cref="byte"/>配列</returns>
+    /// <returns>UTF-8でエンコードされた<see cref="byte"/>配列を返します。</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public byte[] DangerousAsByteArray() => _value;
 
     /// <summary>
     /// UTF-8文字数を取得します。
     /// </summary>
-    /// <returns>UTF-8文字数</returns>
+    /// <returns>UTF-8文字数を返します。</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public int GetLength()
     {
@@ -311,7 +311,7 @@ public readonly partial struct Utf8Array : IEquatable<Utf8Array>,
     /// </summary>
     /// <returns>
     /// UTF-8配列が空または空白の場合は<see langword="true"/>、
-    /// それ以外は<see langword="false"/>。
+    /// それ以外は<see langword="false"/>を返します。
     /// </returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public bool IsEmptyOrWhiteSpace()
@@ -376,7 +376,7 @@ public readonly partial struct Utf8Array : IEquatable<Utf8Array>,
     /// </summary>
     /// <returns>
     /// UTF-8配列が、Ascii文字のみで構成されている場合は<see langword="true"/>、
-    /// それ以外は<see langword="false"/>。
+    /// それ以外は<see langword="false"/>を返します。
     /// </returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public bool IsAscii() => UnicodeUtility.IsAscii(AsSpan());
@@ -385,7 +385,7 @@ public readonly partial struct Utf8Array : IEquatable<Utf8Array>,
     /// 最初の要素への参照を取得します。
     /// このメソッドは境界チェックを行いません。
     /// </summary>
-    /// <returns>最初の要素への参照</returns>
+    /// <returns>最初の要素への参照を返します。</returns>
     public ref byte DangerousGetReference() => ref _value.DangerousGetReference();
 
     /// <summary>
@@ -393,7 +393,7 @@ public readonly partial struct Utf8Array : IEquatable<Utf8Array>,
     /// このメソッドは引数チェックを行いません。
     /// </summary>
     /// <param name="bytes">UTF-8でエンコードされた<see cref="byte"/>配列</param>
-    /// <returns><see cref="Utf8Array"/>構造体の新しいインスタンス</returns>
+    /// <returns><see cref="Utf8Array"/>構造体の新しいインスタンスを返します。</returns>
     internal static Utf8Array UnsafeCreate(byte[] bytes)
     {
         Utf8Array array = default;

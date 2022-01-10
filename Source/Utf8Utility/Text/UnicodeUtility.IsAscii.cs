@@ -18,7 +18,7 @@ partial class UnicodeUtility
     /// <param name="value">配列</param>
     /// <returns>
     /// 指定された配列が、Ascii文字のみで構成されている場合は<see langword="true"/>、
-    /// それ以外は<see langword="false"/>。
+    /// それ以外は<see langword="false"/>を返します。
     /// </returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsAscii(ReadOnlySpan<byte> value)
