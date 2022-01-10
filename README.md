@@ -94,10 +94,24 @@ MIT
 
 ## クレジット
 
-このプロジェクトでは、下記のライブラリ等を使用しています。
+このプロジェクトでは、次のライブラリ等を使用しています。
 
 ### ライブラリ
 
-- Microsoft.Toolkit.HighPerformance  
-<https://github.com/windows-toolkit/WindowsCommunityToolkit>  
-(c) .NET Foundation and Contributors.
+- [CommunityToolkit.HighPerformance](https://github.com/CommunityToolkit/dotnet)
+
+### テスト
+
+- [FluentAssertions](https://fluentassertions.com/)
+- [Microsoft.NET.Test.Sdk](https://github.com/microsoft/vstest/)
+- [xunit](https://github.com/xunit/xunit)
+
+### アナライザー
+
+- Microsoft.CodeAnalysis.NetAnalyzers (SDK組み込み)
+- [Microsoft.VisualStudio.Threading.Analyzers](https://github.com/Microsoft/vs-threading)
+- [StyleCop.Analyzers](https://github.com/DotNetAnalyzers/StyleCopAnalyzers)
+
+### その他
+
+- [Microsoft.SourceLink.GitHub](https://github.com/dotnet/sourcelink)
