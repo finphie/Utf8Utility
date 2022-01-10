@@ -3,7 +3,7 @@ using System.Runtime.Intrinsics;
 using System.Runtime.Intrinsics.X86;
 using System.Text;
 using BenchmarkDotNet.Attributes;
-using Microsoft.Toolkit.HighPerformance;
+using CommunityToolkit.HighPerformance;
 using Utf8Utility.Benchmarks.Helpers;
 
 namespace Utf8Utility.Benchmarks;
