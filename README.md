@@ -104,13 +104,27 @@ MIT
 
 - [FluentAssertions](https://fluentassertions.com/)
 - [Microsoft.NET.Test.Sdk](https://github.com/microsoft/vstest/)
+- [Newtonsoft.Json](https://github.com/JamesNK/Newtonsoft.Json)
+- [NuGet.Frameworks](https://github.com/NuGet/NuGet.Client)
 - [xunit](https://github.com/xunit/xunit)
+- [xunit.runner.visualstudio](https://github.com/xunit/visualstudio.xunit)
 
 ### アナライザー
 
 - Microsoft.CodeAnalysis.NetAnalyzers (SDK組み込み)
 - [Microsoft.VisualStudio.Threading.Analyzers](https://github.com/Microsoft/vs-threading)
 - [StyleCop.Analyzers](https://github.com/DotNetAnalyzers/StyleCopAnalyzers)
+
+### ベンチマーク
+
+- [BenchmarkDotNet](https://github.com/dotnet/BenchmarkDotNet)
+- [CommandLineParser](https://github.com/commandlineparser/commandline)
+- [Iced](https://github.com/icedland/iced)
+- [Microsoft.CodeAnalysis.CSharp](https://github.com/dotnet/roslyn)
+- [Microsoft.Diagnostics.NETCore.Client](https://github.com/dotnet/diagnostics)
+- [Microsoft.Diagnostics.Runtime](https://github.com/Microsoft/clrmd)
+- [Microsoft.Diagnostics.Tracing.TraceEvent](https://github.com/Microsoft/perfview)
+- [Perfolizer](https://github.com/AndreyAkinshin/perfolizer)
 
 ### その他
 
