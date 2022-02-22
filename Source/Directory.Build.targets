@@ -1,9 +1,5 @@
 <Project>
 
-  <PropertyGroup Condition="'$(IsGenerator)' == 'true'">
-    <IncludeBuildOutput>false</IncludeBuildOutput>
-  </PropertyGroup>
-
   <PropertyGroup Condition="'$(IsPackable)' == 'true'">
     <NoPackageAnalysis>true</NoPackageAnalysis>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
@@ -15,7 +11,15 @@
   </PropertyGroup>
 
   <Choose>
-    <When Condition="'$(IsPackable)' == 'true' and '$(IsGenerator)' == 'false'">
+    <When Condition="'$(IsPackable)' == 'true'">
+      <PropertyGroup>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+      </PropertyGroup>
+
+      <ItemGroup>
+        <None Include="$([MSBuild]::GetPathOfFileAbove('README.md', '$(MSBuildThisFileDirectory)..\'))" Pack="true" PackagePath="\" />
+      </ItemGroup>
+
       <Choose>
         <When Condition="'$(OutputType)' == 'Library'">
           <PropertyGroup>
