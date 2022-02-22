@@ -202,7 +202,7 @@ public readonly partial struct Utf8Array : IEquatable<Utf8Array>,
 
 #if NET6_0_OR_GREATER
     /// <inheritdoc/>
-    public bool TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider)
+    public bool TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
         => Utf8.ToUtf16(_value, destination, out _, out charsWritten) == OperationStatus.Done;
 
     /// <inheritdoc/>
