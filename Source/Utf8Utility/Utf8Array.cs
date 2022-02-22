@@ -1,13 +1,13 @@
 ﻿using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Text;
 using CommunityToolkit.HighPerformance;
 using Utf8Utility.Helpers;
 using Utf8Utility.Text;
 #if NET6_0_OR_GREATER
 using System.Buffers;
-using System.Runtime.InteropServices;
 using System.Text.Unicode;
 #endif
 
@@ -84,33 +84,9 @@ public readonly partial struct Utf8Array : IEquatable<Utf8Array>,
     /// <param name="chars">UTF-16でエンコードされた<see cref="ReadOnlySpan{T}"/>構造体</param>
     public Utf8Array(ReadOnlySpan<char> chars)
     {
-        int count;
-
-#if NET6_0_OR_GREATER
-        count = Encoding.UTF8.GetByteCount(chars);
+        var count = Encoding.UTF8.GetByteCount(chars);
         _value = new byte[count];
         Encoding.UTF8.GetBytes(chars, _value);
-#else
-        if (chars.IsEmpty)
-        {
-            _value = Array.Empty<byte>();
-            return;
-        }
-
-        unsafe
-        {
-            fixed (char* c = chars)
-            {
-                count = Encoding.UTF8.GetByteCount(c, chars.Length);
-                _value = new byte[count];
-
-                fixed (byte* bytes = _value)
-                {
-                    Encoding.UTF8.GetBytes(c, chars.Length, bytes, _value.Length);
-                }
-            }
-        }
-#endif
     }
 
     /// <summary>
@@ -208,6 +184,7 @@ public readonly partial struct Utf8Array : IEquatable<Utf8Array>,
     /// <inheritdoc/>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public int CompareTo(Utf8Array other) => Compare(this, other);
+#endif
 
     /// <summary>
     /// <see cref="ReadOnlySpan{Byte}"/>構造体を取得します。
@@ -223,7 +200,6 @@ public readonly partial struct Utf8Array : IEquatable<Utf8Array>,
         ref var valueStart = ref Unsafe.AddByteOffset(ref DangerousGetReference(), (nint)(uint)start);
         return MemoryMarshal.CreateReadOnlySpan(ref valueStart, length);
     }
-#endif
 
     /// <summary>
     /// <see cref="ReadOnlySpan{Byte}"/>構造体を取得します。
@@ -232,14 +208,9 @@ public readonly partial struct Utf8Array : IEquatable<Utf8Array>,
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public ReadOnlySpan<byte> AsSpan()
     {
-#if NET6_0_OR_GREATER
         // 引数の検証をスキップするために、手動でReadOnlySpanを作成する。
         ref var valueStart = ref DangerousGetReference();
         return MemoryMarshal.CreateReadOnlySpan(ref valueStart, _value.Length);
-#else
-        var span = new ReadOnlySpan<byte>(_value, 0, _value.Length);
-        return span;
-#endif
     }
 
     /// <summary>
@@ -288,11 +259,7 @@ public readonly partial struct Utf8Array : IEquatable<Utf8Array>,
         while ((int)index < ByteCount)
         {
             // 最適化の関係でrefローカル変数にしてはいけない。
-#if NET6_0_OR_GREATER
             var value = Unsafe.AddByteOffset(ref _value.DangerousGetReference(), index);
-#else
-            var value = Unsafe.AddByteOffset(ref _value.DangerousGetReference(), (nint)index);
-#endif
 
             if ((value & 0xC0) != 0x80)
             {

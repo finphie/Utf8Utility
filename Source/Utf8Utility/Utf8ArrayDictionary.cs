@@ -118,24 +118,7 @@ public sealed class Utf8ArrayDictionary<TValue> : IUtf8ArrayDictionary<TValue>, 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public bool TryGetValue(ReadOnlySpan<char> key, [MaybeNullWhen(false)] out TValue value)
     {
-        int count;
-
-#if NET5_0_OR_GREATER
-        count = Encoding.UTF8.GetByteCount(key);
-#else
-        if (key.IsEmpty)
-        {
-            return TryGetValue(ReadOnlySpan<byte>.Empty, out value);
-        }
-
-        unsafe
-        {
-            fixed (char* chars = key)
-            {
-                count = Encoding.UTF8.GetByteCount(chars, key.Length);
-            }
-        }
-#endif
+        var count = Encoding.UTF8.GetByteCount(key);
 
         byte[]? rentedUtf8Key = null;
         Span<byte> utf8Key = count <= 256
@@ -144,21 +127,7 @@ public sealed class Utf8ArrayDictionary<TValue> : IUtf8ArrayDictionary<TValue>, 
 
         try
         {
-#if NET5_0_OR_GREATER
             Encoding.UTF8.GetBytes(key, utf8Key);
-#else
-            unsafe
-            {
-                fixed (char* chars = key)
-                {
-                    fixed (byte* bytes = utf8Key)
-                    {
-                        Encoding.UTF8.GetBytes(chars, key.Length, bytes, utf8Key.Length);
-                    }
-                }
-            }
-#endif
-
             return TryGetValue(utf8Key, out value);
         }
         finally
