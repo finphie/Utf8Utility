@@ -39,10 +39,13 @@ jobs:
         shell: pwsh
         run: Write-Output "::set-output name=dotnet::$(Test-Path *.sln)"
 
-      - name: Check TargetFramework
-        if: steps.check.outputs.dotnet == 'True'
+      - name: Set DOTNET_INSTALL_DIR
+        if: steps.check.outputs.dotnet == 'True' && !matrix.os.startswith('mac')
         shell: pwsh
-        run: .github/CheckTargetFramework.ps1
+        run: |
+          $os = '${{ matrix.os }}'
+          $installDir = $os.StartsWith('windows') ? 'C:/Program Files/dotnet' : '/usr/share/dotnet';
+          Write-Output "DOTNET_INSTALL_DIR=$installDir" | Out-File $Env:GITHUB_ENV -Encoding utf8 -Append
 
       - name: Setup .NET
         if: steps.check.outputs.dotnet == 'True'
