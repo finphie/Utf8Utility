@@ -40,7 +40,7 @@ jobs:
         run: Write-Output "::set-output name=dotnet::$(Test-Path *.sln)"
 
       - name: Set DOTNET_INSTALL_DIR
-        if: steps.check.outputs.dotnet == 'True' && !matrix.os.startswith('mac')
+        if: steps.check.outputs.dotnet == 'True' && !startswith(matrix.os, 'mac')
         shell: pwsh
         run: |
           $os = '${{ matrix.os }}'
