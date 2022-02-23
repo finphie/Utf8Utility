@@ -1,5 +1,4 @@
-﻿#if NET6_0_OR_GREATER
-using System.Text;
+﻿using System.Text;
 using FluentAssertions;
 using Xunit;
 
@@ -22,4 +21,3 @@ public sealed class Utf8ArrayDangerousAsSpanTest
         }
     }
 }
-#endif

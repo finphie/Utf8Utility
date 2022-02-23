@@ -18,7 +18,7 @@ static class ThrowHelper
     public static void ThrowArgumentOutOfRangeException(string paramName)
         => throw new ArgumentOutOfRangeException(paramName);
 
-#if NETSTANDARD2_0
+#if NETSTANDARD2_1
     /// <summary>
     /// 新しい<see cref="ArgumentNullException"/>例外をスローします。
     /// </summary>

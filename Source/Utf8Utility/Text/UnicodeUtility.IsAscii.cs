@@ -172,17 +172,11 @@ partial class UnicodeUtility
 
             do
             {
-#if NET6_0_OR_GREATER
                 maskA |= Unsafe.AddByteOffset(ref current, index);
                 maskB |= Unsafe.AddByteOffset(ref current, index + sizeof(ulong));
                 maskC |= Unsafe.AddByteOffset(ref current, index + (sizeof(ulong) * 2));
                 maskD |= Unsafe.AddByteOffset(ref current, index + (sizeof(ulong) * 3));
-#else
-                maskA |= Unsafe.AddByteOffset(ref current, (nint)index);
-                maskB |= Unsafe.AddByteOffset(ref current, (nint)(index + sizeof(ulong)));
-                maskC |= Unsafe.AddByteOffset(ref current, (nint)(index + (sizeof(ulong) * 2)));
-                maskD |= Unsafe.AddByteOffset(ref current, (nint)(index + (sizeof(ulong) * 3)));
-#endif
+
                 index += sizeof(ulong) * 4;
             }
             while ((int)index < endIndex);
@@ -190,53 +184,35 @@ partial class UnicodeUtility
 
         if (value.Length - (int)index >= sizeof(ulong) * 2)
         {
-#if NET6_0_OR_GREATER
             ref var current = ref Unsafe.As<byte, ulong>(ref Unsafe.AddByteOffset(ref first, index));
-#else
-            ref var current = ref Unsafe.As<byte, ulong>(ref Unsafe.AddByteOffset(ref first, (nint)index));
-#endif
+
             maskA |= current;
             maskA |= Unsafe.Add(ref current, 1);
+
             index += sizeof(ulong) * 2;
         }
 
         if (value.Length - (int)index >= sizeof(ulong))
         {
-#if NET6_0_OR_GREATER
             maskA |= Unsafe.As<byte, ulong>(ref Unsafe.AddByteOffset(ref first, index));
-#else
-            maskA |= Unsafe.As<byte, ulong>(ref Unsafe.AddByteOffset(ref first, (nint)index));
-#endif
             index += sizeof(ulong);
         }
 
         if (value.Length - (int)index >= sizeof(uint))
         {
-#if NET6_0_OR_GREATER
             maskA |= Unsafe.As<byte, uint>(ref Unsafe.AddByteOffset(ref first, index));
-#else
-            maskA |= Unsafe.As<byte, uint>(ref Unsafe.AddByteOffset(ref first, (nint)index));
-#endif
             index += sizeof(uint);
         }
 
         if (value.Length - (int)index >= sizeof(ushort))
         {
-#if NET6_0_OR_GREATER
             maskA |= Unsafe.As<byte, ushort>(ref Unsafe.AddByteOffset(ref first, index));
-#else
-            maskA |= Unsafe.As<byte, ushort>(ref Unsafe.AddByteOffset(ref first, (nint)index));
-#endif
             index += sizeof(ushort);
         }
 
         if ((int)index < value.Length)
         {
-#if NET6_0_OR_GREATER
             maskA |= Unsafe.AddByteOffset(ref first, index);
-#else
-            maskA |= Unsafe.AddByteOffset(ref first, (nint)index);
-#endif
         }
 
         return ((maskA | maskB | maskC | maskD) & 0x8080808080808080) == 0;
