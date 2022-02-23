@@ -39,6 +39,11 @@ jobs:
         shell: pwsh
         run: Write-Output "::set-output name=dotnet::$(Test-Path *.sln)"
 
+      - name: Check TargetFramework
+        if: steps.check.outputs.dotnet == 'True'
+        shell: pwsh
+        run: .github/CheckTargetFramework.ps1
+
       - name: Setup .NET
         if: steps.check.outputs.dotnet == 'True'
         uses: actions/setup-dotnet@v1
