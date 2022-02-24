@@ -1,11 +1,9 @@
 ﻿using BenchmarkDotNet.Attributes;
-using BenchmarkDotNet.Jobs;
 using Utf8Utility.Benchmarks.Helpers;
 
 namespace Utf8Utility.Benchmarks;
 
-[SimpleJob(RuntimeMoniker.Net60)]
-[MemoryDiagnoser]
+[Config(typeof(BenchmarkConfig))]
 public class Utf8ArrayDictionaryTryGetValueBenchmark
 {
     const int Length = 10;

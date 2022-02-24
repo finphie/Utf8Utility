@@ -61,5 +61,5 @@ public class Utf8ArrayGetLengthBenchmark
     }
 
     [Benchmark(Baseline = true)]
-    public int GetLength_Long() => _value.GetLength();
+    public int GetLength() => _value.GetLength();
 }

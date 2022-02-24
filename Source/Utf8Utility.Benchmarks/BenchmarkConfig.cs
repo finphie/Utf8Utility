@@ -16,12 +16,7 @@ public sealed class BenchmarkConfig : ManualConfig
         AddColumn(CategoriesColumn.Default);
         AddDiagnoser(MemoryDiagnoser.Default);
 
-        AddJob(Job.Default.WithRuntime(CoreRuntime.Core60)
-            .WithId("Default"));
-
-        AddJob(Job.Default.WithRuntime(CoreRuntime.Core60)
-            .WithEnvironmentVariables(
-                new EnvironmentVariable("COMPlus_EnableHWIntrinsic", "0"))
-            .WithId("DisableHWIntrinsic"));
+        AddJob(Job.Default.WithRuntime(CoreRuntime.CreateForNewVersion("net7.0", ".NET 7")));
+        AddJob(Job.Default.WithRuntime(CoreRuntime.Core60));
     }
 }
