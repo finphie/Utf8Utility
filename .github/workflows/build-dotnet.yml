@@ -54,6 +54,12 @@ jobs:
           dotnet-version: ${{ env.dotnet-version }}
           include-prerelease: true
 
+      - name: Setup .NET 6
+        if: steps.check.outputs.dotnet == 'True' && startswith(matrix.os, 'mac')
+        uses: actions/setup-dotnet@main
+        with:
+          dotnet-version: 6.0.x
+
       - name: .NET Build
         if: steps.check.outputs.dotnet == 'True'
         run: dotnet build --configuration Release -warnAsError
