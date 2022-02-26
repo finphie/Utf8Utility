@@ -2,7 +2,7 @@
 
 [![Build(.NET)](https://github.com/finphie/Utf8Utility/actions/workflows/build-dotnet.yml/badge.svg)](https://github.com/finphie/Utf8Utility/actions/workflows/build-dotnet.yml)
 [![NuGet](https://img.shields.io/nuget/v/Utf8Utility?color=0078d4&label=NuGet)](https://www.nuget.org/packages/Utf8Utility/)
-[![Utf8Utility package in DotNet feed in Azure Artifacts](https://feeds.dev.azure.com/finphie/7af9aa4d-c550-43af-87a5-01539b2d9934/_apis/public/Packaging/Feeds/18cbb017-6f1d-41eb-b9a5-a6dbf411e3f7/Packages/72c69351-0c11-40f2-8853-5712bf32468d/Badge)](https://dev.azure.com/finphie/Main/_packaging?_a=package&feed=18cbb017-6f1d-41eb-b9a5-a6dbf411e3f7&package=72c69351-0c11-40f2-8853-5712bf32468d&preferRelease=true)
+[![Azure Artifacts](https://feeds.dev.azure.com/finphie/7af9aa4d-c550-43af-87a5-01539b2d9934/_apis/public/Packaging/Feeds/18cbb017-6f1d-41eb-b9a5-a6dbf411e3f7/Packages/72c69351-0c11-40f2-8853-5712bf32468d/Badge)](https://dev.azure.com/finphie/Main/_packaging?_a=package&feed=18cbb017-6f1d-41eb-b9a5-a6dbf411e3f7&package=72c69351-0c11-40f2-8853-5712bf32468d&preferRelease=true)
 
 UTF-8関連のユーティリティライブラリです。
 
@@ -53,7 +53,7 @@ var isAscii = array.IsAscii();
 ref var start = ref array.DangerousGetReference();
 
 // 比較
-var compareTo = array.CompareTo();
+var compareTo = array.CompareTo(array);
 Utf8Array.CompareOrdinal(array, array);
 Utf8Array.Compare(array, array, StringComparison.CurrentCulture);
 
@@ -81,8 +81,9 @@ var isAscii = UnicodeUtility.IsAscii(span);
 
 ## サポートフレームワーク
 
+- .NET 7
 - .NET 6
-- .NET Standard 2.0
+- .NET Standard 2.1
 
 ## 作者
 
@@ -102,8 +103,8 @@ MIT
 
 ### テスト
 
-- [FluentAssertions](https://fluentassertions.com/)
-- [Microsoft.NET.Test.Sdk](https://github.com/microsoft/vstest/)
+- [FluentAssertions](https://github.com/fluentassertions/fluentassertions)
+- [Microsoft.NET.Test.Sdk](https://github.com/microsoft/vstest)
 - [Newtonsoft.Json](https://github.com/JamesNK/Newtonsoft.Json)
 - [NuGet.Frameworks](https://github.com/NuGet/NuGet.Client)
 - [xunit](https://github.com/xunit/xunit)
