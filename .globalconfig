@@ -84,6 +84,7 @@ csharp_style_prefer_switch_expression = true:warning
 
 # Null チェック設定
 csharp_style_conditional_delegate_call = true:warning
+csharp_style_prefer_parameter_null_checking = true:warning
 
 # 修飾子設定
 csharp_prefer_static_local_function = true:warning
@@ -93,6 +94,7 @@ csharp_preferred_modifier_order = public,private,protected,internal,static,exter
 csharp_prefer_braces = true:warning
 csharp_prefer_simple_using_statement = true:warning
 csharp_style_namespace_declarations = file_scoped:warning
+csharp_style_prefer_method_group_conversion = true:warning
 
 # 式レベルの設定
 csharp_prefer_simple_default_expression = true:warning
