@@ -62,7 +62,7 @@ var equals = array.Equals(array);
 var hash = array.GetHashCode();
 var utf16 = array.ToString();
 var span = array.AsSpan();
-array.TryFormat(stackalloc char[256], out var charsWritten, ReadOnlySpan<char>.Empty, null);
+array.TryFormat(stackalloc char[256], out var charsWritten);
 
 // Utf8ArrayをキーとしたDictionaryです。
 var dict = new Utf8ArrayDictionary<int>();
