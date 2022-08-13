@@ -82,7 +82,7 @@ public sealed class Utf8ArrayDictionaryGetValueRefOrNullRefTest
         Unsafe.IsNullRef(ref utf8Dict.GetValueRefOrNullRef(utf8Key.AsSpan())).Should().BeTrue();
     }
 
-    class Test
+    sealed class Test
     {
         public Test(int a, string b) => (A, B) = (a, b);
 

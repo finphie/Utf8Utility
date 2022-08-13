@@ -40,6 +40,6 @@ public static class AsciiUtility
     internal static bool IsWhiteSpace(byte value)
     {
         ref var table = ref MemoryMarshal.GetReference(AsciiCharInfo);
-        return (Unsafe.AddByteOffset(ref table, (nint)value) & IsWhiteSpaceFlag) != 0;
+        return (Unsafe.Add(ref table, (nint)value) & IsWhiteSpaceFlag) != 0;
     }
 }

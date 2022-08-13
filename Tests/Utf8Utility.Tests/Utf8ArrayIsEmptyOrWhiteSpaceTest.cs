@@ -34,6 +34,6 @@ public sealed class Utf8ArrayIsEmptyOrWhiteSpaceTest
     [InlineData("\u1680a ")]
     [InlineData(" 𩸽")]
     public void 空白以外_falseを返す(string value)
-    => new Utf8Array(value).IsEmptyOrWhiteSpace().Should().BeFalse();
+        => new Utf8Array(value).IsEmptyOrWhiteSpace().Should().BeFalse();
 }
 #endif

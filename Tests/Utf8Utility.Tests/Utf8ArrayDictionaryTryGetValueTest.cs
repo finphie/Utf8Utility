@@ -108,7 +108,7 @@ public sealed class Utf8ArrayDictionaryTryGetValueTest
         utf8DictValue.Should().Be(default);
     }
 
-    class Test
+    sealed class Test
     {
         public Test(int a, string b) => (A, B) = (a, b);
 
