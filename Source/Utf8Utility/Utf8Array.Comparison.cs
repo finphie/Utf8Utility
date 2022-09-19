@@ -57,10 +57,13 @@ partial struct Utf8Array
             ref var yValueStart = ref Unsafe.AddByteOffset(ref y.DangerousGetReference(), yIndex);
 
             // Ascii文字の場合のみ、処理を最適化する。
-            ReadOnlySpan<char> xSpan;
+            scoped ReadOnlySpan<char> xSpan;
             if (UnicodeUtility.IsAsciiCodePoint(xValueStart))
             {
-                xSpan = GetAsciiSpan(ref xValueStart);
+                var charXValue = (char)xValueStart;
+                scoped ref var charXValueStart = ref charXValue;
+
+                xSpan = GetAsciiSpan(charXValueStart);
                 xIndex++;
             }
             else
@@ -70,10 +73,13 @@ partial struct Utf8Array
             }
 
             // Ascii文字の場合のみ、処理を最適化する。
-            ReadOnlySpan<char> ySpan;
+            scoped ReadOnlySpan<char> ySpan;
             if (UnicodeUtility.IsAsciiCodePoint(yValueStart))
             {
-                ySpan = GetAsciiSpan(ref yValueStart);
+                var charYValue = (char)yValueStart;
+                scoped ref var charYValueStart = ref charYValue;
+
+                ySpan = GetAsciiSpan(charYValueStart);
                 yIndex++;
             }
             else
@@ -97,21 +103,12 @@ partial struct Utf8Array
         return x.ByteCount - y.ByteCount;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        static ReadOnlySpan<char> GetAsciiSpan(ref byte valueStart)
-        {
-            // Ascii文字なのでbyte型からchar型への変換を行っても問題ない。
-            var asciiCode = (char)valueStart;
-
-            // Ascii文字は1バイト。
+        static ReadOnlySpan<char> GetAsciiSpan(in char valueStart)
 #if NET7_0_OR_GREATER
-            return MemoryMarshal.CreateReadOnlySpan(ref asciiCode, 1);
+            => new(valueStart);
 #else
-            unsafe
-            {
-                return MemoryMarshal.CreateReadOnlySpan(ref Unsafe.AsRef<char>(Unsafe.AsPointer(ref asciiCode)), 1);
-            }
+            => MemoryMarshal.CreateReadOnlySpan(ref Unsafe.AsRef(valueStart), 1);
 #endif
-        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static ReadOnlySpan<char> GetUtf16Span(ref byte valueStart, int length, out int bytesConsumed)
@@ -121,8 +118,8 @@ partial struct Utf8Array
 
             // UTF-16文字は、char1つまたは2つで表現できる。
             // したがって、バッファはchar2つ分（4バイト）以上必要なのでnintで定義する。
-            Unsafe.SkipInit(out nint buffer);
-            var bufferSpan = MemoryMarshal.CreateSpan(ref Unsafe.As<nint, char>(ref buffer), 2);
+            Unsafe.SkipInit(out uint buffer);
+            var bufferSpan = MemoryMarshal.CreateSpan(ref Unsafe.As<uint, char>(ref buffer), 2);
 
             // UTF-16にエンコードできないことはないはず。
             // https://github.com/dotnet/runtime/blob/v6.0.0/src/libraries/System.Private.CoreLib/src/System/Text/Rune.cs#L997-L1039
