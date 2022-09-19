@@ -51,9 +51,6 @@ partial struct Utf8Array
         nuint xIndex = 0;
         nuint yIndex = 0;
 
-        Span<char> xBuffer = stackalloc char[2];
-        Span<char> yBuffer = stackalloc char[2];
-
         while ((int)xIndex < x.ByteCount && (int)yIndex < y.ByteCount)
         {
             ref var xValueStart = ref Unsafe.AddByteOffset(ref x.DangerousGetReference(), xIndex);
@@ -71,8 +68,7 @@ partial struct Utf8Array
             }
             else
             {
-                WriteUtf16Span(ref xValueStart, x.ByteCount - (int)xIndex, out var bytesConsumed, xBuffer, out var charsWritten);
-                xSpan = MemoryMarshal.CreateReadOnlySpan(ref MemoryMarshal.GetReference(xBuffer), charsWritten);
+                xSpan = GetUtf16Span(ref xValueStart, x.ByteCount - (int)xIndex, out var bytesConsumed);
                 xIndex += (uint)bytesConsumed;
             }
 
@@ -88,8 +84,7 @@ partial struct Utf8Array
             }
             else
             {
-                WriteUtf16Span(ref yValueStart, y.ByteCount - (int)yIndex, out var bytesConsumed, yBuffer, out var charsWritten);
-                ySpan = MemoryMarshal.CreateReadOnlySpan(ref MemoryMarshal.GetReference(yBuffer), charsWritten);
+                ySpan = GetUtf16Span(ref yValueStart, y.ByteCount - (int)yIndex, out var bytesConsumed);
                 yIndex += (uint)bytesConsumed;
             }
 
@@ -116,14 +111,34 @@ partial struct Utf8Array
 #endif
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        static void WriteUtf16Span(ref byte valueStart, int length, out int bytesConsumed, Span<char> destination, out int charsWritten)
+        static ReadOnlySpan<char> GetUtf16Span(ref byte valueStart, int length, out int bytesConsumed)
         {
             var span = MemoryMarshal.CreateReadOnlySpan(ref valueStart, length);
             Rune.DecodeFromUtf8(span, out var rune, out bytesConsumed);
 
+            // UTF-16文字は、char1つまたは2つで表現できる。
+            // したがって、バッファはchar2つ分（4バイト）以上必要なのでnintで定義する。
+            Unsafe.SkipInit(out uint buffer);
+            var bufferSpan = MemoryMarshal.CreateSpan(ref Unsafe.As<uint, char>(ref buffer), 2);
+
             // UTF-16にエンコードできないことはないはず。
             // https://github.com/dotnet/runtime/blob/v6.0.0/src/libraries/System.Private.CoreLib/src/System/Text/Rune.cs#L997-L1039
-            rune.TryEncodeToUtf16(destination, out charsWritten);
+            rune.TryEncodeToUtf16(bufferSpan, out var charsWritten);
+
+            ref var bufferStart = ref Unsafe.NullRef<char>();
+
+#if NET7_0_OR_GREATER
+            // C# 11/.NET 6の組み合わせでは、コンパイルエラー（CS8347/CS8352）になる。
+            bufferStart = ref MemoryMarshal.GetReference(bufferSpan);
+#else
+            unsafe
+            {
+                // 上記コンパイルエラーの回避策。
+                // ポインターを経由してコンパイラーの追跡を切る。
+                bufferStart = ref Unsafe.AsRef<char>(Unsafe.AsPointer(ref MemoryMarshal.GetReference(bufferSpan)));
+            }
+#endif
+            return MemoryMarshal.CreateReadOnlySpan(ref bufferStart, charsWritten);
         }
     }
 }
