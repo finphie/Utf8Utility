@@ -48,45 +48,30 @@ partial struct Utf8Array
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int Compare(Utf8Array x, Utf8Array y, StringComparison comparisonType)
     {
-        nuint xIndex = 0;
-        nuint yIndex = 0;
-
-        while ((int)xIndex < x.ByteCount && (int)yIndex < y.ByteCount)
+        if (x.IsEmpty || y.IsEmpty)
         {
-            ref var xValueStart = ref Unsafe.AddByteOffset(ref x.DangerousGetReference(), xIndex);
-            ref var yValueStart = ref Unsafe.AddByteOffset(ref y.DangerousGetReference(), yIndex);
+            return x.ByteCount - y.ByteCount;
+        }
 
-            // Ascii文字の場合のみ、処理を最適化する。
-            scoped ReadOnlySpan<char> xSpan;
-            if (UnicodeUtility.IsAsciiCodePoint(xValueStart))
-            {
-                var charXValue = (char)xValueStart;
-                scoped ref var charXValueStart = ref charXValue;
+        Span<char> xBuffer = stackalloc char[2];
+        Span<char> yBuffer = stackalloc char[2];
 
-                xSpan = GetAsciiSpan(charXValueStart);
-                xIndex++;
-            }
-            else
-            {
-                xSpan = GetUtf16Span(ref xValueStart, x.ByteCount - (int)xIndex, out var bytesConsumed);
-                xIndex += (uint)bytesConsumed;
-            }
+        ref var xBufferStart = ref MemoryMarshal.GetReference(xBuffer);
+        ref var yBufferStart = ref MemoryMarshal.GetReference(yBuffer);
 
-            // Ascii文字の場合のみ、処理を最適化する。
-            scoped ReadOnlySpan<char> ySpan;
-            if (UnicodeUtility.IsAsciiCodePoint(yValueStart))
-            {
-                var charYValue = (char)yValueStart;
-                scoped ref var charYValueStart = ref charYValue;
+        ref var xStart = ref x.DangerousGetReference();
+        ref var yStart = ref y.DangerousGetReference();
 
-                ySpan = GetAsciiSpan(charYValueStart);
-                yIndex++;
-            }
-            else
-            {
-                ySpan = GetUtf16Span(ref yValueStart, y.ByteCount - (int)yIndex, out var bytesConsumed);
-                yIndex += (uint)bytesConsumed;
-            }
+        ref var xEnd = ref Unsafe.AddByteOffset(ref xStart, (nint)(uint)x.ByteCount);
+        ref var yEnd = ref Unsafe.AddByteOffset(ref yStart, (nint)(uint)y.ByteCount);
+
+        do
+        {
+            WriteUtf16Span(ref xStart, out var xBytesConsumed, xBuffer, out var charsWritten);
+            var xSpan = MemoryMarshal.CreateReadOnlySpan(ref xBufferStart, charsWritten);
+
+            WriteUtf16Span(ref yStart, out var yBytesConsumed, yBuffer, out charsWritten);
+            var ySpan = MemoryMarshal.CreateReadOnlySpan(ref yBufferStart, charsWritten);
 
             var result = xSpan.CompareTo(ySpan, comparisonType);
 
@@ -94,7 +79,11 @@ partial struct Utf8Array
             {
                 return result;
             }
+
+            xStart = ref Unsafe.AddByteOffset(ref xStart, (nint)(uint)xBytesConsumed);
+            yStart = ref Unsafe.AddByteOffset(ref yStart, (nint)(uint)yBytesConsumed);
         }
+        while (Unsafe.IsAddressLessThan(ref xStart, ref xEnd) && Unsafe.IsAddressLessThan(ref yStart, ref yEnd));
 
         // 到達条件
         // 1. 比較対象の片方または両方のUTF-8配列が空。
@@ -103,42 +92,25 @@ partial struct Utf8Array
         return x.ByteCount - y.ByteCount;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        static ReadOnlySpan<char> GetAsciiSpan(in char valueStart)
-#if NET7_0_OR_GREATER
-            => new(valueStart);
-#else
-            => MemoryMarshal.CreateReadOnlySpan(ref Unsafe.AsRef(valueStart), 1);
-#endif
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        static ReadOnlySpan<char> GetUtf16Span(ref byte valueStart, int length, out int bytesConsumed)
+        static void WriteUtf16Span(ref byte valueStart, out int bytesConsumed, Span<char> destination, out int charsWritten)
         {
+            // Ascii文字の場合のみ、処理を最適化する。
+            if (UnicodeUtility.IsAsciiCodePoint(valueStart))
+            {
+                MemoryMarshal.GetReference(destination) = (char)valueStart;
+                bytesConsumed = 1;
+                charsWritten = 1;
+                return;
+            }
+
+            // UTF-8文字を1文字だけ取得する。
+            var length = UnicodeUtility.GetUtf8SequenceLength(valueStart);
             var span = MemoryMarshal.CreateReadOnlySpan(ref valueStart, length);
             Rune.DecodeFromUtf8(span, out var rune, out bytesConsumed);
 
-            // UTF-16文字は、char1つまたは2つで表現できる。
-            // したがって、バッファはchar2つ分（4バイト）以上必要なのでnintで定義する。
-            Unsafe.SkipInit(out uint buffer);
-            var bufferSpan = MemoryMarshal.CreateSpan(ref Unsafe.As<uint, char>(ref buffer), 2);
-
             // UTF-16にエンコードできないことはないはず。
-            // https://github.com/dotnet/runtime/blob/v6.0.0/src/libraries/System.Private.CoreLib/src/System/Text/Rune.cs#L997-L1039
-            rune.TryEncodeToUtf16(bufferSpan, out var charsWritten);
-
-            ref var bufferStart = ref Unsafe.NullRef<char>();
-
-#if NET7_0_OR_GREATER
-            // C# 11/.NET 6の組み合わせでは、コンパイルエラー（CS8347/CS8352）になる。
-            bufferStart = ref MemoryMarshal.GetReference(bufferSpan);
-#else
-            unsafe
-            {
-                // 上記コンパイルエラーの回避策。
-                // ポインターを経由してコンパイラーの追跡を切る。
-                bufferStart = ref Unsafe.AsRef<char>(Unsafe.AsPointer(ref MemoryMarshal.GetReference(bufferSpan)));
-            }
-#endif
-            return MemoryMarshal.CreateReadOnlySpan(ref bufferStart, charsWritten);
+            // https://github.com/dotnet/runtime/blob/v7.0.0-rc.1.22426.10/src/libraries/System.Private.CoreLib/src/System/Text/Rune.cs#L992-L1034
+            rune.TryEncodeToUtf16(destination, out charsWritten);
         }
     }
 }
