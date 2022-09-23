@@ -50,7 +50,7 @@ partial struct Utf8Array
     {
         if (x.IsEmpty || y.IsEmpty)
         {
-            return x.ByteCount - y.ByteCount;
+            goto Count;
         }
 
         Span<char> xBuffer = stackalloc char[2];
@@ -84,6 +84,8 @@ partial struct Utf8Array
             yStart = ref Unsafe.AddByteOffset(ref yStart, (nint)(uint)yBytesConsumed);
         }
         while (Unsafe.IsAddressLessThan(ref xStart, ref xEnd) && Unsafe.IsAddressLessThan(ref yStart, ref yEnd));
+
+    Count:
 
         // 到達条件
         // 1. 比較対象の片方または両方のUTF-8配列が空。
