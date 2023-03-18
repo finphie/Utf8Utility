@@ -14,13 +14,13 @@ Utf8Utilityは、UTF-8関連処理の実装を詰め合わせたライブラリ�
 
 ### NuGet（正式リリース版）
 
-```console
+```shell
 dotnet add package Utf8Utility
 ```
 
 ### Azure Artifacts（開発用ビルド）
 
-```console
+```shell
 dotnet add package Utf8Utility -s https://pkgs.dev.azure.com/finphie/Main/_packaging/DotNet/nuget/v3/index.json
 ```
 
