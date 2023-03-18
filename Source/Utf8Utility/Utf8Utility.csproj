@@ -6,8 +6,8 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Description>UTF-8ユーティリティ</Description>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageTags>utf8</PackageTags>
   </PropertyGroup>
 
