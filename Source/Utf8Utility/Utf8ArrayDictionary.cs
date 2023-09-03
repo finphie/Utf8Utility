@@ -7,6 +7,10 @@ using CommunityToolkit.HighPerformance;
 using CommunityToolkit.HighPerformance.Helpers;
 using Utf8Utility.Helpers;
 
+#if !NET8_0_OR_GREATER
+using CommunityToolkit.Diagnostics;
+#endif
+
 namespace Utf8Utility;
 
 /// <summary>
@@ -42,10 +46,7 @@ public sealed class Utf8ArrayDictionary<TValue> : IUtf8ArrayDictionary<TValue>, 
 #if NET8_0_OR_GREATER
         ArgumentOutOfRangeException.ThrowIfNegative(capacity);
 #else
-        if (capacity < 0)
-        {
-            ThrowHelper.ThrowArgumentOutOfRangeException(nameof(capacity));
-        }
+        Guard.IsGreaterThanOrEqualTo(capacity, 0);
 #endif
 
         if (capacity < 2)
