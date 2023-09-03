@@ -1,5 +1,9 @@
 ﻿using System.Text;
 
+#if !NET8_0_OR_GREATER
+using CommunityToolkit.Diagnostics;
+#endif
+
 namespace Utf8Utility.Tests.Helpers;
 
 /// <summary>
@@ -22,10 +26,7 @@ sealed class StringHelper
 #if NET8_0_OR_GREATER
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(length);
 #else
-        if (length <= 0)
-        {
-            throw new ArgumentOutOfRangeException(nameof(length));
-        }
+        Guard.IsGreaterThan(length, 0);
 #endif
 
         var buffer = new byte[length];

@@ -5,11 +5,14 @@ using System.Runtime.InteropServices;
 using System.Text;
 using CommunityToolkit.HighPerformance;
 using CommunityToolkit.HighPerformance.Helpers;
-using Utf8Utility.Helpers;
 using Utf8Utility.Text;
+
 #if NET6_0_OR_GREATER
 using System.Buffers;
 using System.Text.Unicode;
+using Utf8Utility.Helpers;
+#else
+using CommunityToolkit.Diagnostics;
 #endif
 
 namespace Utf8Utility;
@@ -45,10 +48,7 @@ public readonly partial struct Utf8Array : IEquatable<Utf8Array>,
 #if NET6_0_OR_GREATER
         ArgumentNullException.ThrowIfNull(bytes);
 #else
-        if (bytes is null)
-        {
-            ThrowHelper.ThrowArgumentNullException(nameof(bytes));
-        }
+        Guard.IsNotNull(bytes);
 #endif
 
         _value = bytes;
@@ -64,10 +64,7 @@ public readonly partial struct Utf8Array : IEquatable<Utf8Array>,
 #if NET6_0_OR_GREATER
         ArgumentNullException.ThrowIfNull(s);
 #else
-        if (s is null)
-        {
-            ThrowHelper.ThrowArgumentNullException(nameof(s));
-        }
+        Guard.IsNotNull(s);
 #endif
 
         _value = Encoding.UTF8.GetBytes(s);
