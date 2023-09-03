@@ -15,8 +15,6 @@ public sealed class BenchmarkConfig : ManualConfig
         AddLogicalGroupRules(BenchmarkLogicalGroupRule.ByCategory);
         AddColumn(CategoriesColumn.Default);
         AddDiagnoser(MemoryDiagnoser.Default);
-
-        AddJob(Job.Default.WithRuntime(CoreRuntime.CreateForNewVersion("net7.0", ".NET 7.0")));
-        AddJob(Job.Default.WithRuntime(CoreRuntime.Core60));
+        AddJob(Job.Default.WithRuntime(CoreRuntime.Core80));
     }
 }
