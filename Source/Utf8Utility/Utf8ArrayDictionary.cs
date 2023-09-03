@@ -4,6 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Text;
 using CommunityToolkit.HighPerformance;
+using CommunityToolkit.HighPerformance.Helpers;
 using Utf8Utility.Helpers;
 
 namespace Utf8Utility;
@@ -163,7 +164,7 @@ public sealed class Utf8ArrayDictionary<TValue> : IUtf8ArrayDictionary<TValue>, 
     public ref TValue GetValueRefOrNullRef(ReadOnlySpan<byte> key)
     {
         var entries = _entries;
-        var bucketIndex = GetBucketIndex(key.GetDjb2HashCode());
+        var bucketIndex = GetBucketIndex(HashCode<byte>.Combine(key));
         var i = GetBucket(bucketIndex) - 1;
 
         do

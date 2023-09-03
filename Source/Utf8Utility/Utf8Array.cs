@@ -4,6 +4,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 using CommunityToolkit.HighPerformance;
+using CommunityToolkit.HighPerformance.Helpers;
 using Utf8Utility.Helpers;
 using Utf8Utility.Text;
 #if NET6_0_OR_GREATER
@@ -116,13 +117,18 @@ public readonly partial struct Utf8Array : IEquatable<Utf8Array>,
     /// UTF-8配列が空の場合は<see langword="true"/>、
     /// それ以外は<see langword="false"/>を返します。
     /// </returns>
-    [SuppressMessage("Style", "IDE0075:条件式を簡略化する", Justification = "最適化のため")]
     public bool IsEmpty
     {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#if NET7_0_OR_GREATER
+
+        get => _value is null || _value.Length == 0;
+#else
         // インライン化された場合の最適化のため、三項演算子でtrue/falseを返す。
         // https://github.com/dotnet/runtime/issues/4207
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [SuppressMessage("Style", "IDE0075:条件式を簡略化する", Justification = "最適化のため")]
         get => (_value is null || _value.Length == 0) ? true : false;
+#endif
     }
 
     /// <summary>
@@ -168,7 +174,7 @@ public readonly partial struct Utf8Array : IEquatable<Utf8Array>,
         => AsSpan().SequenceEqual(other.AsSpan());
 
     /// <inheritdoc/>
-    public override int GetHashCode() => _value.GetDjb2HashCode();
+    public override int GetHashCode() => HashCode<byte>.Combine(AsSpan());
 
     /// <inheritdoc/>
     public override string ToString() => Encoding.UTF8.GetString(_value);
@@ -247,7 +253,7 @@ public readonly partial struct Utf8Array : IEquatable<Utf8Array>,
         while ((int)index <= length)
         {
             // 最適化の関係でrefローカル変数にしてはいけない。
-            var value = Unsafe.As<byte, ulong>(ref Unsafe.AddByteOffset(ref _value.DangerousGetReference(), index));
+            var value = Unsafe.As<byte, ulong>(ref Unsafe.AddByteOffset(ref DangerousGetReference(), index));
 
             var x = ((value >> 6) | (~value >> 7)) & Mask;
             count += BitOperations.PopCount(x);
@@ -259,7 +265,7 @@ public readonly partial struct Utf8Array : IEquatable<Utf8Array>,
         while ((int)index < ByteCount)
         {
             // 最適化の関係でrefローカル変数にしてはいけない。
-            var value = Unsafe.AddByteOffset(ref _value.DangerousGetReference(), index);
+            var value = Unsafe.AddByteOffset(ref DangerousGetReference(), index);
 
             if ((value & 0xC0) != 0x80)
             {
@@ -353,6 +359,7 @@ public readonly partial struct Utf8Array : IEquatable<Utf8Array>,
     /// このメソッドは境界チェックを行いません。
     /// </summary>
     /// <returns>最初の要素への参照を返します。</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public ref byte DangerousGetReference() => ref _value.DangerousGetReference();
 
     /// <summary>
