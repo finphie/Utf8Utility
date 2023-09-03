@@ -39,10 +39,14 @@ public sealed class Utf8ArrayDictionary<TValue> : IUtf8ArrayDictionary<TValue>, 
     /// <param name="capacity">格納できる要素数の初期値</param>
     public Utf8ArrayDictionary(int capacity)
     {
+#if NET8_0_OR_GREATER
+        ArgumentOutOfRangeException.ThrowIfNegative(capacity);
+#else
         if (capacity < 0)
         {
             ThrowHelper.ThrowArgumentOutOfRangeException(nameof(capacity));
         }
+#endif
 
         if (capacity < 2)
         {
