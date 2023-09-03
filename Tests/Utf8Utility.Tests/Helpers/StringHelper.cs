@@ -19,10 +19,14 @@ sealed class StringHelper
     /// <exception cref="ArgumentOutOfRangeException">文字数に0以下が指定された場合、この例外をスローします。</exception>
     public static string GetAsciiRandomString(int length)
     {
+#if NET8_0_OR_GREATER
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(length);
+#else
         if (length <= 0)
         {
             throw new ArgumentOutOfRangeException(nameof(length));
         }
+#endif
 
         var buffer = new byte[length];
 
