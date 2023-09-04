@@ -8,10 +8,6 @@ using CommunityToolkit.HighPerformance;
 using CommunityToolkit.HighPerformance.Helpers;
 using Utf8Utility.Text;
 
-#if NET6_0_OR_GREATER
-using Utf8Utility.Helpers;
-#endif
-
 namespace Utf8Utility;
 
 /// <summary>
@@ -91,7 +87,7 @@ public readonly partial struct Utf8Array : IEquatable<Utf8Array>,
     /// 空文字列を表す<see cref="Utf8Array"/>インスタンスを取得します。
     /// </summary>
     /// <value>
-    /// 空文字列を表す<see cref="Utf8Array"/>インスタンス
+    /// 空文字列を表す<see cref="Utf8Array"/>インスタンスを返します。
     /// </value>
     public static Utf8Array Empty
     {
@@ -103,17 +99,17 @@ public readonly partial struct Utf8Array : IEquatable<Utf8Array>,
     /// バイト数を取得します。
     /// </summary>
     /// <value>
-    /// バイト数
+    /// 内部配列のバイト数を返します。
     /// </value>
     public int ByteCount => _value.Length;
 
     /// <summary>
-    /// UTF-8配列が空かどうかを判定します。
+    /// UTF-8配列が空かどうかを取得します。
     /// </summary>
-    /// <returns>
+    /// <value>
     /// UTF-8配列が空の場合は<see langword="true"/>、
     /// それ以外は<see langword="false"/>を返します。
-    /// </returns>
+    /// </value>
     public bool IsEmpty
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -283,43 +279,7 @@ public readonly partial struct Utf8Array : IEquatable<Utf8Array>,
     /// </summary>
     /// <returns>UTF-8文字数を返します。</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public int GetLength()
-    {
-        var count = 0;
-        nuint index = 0;
-
-#if NET6_0_OR_GREATER
-        const ulong Mask = 0x8080808080808080 >> 7;
-        var length = ByteCount - sizeof(ulong);
-
-        // 8バイト単位でカウントする。
-        while ((int)index <= length)
-        {
-            // 最適化の関係でrefローカル変数にしてはいけない。
-            var value = Unsafe.As<byte, ulong>(ref Unsafe.AddByteOffset(ref DangerousGetReference(), index));
-
-            var x = ((value >> 6) | (~value >> 7)) & Mask;
-            count += BitOperations.PopCount(x);
-            index += sizeof(ulong);
-        }
-#endif
-
-        // 1バイト単位でカウントする。
-        while ((int)index < ByteCount)
-        {
-            // 最適化の関係でrefローカル変数にしてはいけない。
-            var value = Unsafe.AddByteOffset(ref DangerousGetReference(), index);
-
-            if ((value & 0xC0) != 0x80)
-            {
-                count++;
-            }
-
-            index++;
-        }
-
-        return count;
-    }
+    public int GetLength() => UnicodeUtility.GetLength(AsSpan());
 
     /// <summary>
     /// UTF-8配列をUTF-16配列に変換します。
@@ -365,61 +325,7 @@ public readonly partial struct Utf8Array : IEquatable<Utf8Array>,
     /// それ以外は<see langword="false"/>を返します。
     /// </returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public bool IsEmptyOrWhiteSpace()
-    {
-        // Utf8Spanを参考に実装
-        // https://github.com/dotnet/runtimelab/blob/84564a0e033114a1b2316c7bfb9953e4e3255cd3/src/libraries/System.Private.CoreLib/src/System/Text/Utf8Span.cs#L124
-        // https://github.com/dotnet/runtimelab/blob/84564a0e033114a1b2316c7bfb9953e4e3255cd3/src/libraries/System.Private.CoreLib/src/System/Text/Unicode/Utf8Utility.WhiteSpace.CoreLib.cs#L11-L68
-        nuint index = 0;
-
-        while ((int)index < _value.Length)
-        {
-            ref var valueStart = ref DangerousGetReference();
-            ref var value = ref Unsafe.AddByteOffset(ref valueStart, index);
-
-            // 文字コードが[0x21..0x7F]の範囲にあるか。
-            if ((sbyte)value > (sbyte)' ')
-            {
-                break;
-            }
-
-            // Ascii文字の場合のみ、処理を最適化する。
-            // 空白確認には、{Rune|char}.IsWhiteSpaceを利用できる。
-            // Rune.DecodeFromUtf8は引数チェックなどがあるので遅く、
-            // 回避するためにUnsafe.Asでvalueを直接書き換える必要があるが、Ascii文字限定。
-            // charにキャストして比較する方法もAscii文字限定。
-            // したがって、最適化を行う場合はAscii文字かどうかでの分岐は必須。
-            if (UnicodeUtility.IsAsciiCodePoint(value))
-            {
-                // 直前の処理でAscii文字であることは確定しているため、
-                // {Rune|char}.IsWhiteSpaceを使用せず、自前実装で比較を行う。
-                // 上記メソッドではAscii文字かどうかで判定が入ってしまうため。
-                // https://github.com/dotnet/runtime/blob/v6.0.0/src/libraries/System.Private.CoreLib/src/System/Text/Rune.cs#L1350-L1366
-                // https://github.com/dotnet/runtime/blob/v6.0.0/src/libraries/System.Private.CoreLib/src/System/Char.cs#L274-L287
-                if (AsciiUtility.IsWhiteSpace(value))
-                {
-                    index++;
-                    continue;
-                }
-            }
-            else
-            {
-                var span = MemoryMarshal.CreateReadOnlySpan(ref value, _value.Length - (int)index);
-                Rune.DecodeFromUtf8(span, out var rune, out var bytesConsumed);
-
-                if (Rune.IsWhiteSpace(rune))
-                {
-                    index += (uint)bytesConsumed;
-                    continue;
-                }
-            }
-
-            // ここに到達した場合、空白以外の文字のはず。
-            break;
-        }
-
-        return (int)index == _value.Length;
-    }
+    public bool IsEmptyOrWhiteSpace() => UnicodeUtility.IsEmptyOrWhiteSpace(AsSpan());
 #endif
 
     /// <summary>
