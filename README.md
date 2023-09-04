@@ -34,20 +34,25 @@ using Utf8Utility.Text;
 // stringまたはUTF-8のバイト配列、ReadOnlySpan{char|byte}を指定できます。
 var array = new Utf8Array("abc");
 
+var span = array.AsSpan();
+
 // バイト数
 var byteCount = array.ByteCount;
 
 // 文字数
 var length = array.GetLength();
+var length2 = UnicodeUtility.GetLength(span);
 
 // 空かどうか
 var isEmpty = array.IsEmpty;
 
 // 空か空白文字列かどうか
 var isEmptyOrWhiteSpace = array.IsEmptyOrWhiteSpace();
+var isEmptyOrWhiteSpace2 = UnicodeUtility.IsEmptyOrWhiteSpace(span);
 
 // Ascii文字列かどうか
 var isAscii = array.IsAscii();
+var isAscii2 = UnicodeUtility.IsAscii(span);
 
 // 内部配列への参照
 ref var start = ref array.DangerousGetReference();
@@ -61,26 +66,30 @@ var empty = Utf8Array.Empty;
 var equals = array.Equals(array);
 var hash = array.GetHashCode();
 var utf16 = array.ToString();
-var span = array.AsSpan();
-array.TryFormat(stackalloc char[256], out var charsWritten);
+
+_ = array.TryFormat(stackalloc char[256], out var charsWritten);
+_ = array.TryFormat(stackalloc byte[256], out var bytesWritten);
+
+array.CopyTo(stackalloc byte[256]);
+_ = array.TryCopyTo(stackalloc byte[256]);
+
+_ = array.GetChars(stackalloc char[256]);
+_ = array.TryGetChars(stackalloc char[256], out var charsWritten);
 
 // Utf8ArrayをキーとしたDictionaryです。
 var dict = new Utf8ArrayDictionary<int>();
 
 // キー指定にはUtf8Arrayの他にReadOnlySpan{char|byte}を指定できます。
-dict.TryGetValue(array, out var result);
+_ = dict.TryGetValue(array, out var result);
 ref var dictStart = ref dict.GetValueRefOrNullRef(array);
 
-dict.TryAdd(array, 1);
+_ = dict.TryAdd(array, 1);
 dict.Clear();
-
-// Ascii文字列かどうか
-var span = array.AsSpan();
-var isAscii = UnicodeUtility.IsAscii(span);
 ```
 
 ## サポートフレームワーク
 
+- .NET 8
 - .NET 7
 - .NET 6
 - .NET Standard 2.1
