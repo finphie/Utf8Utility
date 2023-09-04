@@ -108,6 +108,7 @@ MIT
 
 ### ライブラリ
 
+- [CommunityToolkit.Diagnostics](https://github.com/CommunityToolkit/dotnet)
 - [CommunityToolkit.HighPerformance](https://github.com/CommunityToolkit/dotnet)
 
 ### テスト
