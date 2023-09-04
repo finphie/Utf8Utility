@@ -3,16 +3,13 @@ using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
+using CommunityToolkit.Diagnostics;
 using CommunityToolkit.HighPerformance;
 using CommunityToolkit.HighPerformance.Helpers;
 using Utf8Utility.Text;
 
 #if NET6_0_OR_GREATER
-using System.Buffers;
-using System.Text.Unicode;
 using Utf8Utility.Helpers;
-#else
-using CommunityToolkit.Diagnostics;
 #endif
 
 namespace Utf8Utility;
@@ -24,6 +21,9 @@ namespace Utf8Utility;
 [SuppressMessage("Design", "CA1036:比較可能な型でメソッドをオーバーライドします", Justification = "配列")]
 #endif
 public readonly partial struct Utf8Array : IEquatable<Utf8Array>,
+#if NET8_0_OR_GREATER
+    IUtf8SpanFormattable,
+#endif
 #if NET6_0_OR_GREATER
     ISpanFormattable, IComparable<Utf8Array>
 #else
@@ -179,15 +179,61 @@ public readonly partial struct Utf8Array : IEquatable<Utf8Array>,
     /// <inheritdoc/>
     public string ToString(string? format, IFormatProvider? formatProvider) => ToString();
 
+#if NET8_0_OR_GREATER
+    /// <inheritdoc/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public bool TryFormat(Span<byte> utf8Destination, out int bytesWritten, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
+    {
+        if (!TryCopyTo(utf8Destination))
+        {
+            bytesWritten = 0;
+            return false;
+        }
+
+        bytesWritten = _value.Length;
+        return true;
+    }
+#endif
+
 #if NET6_0_OR_GREATER
     /// <inheritdoc/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public bool TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
-        => Utf8.ToUtf16(_value, destination, out _, out charsWritten) == OperationStatus.Done;
+        => TryGetChars(destination, out charsWritten);
 
     /// <inheritdoc/>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public int CompareTo(Utf8Array other) => Compare(this, other);
 #endif
+
+    /// <summary>
+    /// UTF-8配列を指定された出力先にコピーします。
+    /// </summary>
+    /// <param name="destination">出力先</param>
+    /// <returns>コピーに成功した場合は<see langword="true"/>を返します。失敗した場合は<see langword="false"/>を返します。</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public bool TryCopyTo(Span<byte> destination)
+    {
+        if (ByteCount > destination.Length)
+        {
+            return false;
+        }
+
+        CopyToInternal(destination);
+        return true;
+    }
+
+    /// <summary>
+    /// UTF-8配列を指定された出力先にコピーします。
+    /// </summary>
+    /// <param name="destination">出力先</param>
+    /// <exception cref="ArgumentException">コピー先のサイズが不足している場合、この例外をスローします。</exception>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void CopyTo(Span<byte> destination)
+    {
+        Guard.HasSizeGreaterThanOrEqualTo(destination, ByteCount);
+        CopyToInternal(destination);
+    }
 
     /// <summary>
     /// <see cref="ReadOnlySpan{Byte}"/>構造体を取得します。
@@ -274,6 +320,41 @@ public readonly partial struct Utf8Array : IEquatable<Utf8Array>,
 
         return count;
     }
+
+    /// <summary>
+    /// UTF-8配列をUTF-16配列に変換します。
+    /// </summary>
+    /// <param name="destination">出力先</param>
+    /// <param name="charsWritten">UTF-16配列の長さ</param>
+    /// <returns>変換に成功した場合は<see langword="true"/>を返します。失敗した場合は<see langword="false"/>を返します。</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public bool TryGetChars(Span<char> destination, out int charsWritten)
+    {
+        var span = AsSpan();
+
+#if NET8_0_OR_GREATER
+        return Encoding.UTF8.TryGetChars(span, destination, out charsWritten);
+#else
+        var required = Encoding.UTF8.GetCharCount(span);
+
+        if (required > destination.Length)
+        {
+            charsWritten = 0;
+            return false;
+        }
+
+        charsWritten = Encoding.UTF8.GetChars(span, destination);
+        return true;
+#endif
+    }
+
+    /// <summary>
+    /// UTF-8配列をUTF-16配列に変換します。
+    /// </summary>
+    /// <param name="destination">出力先</param>
+    /// <returns>UTF-16配列の長さを返します。</returns>
+    /// <exception cref="ArgumentException">コピー先のサイズが不足している場合、この例外をスローします。</exception>
+    public int GetChars(Span<char> destination) => Encoding.UTF8.GetChars(AsSpan(), destination);
 
 #if NET6_0_OR_GREATER
     /// <summary>
@@ -372,6 +453,10 @@ public readonly partial struct Utf8Array : IEquatable<Utf8Array>,
 
         return array;
     }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    void CopyToInternal(Span<byte> destination)
+        => Unsafe.CopyBlockUnaligned(ref MemoryMarshal.GetReference(destination), ref DangerousGetReference(), (uint)_value.Length);
 
     static class EmptyArray
     {
