@@ -12,11 +12,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="CommunityToolkit.HighPerformance" Version="8.2.1" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)' != 'net8.0'">
     <PackageReference Include="CommunityToolkit.Diagnostics" Version="8.2.1" />
+    <PackageReference Include="CommunityToolkit.HighPerformance" Version="8.2.1" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.1'">
