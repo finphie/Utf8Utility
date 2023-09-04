@@ -1,4 +1,6 @@
-﻿using FluentAssertions;
+﻿using System.Globalization;
+using System.Text;
+using FluentAssertions;
 using Utf8Utility.Text;
 using Xunit;
 
@@ -33,6 +35,26 @@ public sealed class UnicodeUtilityTest
     [InlineData(0xF4)]
     public void IsAsciiCodePoint_Ascii文字以外_falseを返す(byte value)
         => UnicodeUtility.IsAsciiCodePoint(value).Should().BeFalse();
+
+    [Theory]
+    [InlineData("")]
+    [InlineData("a")]
+    [InlineData("abc")]
+    [InlineData("α")]
+    [InlineData("αβγ")]
+    [InlineData("あ")]
+    [InlineData("あいう")]
+    [InlineData("𩸽")]
+    [InlineData("𩸽😀🖳")]
+    [InlineData("aα")]
+    [InlineData("aあ")]
+    [InlineData("a𩸽")]
+    public void GetLength_長さを返す(string value)
+    {
+        var utf8 = Encoding.UTF8.GetBytes(value);
+        var info = new StringInfo(value);
+        UnicodeUtility.GetLength(utf8).Should().Be(info.LengthInTextElements);
+    }
 
     [Fact]
     public void IsEmptyOrWhiteSpace_空白_trueを返す()

@@ -1,9 +1,10 @@
 ﻿using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using CommunityToolkit.HighPerformance;
 
 #if NET6_0_OR_GREATER
+using System.Numerics;
 using System.Text;
-using CommunityToolkit.HighPerformance;
 #endif
 
 namespace Utf8Utility.Text;
@@ -55,6 +56,48 @@ public static partial class UnicodeUtility
     /// </returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsAsciiCodePoint(byte value) => value <= 0x7Fu;
+
+    /// <summary>
+    /// UTF-8文字数を取得します。
+    /// </summary>
+    /// <param name="value">UTF-8文字列</param>
+    /// <returns>UTF-8文字数を返します。</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static int GetLength(ReadOnlySpan<byte> value)
+    {
+        var count = 0;
+        nuint index = 0;
+
+#if NET6_0_OR_GREATER
+        const ulong Mask = 0x8080808080808080 >> 7;
+        var length = value.Length - sizeof(ulong);
+
+        // 8バイト単位でカウントする。
+        while ((int)index <= length)
+        {
+            var number = Unsafe.As<byte, ulong>(ref Unsafe.AddByteOffset(ref value.DangerousGetReference(), index));
+
+            var x = ((number >> 6) | (~number >> 7)) & Mask;
+            count += BitOperations.PopCount(x);
+            index += sizeof(ulong);
+        }
+#endif
+
+        // 1バイト単位でカウントする。
+        while ((int)index < value.Length)
+        {
+            var number = Unsafe.AddByteOffset(ref value.DangerousGetReference(), index);
+
+            if ((number & 0xC0) != 0x80)
+            {
+                count++;
+            }
+
+            index++;
+        }
+
+        return count;
+    }
 
 #if NET6_0_OR_GREATER
     /// <summary>

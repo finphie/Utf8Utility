@@ -8,10 +8,6 @@ using CommunityToolkit.HighPerformance;
 using CommunityToolkit.HighPerformance.Helpers;
 using Utf8Utility.Text;
 
-#if NET6_0_OR_GREATER
-using Utf8Utility.Helpers;
-#endif
-
 namespace Utf8Utility;
 
 /// <summary>
@@ -283,43 +279,7 @@ public readonly partial struct Utf8Array : IEquatable<Utf8Array>,
     /// </summary>
     /// <returns>UTF-8文字数を返します。</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public int GetLength()
-    {
-        var count = 0;
-        nuint index = 0;
-
-#if NET6_0_OR_GREATER
-        const ulong Mask = 0x8080808080808080 >> 7;
-        var length = ByteCount - sizeof(ulong);
-
-        // 8バイト単位でカウントする。
-        while ((int)index <= length)
-        {
-            // 最適化の関係でrefローカル変数にしてはいけない。
-            var value = Unsafe.As<byte, ulong>(ref Unsafe.AddByteOffset(ref DangerousGetReference(), index));
-
-            var x = ((value >> 6) | (~value >> 7)) & Mask;
-            count += BitOperations.PopCount(x);
-            index += sizeof(ulong);
-        }
-#endif
-
-        // 1バイト単位でカウントする。
-        while ((int)index < ByteCount)
-        {
-            // 最適化の関係でrefローカル変数にしてはいけない。
-            var value = Unsafe.AddByteOffset(ref DangerousGetReference(), index);
-
-            if ((value & 0xC0) != 0x80)
-            {
-                count++;
-            }
-
-            index++;
-        }
-
-        return count;
-    }
+    public int GetLength() => UnicodeUtility.GetLength(AsSpan());
 
     /// <summary>
     /// UTF-8配列をUTF-16配列に変換します。

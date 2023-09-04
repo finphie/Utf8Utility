@@ -27,14 +27,4 @@ static class BitOperations
         return ++value;
     }
 #endif
-
-#if NET6_0_OR_GREATER
-    /// <summary>
-    /// 立っているビット数を取得します。
-    /// </summary>
-    /// <param name="value">数値</param>
-    /// <returns>立っているビット数を返します。</returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static int PopCount(ulong value) => System.Numerics.BitOperations.PopCount(value);
-#endif
 }
