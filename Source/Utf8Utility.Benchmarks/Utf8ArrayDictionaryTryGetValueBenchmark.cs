@@ -1,4 +1,5 @@
-﻿using BenchmarkDotNet.Attributes;
+﻿using System.Collections.Frozen;
+using BenchmarkDotNet.Attributes;
 using Utf8Utility.Benchmarks.Helpers;
 
 namespace Utf8Utility.Benchmarks;
@@ -10,6 +11,8 @@ public class Utf8ArrayDictionaryTryGetValueBenchmark
 
     readonly Dictionary<Utf8Array, int> _dict = new();
     readonly Utf8ArrayDictionary<int> _utf8Dict = new();
+
+    FrozenDictionary<Utf8Array, int> _frozenDictionary = null!;
 
     [Params(1, 10, 100, 1000)]
     public int Count { get; set; }
@@ -29,6 +32,7 @@ public class Utf8ArrayDictionaryTryGetValueBenchmark
 
         Key = new Utf8Array(StringHelper.GetAsciiRandomString(Length));
         _dict.Add(Key, 1);
+        _frozenDictionary = _dict.ToFrozenDictionary();
         _utf8Dict.TryAdd(Key, 1);
     }
 
@@ -36,6 +40,13 @@ public class Utf8ArrayDictionaryTryGetValueBenchmark
     public int Dictionary()
     {
         _dict.TryGetValue(Key, out var value);
+        return value;
+    }
+
+    [Benchmark]
+    public int FrozenDictionary()
+    {
+        _frozenDictionary.TryGetValue(Key, out var value);
         return value;
     }
 
