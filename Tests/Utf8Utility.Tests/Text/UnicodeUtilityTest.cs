@@ -81,6 +81,7 @@ public sealed class UnicodeUtilityTest
         UnicodeUtility.GetLength(utf8).Should().Be(info.LengthInTextElements);
     }
 
+#if NET7_0_OR_GREATER
     [Fact]
     public void IsEmptyOrWhiteSpace_空白_trueを返す()
     {
@@ -111,4 +112,5 @@ public sealed class UnicodeUtilityTest
         UnicodeUtility.IsEmptyOrWhiteSpace("\u1680a "u8).Should().BeFalse();
         UnicodeUtility.IsEmptyOrWhiteSpace(" 𩸽"u8).Should().BeFalse();
     }
+#endif
 }
