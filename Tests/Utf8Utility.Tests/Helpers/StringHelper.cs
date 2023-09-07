@@ -20,14 +20,19 @@ sealed class StringHelper
     /// </summary>
     /// <param name="length">文字数</param>
     /// <returns>ランダムなAscii文字列を返します。</returns>
-    /// <exception cref="ArgumentOutOfRangeException">文字数に0以下が指定された場合、この例外をスローします。</exception>
+    /// <exception cref="ArgumentOutOfRangeException">文字数に0未満が指定された場合、この例外をスローします。</exception>
     public static string GetAsciiRandomString(int length)
     {
 #if NET8_0_OR_GREATER
-        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(length);
+        ArgumentOutOfRangeException.ThrowIfNegative(length);
 #else
-        Guard.IsGreaterThan(length, 0);
+        Guard.IsGreaterThanOrEqualTo(length, 0);
 #endif
+
+        if (length == 0)
+        {
+            return string.Empty;
+        }
 
         var buffer = new byte[length];
 
@@ -37,5 +42,22 @@ sealed class StringHelper
         }
 
         return Encoding.ASCII.GetString(buffer);
+    }
+
+    /// <summary>
+    /// ランダムなAsciiバイト列を取得します。
+    /// </summary>
+    /// <param name="length">文字数</param>
+    /// <returns>ランダムなAsciiバイト列を返します。</returns>
+    /// <exception cref="ArgumentOutOfRangeException">バイト数に0未満が指定された場合、この例外をスローします。</exception>
+    public static byte[] GetAsciiRandomBytes(int length)
+    {
+#if NET8_0_OR_GREATER
+        ArgumentOutOfRangeException.ThrowIfNegative(length);
+#else
+        Guard.IsGreaterThanOrEqualTo(length, 0);
+#endif
+
+        return Encoding.UTF8.GetBytes(GetAsciiRandomString(length));
     }
 }
