@@ -13,14 +13,14 @@ namespace Utf8Utility;
 /// <summary>
 /// UTF-8配列を表す構造体です。
 /// </summary>
-#if NET6_0_OR_GREATER
+#if NET7_0_OR_GREATER
 [SuppressMessage("Design", "CA1036:比較可能な型でメソッドをオーバーライドします", Justification = "配列")]
 #endif
 public readonly partial struct Utf8Array : IEquatable<Utf8Array>,
 #if NET8_0_OR_GREATER
     IUtf8SpanFormattable,
 #endif
-#if NET6_0_OR_GREATER
+#if NET7_0_OR_GREATER
     ISpanFormattable, IComparable<Utf8Array>
 #else
     IFormattable
@@ -41,7 +41,7 @@ public readonly partial struct Utf8Array : IEquatable<Utf8Array>,
     /// <exception cref="ArgumentNullException">引数がnullの場合、この例外をスローします。</exception>
     public Utf8Array(byte[] bytes)
     {
-#if NET6_0_OR_GREATER
+#if NET7_0_OR_GREATER
         ArgumentNullException.ThrowIfNull(bytes);
 #else
         Guard.IsNotNull(bytes);
@@ -57,7 +57,7 @@ public readonly partial struct Utf8Array : IEquatable<Utf8Array>,
     /// <exception cref="ArgumentNullException">引数がnullの場合、この例外をスローします。</exception>
     public Utf8Array(string s)
     {
-#if NET6_0_OR_GREATER
+#if NET7_0_OR_GREATER
         ArgumentNullException.ThrowIfNull(s);
 #else
         Guard.IsNotNull(s);
@@ -191,7 +191,7 @@ public readonly partial struct Utf8Array : IEquatable<Utf8Array>,
     }
 #endif
 
-#if NET6_0_OR_GREATER
+#if NET7_0_OR_GREATER
     /// <inheritdoc/>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public bool TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
@@ -316,7 +316,7 @@ public readonly partial struct Utf8Array : IEquatable<Utf8Array>,
     /// <exception cref="ArgumentException">コピー先のサイズが不足している場合、この例外をスローします。</exception>
     public int GetChars(Span<char> destination) => Encoding.UTF8.GetChars(AsSpan(), destination);
 
-#if NET6_0_OR_GREATER
+#if NET7_0_OR_GREATER
     /// <summary>
     /// UTF-8配列が空または空白かどうかを判定します。
     /// </summary>

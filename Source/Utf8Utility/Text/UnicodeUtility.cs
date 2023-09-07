@@ -2,7 +2,7 @@
 using System.Runtime.InteropServices;
 using CommunityToolkit.HighPerformance;
 
-#if NET6_0_OR_GREATER
+#if NET7_0_OR_GREATER
 using System.Numerics;
 using System.Text;
 #endif
@@ -68,7 +68,7 @@ public static partial class UnicodeUtility
         var count = 0;
         nuint index = 0;
 
-#if NET6_0_OR_GREATER
+#if NET7_0_OR_GREATER
         const ulong Mask = 0x8080808080808080 >> 7;
         var length = value.Length - sizeof(ulong);
 
@@ -99,7 +99,7 @@ public static partial class UnicodeUtility
         return count;
     }
 
-#if NET6_0_OR_GREATER
+#if NET7_0_OR_GREATER
     /// <summary>
     /// UTF-8文字列が空または空白かどうかを判定します。
     /// </summary>

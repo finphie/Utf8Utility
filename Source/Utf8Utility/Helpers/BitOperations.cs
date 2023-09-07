@@ -14,7 +14,7 @@ static class BitOperations
     /// <returns>2の累乗を返します。</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int RoundUpToPowerOf2(int value)
-#if NET6_0_OR_GREATER
+#if NET7_0_OR_GREATER
         => (int)System.Numerics.BitOperations.RoundUpToPowerOf2((uint)value);
 #else
     {

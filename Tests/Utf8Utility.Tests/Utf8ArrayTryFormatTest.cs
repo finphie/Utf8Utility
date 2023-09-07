@@ -1,4 +1,5 @@
-﻿using FluentAssertions;
+﻿#if NET7_0_OR_GREATER
+using FluentAssertions;
 using Xunit;
 
 namespace Utf8Utility.Tests;
@@ -53,3 +54,4 @@ public sealed class Utf8ArrayTryFormatTest
     }
 #endif
 }
+#endif
