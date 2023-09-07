@@ -1,5 +1,5 @@
 ﻿using System.Runtime.CompilerServices;
-using CommunityToolkit.HighPerformance;
+using System.Runtime.InteropServices;
 
 #if NET7_0_OR_GREATER
 using System.Runtime.Intrinsics;
@@ -23,7 +23,7 @@ partial class UnicodeUtility
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsAscii(ReadOnlySpan<byte> value)
     {
-        ref var start = ref value.DangerousGetReference();
+        ref var start = ref MemoryMarshal.GetReference(value);
         ref var end = ref Unsafe.AddByteOffset(ref start, (nint)(uint)value.Length);
 
 #if NET7_0_OR_GREATER
