@@ -1,6 +1,7 @@
 ﻿using System.Globalization;
 using System.Text;
 using FluentAssertions;
+using Utf8Utility.Tests.Helpers;
 using Utf8Utility.Text;
 using Xunit;
 
@@ -8,6 +9,8 @@ namespace Utf8Utility.Tests.Text;
 
 public sealed class UnicodeUtilityTest
 {
+    const int Length = 32 * 4;
+
     [Theory]
     [InlineData(0x00, 1)]
     [InlineData(0x7F, 1)]
@@ -35,6 +38,28 @@ public sealed class UnicodeUtilityTest
     [InlineData(0xF4)]
     public void IsAsciiCodePoint_Ascii文字以外_falseを返す(byte value)
         => UnicodeUtility.IsAsciiCodePoint(value).Should().BeFalse();
+
+    [Fact]
+    public void Ascii文字_trueを返す()
+    {
+        for (var i = 1; i <= Length; i++)
+        {
+            var ascii = StringHelper.GetAsciiRandomBytes(i);
+            UnicodeUtility.IsAscii(ascii).Should().BeTrue($"index: {i}");
+        }
+    }
+
+    [Fact]
+    public void 非Ascii文字_falseを返す()
+    {
+        for (var i = 0; i <= Length; i++)
+        {
+            var ascii = StringHelper.GetAsciiRandomBytes(i).ToList();
+            ascii.Add(0x80);
+
+            UnicodeUtility.IsAscii(ascii.ToArray()).Should().BeFalse($"index: {i}");
+        }
+    }
 
     [Theory]
     [InlineData("")]

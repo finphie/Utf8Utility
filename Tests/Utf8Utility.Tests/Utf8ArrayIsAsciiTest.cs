@@ -6,26 +6,29 @@ namespace Utf8Utility.Tests;
 
 public sealed class Utf8ArrayIsAsciiTest
 {
-    [Theory]
-    [InlineData(10)]
-    [InlineData(127)]
-    public void Ascii文字_trueを返す(int length)
+    const int Length = 32 * 4;
+
+    [Fact]
+    public void Ascii文字_trueを返す()
     {
-        var value = new Utf8Array(StringHelper.GetAsciiRandomString(length));
-        value.IsAscii().Should().BeTrue();
+        for (var i = 1; i <= Length; i++)
+        {
+            var ascii = StringHelper.GetAsciiRandomString(i);
+            var value = new Utf8Array(ascii);
+
+            value.IsAscii().Should().BeTrue($"index: {i}");
+        }
     }
 
-    [Theory]
-    [InlineData(10)]
-    [InlineData(127)]
-    public void 非Ascii文字_falseを返す(int length)
+    [Fact]
+    public void 非Ascii文字_falseを返す()
     {
-        var ascii = StringHelper.GetAsciiRandomString(length - 2);
-
-        for (var i = 0; i <= ascii.Length; i++)
+        for (var i = 0; i <= Length; i++)
         {
-            var s = ascii.Insert(i, "α");
-            var value = new Utf8Array(s);
+            var ascii = StringHelper.GetAsciiRandomBytes(i).ToList();
+            ascii.Add(0x80);
+
+            var value = new Utf8Array(ascii.ToArray());
             value.IsAscii().Should().BeFalse($"index: {i}");
         }
     }

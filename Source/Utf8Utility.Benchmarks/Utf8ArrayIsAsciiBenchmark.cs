@@ -11,11 +11,9 @@ namespace Utf8Utility.Benchmarks;
 [Config(typeof(BenchmarkConfig))]
 public class Utf8ArrayIsAsciiBenchmark
 {
-#nullable disable
-    byte[] _value;
-#nullable restore
+    byte[] _value = null!;
 
-    [Params(4, 16, 100)]
+    [Params(16, 319, 10000)]
     public int Length { get; set; }
 
     [GlobalSetup]
@@ -140,7 +138,7 @@ public class Utf8ArrayIsAsciiBenchmark
     }
 
     [Benchmark]
-    public unsafe bool IsAscii_Sse2()
+    public bool IsAscii_Sse2()
     {
         nuint index = 0;
         var mask16 = Vector128<byte>.Zero;
@@ -190,7 +188,7 @@ public class Utf8ArrayIsAsciiBenchmark
     }
 
     [Benchmark]
-    public unsafe bool IsAscii_Avx2()
+    public bool IsAscii_Avx2()
     {
         nuint index = 0;
         var mask32 = Vector256<byte>.Zero;
@@ -246,5 +244,71 @@ public class Utf8ArrayIsAsciiBenchmark
         }
 
         return ((uint)result | (mask8 & 0x8080808080808080)) == 0;
+    }
+
+    [Benchmark]
+    public unsafe bool IsAscii_Avx2_2()
+    {
+        ref var start = ref _value.DangerousGetReference();
+        ref var end = ref Unsafe.AddByteOffset(ref start, (nint)(uint)_value.Length);
+        var mask1 = Vector256<byte>.Zero;
+        var mask2 = Vector256<byte>.Zero;
+
+        if (_value.Length >= Vector256<byte>.Count * 2)
+        {
+            end = ref Unsafe.SubtractByteOffset(ref end, Vector256<byte>.Count * 2);
+
+            do
+            {
+                mask1 |= Vector256.LoadUnsafe(ref start);
+                mask2 |= Vector256.LoadUnsafe(ref start, (nuint)Vector256<byte>.Count);
+                start = ref Unsafe.AddByteOffset(ref start, Vector256<byte>.Count * 2);
+            }
+            while (!Unsafe.IsAddressGreaterThan(ref start, ref end));
+
+            mask1 |= mask2;
+            end = ref Unsafe.AddByteOffset(ref end, Vector256<byte>.Count * 2);
+        }
+
+        if (Unsafe.ByteOffset(ref start, ref end) >= Vector256<byte>.Count)
+        {
+            mask1 |= Vector256.LoadUnsafe(ref start);
+            start = ref Unsafe.AddByteOffset(ref start, Vector256<byte>.Count);
+        }
+
+        var mask3 = 0UL;
+
+        if (Unsafe.ByteOffset(ref start, ref end) >= sizeof(ulong) * 2)
+        {
+            mask3 = Unsafe.ReadUnaligned<ulong>(ref start);
+            mask3 |= Unsafe.ReadUnaligned<ulong>(ref Unsafe.AddByteOffset(ref start, sizeof(ulong)));
+
+            start = ref Unsafe.AddByteOffset(ref start, sizeof(ulong) * 2);
+        }
+
+        if (Unsafe.ByteOffset(ref start, ref end) >= sizeof(ulong))
+        {
+            mask3 |= Unsafe.ReadUnaligned<ulong>(ref start);
+            start = ref Unsafe.AddByteOffset(ref start, sizeof(ulong));
+        }
+
+        if (Unsafe.ByteOffset(ref start, ref end) >= sizeof(uint))
+        {
+            mask3 |= Unsafe.ReadUnaligned<uint>(ref start);
+            start = ref Unsafe.AddByteOffset(ref start, sizeof(uint));
+        }
+
+        if (Unsafe.ByteOffset(ref start, ref end) >= sizeof(ushort))
+        {
+            mask3 |= Unsafe.ReadUnaligned<ushort>(ref start);
+            start = ref Unsafe.AddByteOffset(ref start, sizeof(ushort));
+        }
+
+        if (Unsafe.ByteOffset(ref start, ref end) >= sizeof(byte))
+        {
+            mask3 |= start;
+        }
+
+        return (mask1.ExtractMostSignificantBits() | (mask3 & 0x8080808080808080)) == 0;
     }
 }
