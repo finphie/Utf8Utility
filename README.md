@@ -40,18 +40,18 @@ var span = array.AsSpan();
 var byteCount = array.ByteCount;
 
 // 文字数
-var length = array.GetLength();
+var length1 = array.GetLength();
 var length2 = UnicodeUtility.GetLength(span);
 
 // 空かどうか
 var isEmpty = array.IsEmpty;
 
 // 空か空白文字列かどうか
-var isEmptyOrWhiteSpace = array.IsEmptyOrWhiteSpace();
+var isEmptyOrWhiteSpace1 = array.IsEmptyOrWhiteSpace();
 var isEmptyOrWhiteSpace2 = UnicodeUtility.IsEmptyOrWhiteSpace(span);
 
 // Ascii文字列かどうか
-var isAscii = array.IsAscii();
+var isAscii1 = array.IsAscii();
 var isAscii2 = UnicodeUtility.IsAscii(span);
 
 // 内部配列への参照
@@ -59,9 +59,9 @@ ref var start = ref array.DangerousGetReference();
 
 // 比較
 var compareTo = array.CompareTo(array);
-_ = Utf8Array.CompareOrdinal(array, array);
-_ = Utf8Array.Compare(array, array, StringComparison.CurrentCulture);
-_ = UnicodeUtility.Compare(span, span, StringComparison.CurrentCulture);
+var compare1 = Utf8Array.CompareOrdinal(array, array);
+var compare2 = Utf8Array.Compare(array, array, StringComparison.CurrentCulture);
+var compare3 = UnicodeUtility.Compare(span, span, StringComparison.CurrentCulture);
 
 var empty = Utf8Array.Empty;
 var equals = array.Equals(array);
@@ -74,7 +74,7 @@ _ = array.TryFormat(stackalloc byte[256], out var bytesWritten);
 array.CopyTo(stackalloc byte[256]);
 _ = array.TryCopyTo(stackalloc byte[256]);
 
-_ = array.GetChars(stackalloc char[256]);
+var chars = array.GetChars(stackalloc char[256]);
 _ = array.TryGetChars(stackalloc char[256], out var charsWritten);
 
 // Utf8ArrayをキーとしたDictionaryです。

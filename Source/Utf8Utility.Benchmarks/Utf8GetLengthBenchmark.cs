@@ -5,7 +5,7 @@ using Utf8Utility.Text;
 namespace Utf8Utility.Benchmarks;
 
 [Config(typeof(BenchmarkConfig))]
-public class Utf8ArrayGetLengthBenchmark
+public class Utf8GetLengthBenchmark
 {
     Utf8Array _value;
 

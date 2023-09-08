@@ -9,7 +9,7 @@ using Utf8Utility.Benchmarks.Helpers;
 namespace Utf8Utility.Benchmarks;
 
 [Config(typeof(BenchmarkConfig))]
-public class Utf8ArrayIsAsciiBenchmark
+public class Utf8IsAsciiBenchmark
 {
     byte[] _value = null!;
 

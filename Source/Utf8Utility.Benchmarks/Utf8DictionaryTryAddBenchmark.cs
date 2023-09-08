@@ -5,7 +5,7 @@ using Utf8Utility.Benchmarks.Helpers;
 namespace Utf8Utility.Benchmarks;
 
 [Config(typeof(BenchmarkConfig))]
-public class Utf8ArrayDictionaryTryAddBenchmark
+public class Utf8DictionaryTryAddBenchmark
 {
     const int Length = 10;
 

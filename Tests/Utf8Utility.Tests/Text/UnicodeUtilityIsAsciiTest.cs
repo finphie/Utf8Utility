@@ -1,10 +1,11 @@
 ﻿using FluentAssertions;
 using Utf8Utility.Tests.Helpers;
+using Utf8Utility.Text;
 using Xunit;
 
-namespace Utf8Utility.Tests;
+namespace Utf8Utility.Tests.Text;
 
-public sealed class Utf8ArrayIsAsciiTest
+public sealed class UnicodeUtilityIsAsciiTest
 {
     const int Length = 32 * 4;
 
@@ -13,10 +14,8 @@ public sealed class Utf8ArrayIsAsciiTest
     {
         for (var i = 1; i <= Length; i++)
         {
-            var ascii = StringHelper.GetAsciiRandomString(i);
-            var value = new Utf8Array(ascii);
-
-            value.IsAscii().Should().BeTrue($"index: {i}");
+            var ascii = StringHelper.GetAsciiRandomBytes(i);
+            UnicodeUtility.IsAscii(ascii).Should().BeTrue($"index: {i}");
         }
     }
 
@@ -28,15 +27,11 @@ public sealed class Utf8ArrayIsAsciiTest
             var ascii = StringHelper.GetAsciiRandomBytes(i).ToList();
             ascii.Add(0x80);
 
-            var value = new Utf8Array(ascii.ToArray());
-            value.IsAscii().Should().BeFalse($"index: {i}");
+            UnicodeUtility.IsAscii(ascii.ToArray()).Should().BeFalse($"index: {i}");
         }
     }
 
     [Fact]
     public void 空文字_falseを返す()
-    {
-        var value = new Utf8Array(string.Empty);
-        value.IsAscii().Should().BeFalse();
-    }
+        => UnicodeUtility.IsAscii(ReadOnlySpan<byte>.Empty).Should().BeFalse();
 }

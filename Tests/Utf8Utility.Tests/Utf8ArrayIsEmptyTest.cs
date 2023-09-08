@@ -6,7 +6,7 @@ namespace Utf8Utility.Tests;
 public sealed class Utf8ArrayIsEmptyTest
 {
     [Fact]
-    public void 空文字列同士_trueを返す()
+    public void 空文字列_trueを返す()
     {
         var values = new[]
         {
