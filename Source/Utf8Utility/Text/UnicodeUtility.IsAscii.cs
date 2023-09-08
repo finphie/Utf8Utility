@@ -92,48 +92,57 @@ partial class UnicodeUtility
 
         if (Vector128.IsHardwareAccelerated)
         {
-            var mask = Vector128<byte>.Zero;
+            var mask1 = Vector128<byte>.Zero;
+            var mask2 = Vector128<byte>.Zero;
 
-            if (value.Length >= Vector128<byte>.Count)
+            if (value.Length >= Vector128<byte>.Count * 2)
             {
-                end = ref Unsafe.SubtractByteOffset(ref end, Vector128<byte>.Count);
+                end = ref Unsafe.SubtractByteOffset(ref end, Vector128<byte>.Count * 2);
 
                 do
                 {
-                    mask |= Vector128.LoadUnsafe(ref start);
-                    start = ref Unsafe.AddByteOffset(ref start, Vector128<byte>.Count);
+                    mask1 |= Vector128.LoadUnsafe(ref start);
+                    mask2 |= Vector128.LoadUnsafe(ref start, (nuint)Vector128<byte>.Count);
+                    start = ref Unsafe.AddByteOffset(ref start, Vector128<byte>.Count * 2);
                 }
                 while (!Unsafe.IsAddressGreaterThan(ref start, ref end));
 
-                end = ref Unsafe.AddByteOffset(ref end, Vector128<byte>.Count);
+                mask1 |= mask2;
+                end = ref Unsafe.AddByteOffset(ref end, Vector128<byte>.Count * 2);
             }
 
-            var mask8 = 0UL;
+            if (Unsafe.ByteOffset(ref start, ref end) >= Vector128<byte>.Count)
+            {
+                mask1 |= Vector128.LoadUnsafe(ref start);
+                start = ref Unsafe.AddByteOffset(ref start, Vector128<byte>.Count);
+            }
+
+            var mask3 = 0UL;
 
             if (Unsafe.ByteOffset(ref start, ref end) >= sizeof(ulong))
             {
-                mask8 |= Unsafe.ReadUnaligned<ulong>(ref start);
+                mask3 |= Unsafe.ReadUnaligned<ulong>(ref start);
                 start = ref Unsafe.AddByteOffset(ref start, sizeof(ulong));
             }
 
             if (Unsafe.ByteOffset(ref start, ref end) >= sizeof(uint))
             {
-                mask8 |= Unsafe.ReadUnaligned<uint>(ref start);
+                mask3 |= Unsafe.ReadUnaligned<uint>(ref start);
                 start = ref Unsafe.AddByteOffset(ref start, sizeof(uint));
             }
 
             if (Unsafe.ByteOffset(ref start, ref end) >= sizeof(ushort))
             {
-                mask8 |= Unsafe.ReadUnaligned<ushort>(ref start);
+                mask3 |= Unsafe.ReadUnaligned<ushort>(ref start);
                 start = ref Unsafe.AddByteOffset(ref start, sizeof(ushort));
             }
 
             if (Unsafe.ByteOffset(ref start, ref end) >= sizeof(byte))
             {
-                mask8 |= start;
+                mask3 |= start;
             }
 
-            return (mask.ExtractMostSignificantBits() | (mask8 & 0x8080808080808080)) == 0;
+            return (mask1.ExtractMostSignificantBits() | (mask3 & 0x8080808080808080)) == 0;
         }
 #endif
 
