@@ -1,10 +1,12 @@
 ﻿#if NET7_0_OR_GREATER
+using System.Text;
 using FluentAssertions;
+using Utf8Utility.Text;
 using Xunit;
 
-namespace Utf8Utility.Tests;
+namespace Utf8Utility.Tests.Text;
 
-public sealed class Utf8ArrayCompareTest
+public sealed class UnicodeUtilityCompareTest
 {
     [Theory]
     [InlineData("")]
@@ -22,12 +24,11 @@ public sealed class Utf8ArrayCompareTest
     [InlineData("a𩸽")]
     public void 同じ文字列_0を返す(string value)
     {
-        var x1 = new Utf8Array(value);
-        var x2 = new Utf8Array(value);
+        var x1 = Encoding.UTF8.GetBytes(value);
+        var x2 = Encoding.UTF8.GetBytes(value);
 
-        Utf8Array.Compare(x1, x2).Should().Be(0);
-        Utf8Array.Compare(x1, x2, StringComparison.InvariantCulture).Should().Be(0);
-        x1.CompareTo(x2).Should().Be(0);
+        UnicodeUtility.Compare(x1, x2).Should().Be(0);
+        UnicodeUtility.Compare(x1, x2, StringComparison.InvariantCulture).Should().Be(0);
     }
 
     [Theory]
@@ -55,38 +56,10 @@ public sealed class Utf8ArrayCompareTest
     [InlineData("a", "A")]
     public void 異なる文字列_0より小さい数値を返す(string value1, string value2)
     {
-        var x1 = new Utf8Array(value1);
-        var x2 = new Utf8Array(value2);
+        var x1 = Encoding.UTF8.GetBytes(value1);
+        var x2 = Encoding.UTF8.GetBytes(value2);
 
-        Utf8Array.Compare(x1, x2, StringComparison.InvariantCulture).Should().BeNegative();
-    }
-
-    [Theory]
-    [InlineData("", "a")]
-    [InlineData("", "α")]
-    [InlineData("", "あ")]
-    [InlineData("", "𩸽")]
-    [InlineData("a", "b")]
-    [InlineData("a", "α")]
-    [InlineData("a", "あ")]
-    [InlineData("a", "𩸽")]
-    [InlineData("α", "β")]
-    [InlineData("α", "あ")]
-    [InlineData("α", "𩸽")]
-    [InlineData("あ", "い")]
-    [InlineData("あ", "𩸽")]
-    [InlineData("a", "ab")]
-    [InlineData("ab", "aα")]
-    [InlineData("!", "0")]
-    [InlineData("z", "{")]
-    [InlineData("0", "a")]
-    [InlineData("A", "a")]
-    public void CompareOrdinal(string value1, string value2)
-    {
-        var x1 = new Utf8Array(value1);
-        var x2 = new Utf8Array(value2);
-
-        Utf8Array.CompareOrdinal(x1, x2).Should().BeNegative();
+        UnicodeUtility.Compare(x1, x2, StringComparison.InvariantCulture).Should().BeNegative();
     }
 }
 #endif
