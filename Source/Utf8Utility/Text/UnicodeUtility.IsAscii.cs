@@ -23,6 +23,11 @@ partial class UnicodeUtility
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsAscii(ReadOnlySpan<byte> value)
     {
+        if (value.IsEmpty)
+        {
+            return false;
+        }
+
         ref var start = ref MemoryMarshal.GetReference(value);
         ref var end = ref Unsafe.AddByteOffset(ref start, (nint)(uint)value.Length);
 
