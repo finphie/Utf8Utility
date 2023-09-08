@@ -59,8 +59,9 @@ ref var start = ref array.DangerousGetReference();
 
 // 比較
 var compareTo = array.CompareTo(array);
-Utf8Array.CompareOrdinal(array, array);
-Utf8Array.Compare(array, array, StringComparison.CurrentCulture);
+_ = Utf8Array.CompareOrdinal(array, array);
+_ = Utf8Array.Compare(array, array, StringComparison.CurrentCulture);
+_ = UnicodeUtility.Compare(span, span, StringComparison.CurrentCulture);
 
 var empty = Utf8Array.Empty;
 var equals = array.Equals(array);
