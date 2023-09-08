@@ -32,4 +32,11 @@ public sealed class Utf8ArrayIsAsciiTest
             value.IsAscii().Should().BeFalse($"index: {i}");
         }
     }
+
+    [Fact]
+    public void 空文字_falseを返す()
+    {
+        var value = new Utf8Array(string.Empty);
+        value.IsAscii().Should().BeFalse();
+    }
 }
