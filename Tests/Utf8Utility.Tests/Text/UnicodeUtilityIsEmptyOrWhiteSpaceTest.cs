@@ -1,10 +1,12 @@
 ﻿#if NET7_0_OR_GREATER
+using System.Text;
 using FluentAssertions;
+using Utf8Utility.Text;
 using Xunit;
 
-namespace Utf8Utility.Tests;
+namespace Utf8Utility.Tests.Text;
 
-public sealed class Utf8ArrayIsEmptyOrWhiteSpaceTest
+public sealed class UnicodeUtilityIsEmptyOrWhiteSpaceTest
 {
     // https://github.com/dotnet/runtime/blob/82d667c6572e85945aa3a02d7f98802db587c0d2/src/libraries/Common/tests/Tests/System/StringTests.cs#L26
     [Theory]
@@ -23,7 +25,7 @@ public sealed class Utf8ArrayIsEmptyOrWhiteSpaceTest
     [InlineData("　\n　")]
     [InlineData("\u1680\u1680")]
     public void 空またはスペース_trueを返す(string value)
-        => new Utf8Array(value).IsEmptyOrWhiteSpace().Should().BeTrue();
+        => UnicodeUtility.IsEmptyOrWhiteSpace(Encoding.UTF8.GetBytes(value)).Should().BeTrue();
 
     [Theory]
     [InlineData("a")]
@@ -34,6 +36,6 @@ public sealed class Utf8ArrayIsEmptyOrWhiteSpaceTest
     [InlineData("\u1680a ")]
     [InlineData(" 𩸽")]
     public void 空またはスペース_falseを返す(string value)
-        => new Utf8Array(value).IsEmptyOrWhiteSpace().Should().BeFalse();
+        => UnicodeUtility.IsEmptyOrWhiteSpace(Encoding.UTF8.GetBytes(value)).Should().BeFalse();
 }
 #endif
