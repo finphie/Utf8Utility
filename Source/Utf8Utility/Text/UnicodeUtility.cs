@@ -15,10 +15,10 @@ namespace Utf8Utility.Text;
 public static partial class UnicodeUtility
 {
     /// <summary>
-    /// 指定されたUTF-8値のバイト数を取得します。
+    /// 指定されたUTF-8文字のバイト数を取得します。
     /// </summary>
     /// <param name="value">値</param>
-    /// <returns>指定されたUTF-8値のバイト数を返します。</returns>
+    /// <returns>指定されたUTF-8文字のバイト数を返します。</returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int GetUtf8SequenceLength(byte value)
     {
