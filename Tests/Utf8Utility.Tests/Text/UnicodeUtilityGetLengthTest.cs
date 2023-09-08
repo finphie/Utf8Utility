@@ -1,10 +1,12 @@
 ﻿using System.Globalization;
+using System.Text;
 using FluentAssertions;
+using Utf8Utility.Text;
 using Xunit;
 
-namespace Utf8Utility.Tests;
+namespace Utf8Utility.Tests.Text;
 
-public sealed class Utf8ArrayGetLengthTest
+public sealed class UnicodeUtilityGetLengthTest
 {
     [Theory]
     [InlineData("")]
@@ -21,9 +23,9 @@ public sealed class Utf8ArrayGetLengthTest
     [InlineData("a𩸽")]
     public void 文字列_長さを返す(string value)
     {
-        var array = new Utf8Array(value);
+        var utf8 = Encoding.UTF8.GetBytes(value);
         var info = new StringInfo(value);
 
-        array.GetLength().Should().Be(info.LengthInTextElements);
+        UnicodeUtility.GetLength(utf8).Should().Be(info.LengthInTextElements);
     }
 }
