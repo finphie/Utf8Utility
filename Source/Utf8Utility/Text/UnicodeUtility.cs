@@ -105,7 +105,7 @@ public static partial class UnicodeUtility
     /// </summary>
     /// <param name="value">UTF-8文字列</param>
     /// <returns>
-    /// UTF-8配列が空または空白の場合は<see langword="true"/>、
+    /// UTF-8文字列が空または空白の場合は<see langword="true"/>、
     /// それ以外は<see langword="false"/>を返します。
     /// </returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -213,8 +213,8 @@ public static partial class UnicodeUtility
         while (Unsafe.IsAddressLessThan(ref xStart, ref xEnd) && Unsafe.IsAddressLessThan(ref yStart, ref yEnd));
 
         // 到達条件
-        // 1. 比較対象の片方または両方のUTF-8配列が空。
-        // 2. 途中まで文字が一致しており、片方または両方のUTF-8配列の末尾に到達。
+        // 1. 比較対象の片方または両方のUTF-8文字列が空。
+        // 2. 途中まで文字が一致しており、片方または両方のUTF-8文字列の末尾に到達。
         // したがって、バイト数の差を比較すれば良い。
         return x.Length - y.Length;
 
