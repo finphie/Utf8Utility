@@ -184,7 +184,7 @@ public class Utf8GetLengthBenchmark
                     sum = Avx2.Subtract(sum, Avx2.CompareGreaterThan(s.AsSByte(), Vector256.Create<sbyte>(-0x41)).AsByte());
                     start = ref Unsafe.AddByteOffset(ref start, Vector256<byte>.Count);
                 }
-                while (!Unsafe.IsAddressGreaterThan(ref start, ref end2));
+                while (Unsafe.IsAddressLessThan(ref start, ref end2));
 
                 var sumHigh = Avx2.UnpackHigh(sum, Vector256<byte>.Zero);
                 var sumLow = Avx2.UnpackLow(sum, Vector256<byte>.Zero);
