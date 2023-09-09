@@ -39,10 +39,14 @@ public sealed class UnicodeUtilityGetLengthTest
     [Theory]
     [InlineData((255 * 32) - 1)]
     [InlineData(255 * 32)]
+    [InlineData(((255 - 1) * 32) - 1)]
+    [InlineData((255 - 1) * 32)]
+    [InlineData(((255 - 1) * 32) + 1)]
     [InlineData((255 * 32) + 1)]
     [InlineData(((255 + 1) * 32) - 1)]
     [InlineData((255 + 1) * 32)]
     [InlineData(((255 + 1) * 32) + 1)]
+    [InlineData(5000)]
     [InlineData(10000)]
     public void 長い文字列_長さを返す(int length)
     {
