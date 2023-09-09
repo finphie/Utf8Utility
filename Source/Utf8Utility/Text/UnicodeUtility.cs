@@ -1,10 +1,12 @@
 ﻿using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using CommunityToolkit.HighPerformance;
 
 #if NET7_0_OR_GREATER
 using System.Numerics;
+using System.Runtime.Intrinsics;
+using System.Runtime.Intrinsics.X86;
 using System.Text;
+using CommunityToolkit.HighPerformance;
 #endif
 
 namespace Utf8Utility.Text;
@@ -66,34 +68,78 @@ public static partial class UnicodeUtility
     public static int GetLength(ReadOnlySpan<byte> value)
     {
         var count = 0;
-        nuint index = 0;
+
+        ref var start = ref MemoryMarshal.GetReference(value);
+        ref var end = ref Unsafe.AddByteOffset(ref start, (nint)(uint)value.Length);
 
 #if NET7_0_OR_GREATER
-        const ulong Mask = 0x8080808080808080 >> 7;
-        var length = value.Length - sizeof(ulong);
-
-        // 8バイト単位でカウントする。
-        while ((int)index <= length)
+        // 下記のURLを参考に最適化
+        // https://qiita.com/saka1_p/items/ff49d981cfd56f3588cc
+        // https://qiita.com/umezawatakeshi/items/ed23935788756c800b86
+        if (value.Length >= Vector256<byte>.Count)
         {
-            var number = Unsafe.As<byte, ulong>(ref Unsafe.AddByteOffset(ref value.DangerousGetReference(), index));
+            end = ref Unsafe.SubtractByteOffset(ref end, Vector256<byte>.Count);
 
-            var x = ((number >> 6) | (~number >> 7)) & Mask;
-            count += BitOperations.PopCount(x);
-            index += sizeof(ulong);
+            do
+            {
+                var sum = Vector256<byte>.Zero;
+                ref var end2 = ref Unsafe.AddByteOffset(ref start, Math.Min(255 * 32, Unsafe.ByteOffset(ref start, ref end)));
+
+                do
+                {
+                    var s = Vector256.LoadUnsafe(ref start);
+                    sum = Avx2.Subtract(sum, Avx2.CompareGreaterThan(s.AsSByte(), Vector256.Create<sbyte>(-0x41)).AsByte());
+                    start = ref Unsafe.AddByteOffset(ref start, Vector256<byte>.Count);
+                }
+                while (!Unsafe.IsAddressGreaterThan(ref start, ref end2));
+
+                var sumHigh = Avx2.UnpackHigh(sum, Vector256<byte>.Zero);
+                var sumLow = Avx2.UnpackLow(sum, Vector256<byte>.Zero);
+                var sum16x16 = Avx2.Add(sumHigh.AsInt16(), sumLow.AsInt16());
+                var sum16x8 = Avx2.Add(sum16x16, Avx2.Permute2x128(sum16x16, sum16x16, 1));
+
+                const byte Control = (0 << 6) | (0 << 4) | (2 << 2) | 3;
+                var sum16x4 = Avx2.Add(sum16x8, Avx2.Shuffle(sum16x8.AsInt32(), Control).AsInt16());
+
+                var temp = sum16x4.AsInt64().GetElement(0);
+                count += (int)((temp >> 0) & 0xffff);
+                count += (int)((temp >> 16) & 0xffff);
+                count += (int)((temp >> 32) & 0xffff);
+                count += (int)((temp >> 48) & 0xffff);
+            }
+            while (!Unsafe.IsAddressGreaterThan(ref start, ref end));
+
+            end = ref Unsafe.AddByteOffset(ref end, Vector256<byte>.Count);
+        }
+
+        if (Unsafe.ByteOffset(ref start, ref end) >= sizeof(ulong))
+        {
+            end = ref Unsafe.SubtractByteOffset(ref end, sizeof(ulong));
+
+            do
+            {
+                var number = Unsafe.ReadUnaligned<ulong>(ref start);
+
+                const ulong Mask = 0x8080808080808080 >> 7;
+                var x = ((number >> 6) | (~number >> 7)) & Mask;
+
+                count += BitOperations.PopCount(x);
+                start = ref Unsafe.AddByteOffset(ref start, sizeof(ulong));
+            }
+            while (!Unsafe.IsAddressGreaterThan(ref start, ref end));
+
+            end = ref Unsafe.AddByteOffset(ref end, sizeof(ulong));
         }
 #endif
 
-        // 1バイト単位でカウントする。
-        while ((int)index < value.Length)
+        while (Unsafe.IsAddressLessThan(ref start, ref end))
         {
-            var number = Unsafe.AddByteOffset(ref value.DangerousGetReference(), index);
-
-            if ((number & 0xC0) != 0x80)
+            if ((start & 0xC0) != 0x80)
             {
                 count++;
             }
 
-            index++;
+            start = ref Unsafe.AddByteOffset(ref start, 1);
         }
 
         return count;
