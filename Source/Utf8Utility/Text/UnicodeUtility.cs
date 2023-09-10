@@ -1,5 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Diagnostics;
 
 #if NET7_0_OR_GREATER
 using System.Numerics;
@@ -78,20 +79,20 @@ public static partial class UnicodeUtility
         // https://qiita.com/umezawatakeshi/items/ed23935788756c800b86
         if (value.Length >= Vector256<byte>.Count)
         {
-            end = ref Unsafe.SubtractByteOffset(ref end, Vector256<byte>.Count);
+            nuint i = 0;
+            var length32 = (nuint)(value.Length & -Vector256<byte>.Count);
 
             do
             {
                 var sum = Vector256<byte>.Zero;
-                ref var end2 = ref Unsafe.AddByteOffset(ref start, Math.Min(255 * 32, Unsafe.ByteOffset(ref start, ref end)));
+                var limit = Math.Min((nuint)(255 * Vector256<byte>.Count), length32 - i);
+                nuint j = 0;
 
-                do
+                for (; j < limit; j += (nuint)Vector256<byte>.Count)
                 {
-                    var s = Vector256.LoadUnsafe(ref start);
-                    sum = Avx2.Subtract(sum, Avx2.CompareGreaterThan(s.AsSByte(), Vector256.Create<sbyte>(-0x41)).AsByte());
-                    start = ref Unsafe.AddByteOffset(ref start, Vector256<byte>.Count);
+                    var vector = Vector256.LoadUnsafe(ref start, j);
+                    sum = Avx2.Subtract(sum, Avx2.CompareGreaterThan(vector.AsSByte(), Vector256.Create<sbyte>(-0x41)).AsByte());
                 }
-                while (Unsafe.IsAddressLessThan(ref start, ref end2));
 
                 var sumHigh = Avx2.UnpackHigh(sum, Vector256<byte>.Zero);
                 var sumLow = Avx2.UnpackLow(sum, Vector256<byte>.Zero);
@@ -102,14 +103,16 @@ public static partial class UnicodeUtility
                 var sum16x4 = Avx2.Add(sum16x8, Avx2.Shuffle(sum16x8.AsInt32(), Control).AsInt16());
 
                 var temp = sum16x4.AsInt64().GetElement(0);
-                count += (int)((temp >> 0) & 0xffff);
-                count += (int)((temp >> 16) & 0xffff);
-                count += (int)((temp >> 32) & 0xffff);
-                count += (int)((temp >> 48) & 0xffff);
-            }
-            while (!Unsafe.IsAddressGreaterThan(ref start, ref end));
+                count += (int)((temp >> 0) & 0xFFFF);
+                count += (int)((temp >> 16) & 0xFFFF);
+                count += (int)((temp >> 32) & 0xFFFF);
+                count += (int)((temp >> 48) & 0xFFFF);
 
-            end = ref Unsafe.AddByteOffset(ref end, Vector256<byte>.Count);
+                i += j;
+            }
+            while (i < length32);
+
+            start = ref Unsafe.AddByteOffset(ref start, i);
         }
 
         if (Unsafe.ByteOffset(ref start, ref end) >= sizeof(ulong))
