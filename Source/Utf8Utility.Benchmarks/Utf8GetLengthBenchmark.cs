@@ -131,10 +131,10 @@ public class Utf8GetLengthBenchmark
                 const ulong Mask = 0x8080808080808080 >> 7;
                 var x = ((number >> 6) | (~number >> 7)) & Mask;
 
-                const ulong C1 = 0x_55555555_55555555ul;
-                const ulong C2 = 0x_33333333_33333333ul;
-                const ulong C3 = 0x_0F0F0F0F_0F0F0F0Ful;
-                const ulong C4 = 0x_01010101_01010101ul;
+                const ulong C1 = 0x_55555555_55555555;
+                const ulong C2 = 0x_33333333_33333333;
+                const ulong C3 = 0x_0F0F0F0F_0F0F0F0F;
+                const ulong C4 = 0x_01010101_01010101;
 
                 x -= (x >> 1) & C1;
                 x = (x & C2) + ((x >> 2) & C2);
