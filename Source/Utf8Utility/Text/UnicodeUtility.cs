@@ -1,9 +1,8 @@
 ﻿using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Diagnostics;
+using Utf8Utility.Helpers;
 
 #if NET7_0_OR_GREATER
-using System.Numerics;
 using System.Runtime.Intrinsics;
 using System.Runtime.Intrinsics.X86;
 using System.Text;
@@ -77,7 +76,7 @@ public static partial class UnicodeUtility
         // 下記のURLを参考に最適化
         // https://qiita.com/saka1_p/items/ff49d981cfd56f3588cc
         // https://qiita.com/umezawatakeshi/items/ed23935788756c800b86
-        if (value.Length >= Vector256<byte>.Count)
+        if (Avx2.IsSupported && value.Length >= Vector256<byte>.Count)
         {
             nuint i = 0;
             var length32 = (nuint)(value.Length & -Vector256<byte>.Count);
@@ -114,8 +113,13 @@ public static partial class UnicodeUtility
 
             start = ref Unsafe.AddByteOffset(ref start, i);
         }
+#endif
 
+#if NET7_0_OR_GREATER
         if (Unsafe.ByteOffset(ref start, ref end) >= sizeof(ulong))
+#else
+        if ((nint)Unsafe.ByteOffset(ref start, ref end) >= sizeof(ulong))
+#endif
         {
             end = ref Unsafe.SubtractByteOffset(ref end, sizeof(ulong));
 
@@ -133,7 +137,6 @@ public static partial class UnicodeUtility
 
             end = ref Unsafe.AddByteOffset(ref end, sizeof(ulong));
         }
-#endif
 
         while (Unsafe.IsAddressLessThan(ref start, ref end))
         {
