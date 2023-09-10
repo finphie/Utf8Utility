@@ -249,12 +249,13 @@ public class Utf8GetLengthBenchmark
         {
             end = ref Unsafe.SubtractByteOffset(ref end, Vector256<byte>.Count);
             var i = 0;
+            var l = _value.Length / 32 * 32;
 
             do
             {
                 var sum = Vector256<byte>.Zero;
                 //ref var end2 = ref Unsafe.AddByteOffset(ref start, Math.Min(255 * 32, Unsafe.ByteOffset(ref start, ref end)));
-                var limit = Math.Min(255 * 32, _value.Length / 32 * 32 - i);
+                var limit = Math.Min(255 * 32, l - i);
                 var j = 0;
 
                 for (; j < limit; j += 32)
@@ -366,6 +367,86 @@ public class Utf8GetLengthBenchmark
             }
 
             start = ref Unsafe.AddByteOffset(ref start, (nint)(uint)i);
+            end = ref Unsafe.AddByteOffset(ref end, Vector256<byte>.Count);
+        }
+
+        if (Unsafe.ByteOffset(ref start, ref end) >= sizeof(ulong))
+        {
+            end = ref Unsafe.SubtractByteOffset(ref end, sizeof(ulong));
+
+            do
+            {
+                var number = Unsafe.ReadUnaligned<ulong>(ref start);
+
+                const ulong Mask = 0x8080808080808080 >> 7;
+                var x = ((number >> 6) | (~number >> 7)) & Mask;
+
+                count += BitOperations.PopCount(x);
+                start = ref Unsafe.AddByteOffset(ref start, sizeof(ulong));
+            }
+            while (!Unsafe.IsAddressGreaterThan(ref start, ref end));
+
+            end = ref Unsafe.AddByteOffset(ref end, sizeof(ulong));
+        }
+
+        while (Unsafe.IsAddressLessThan(ref start, ref end))
+        {
+            if ((start & 0xC0) != 0x80)
+            {
+                count++;
+            }
+
+            start = ref Unsafe.AddByteOffset(ref start, 1);
+        }
+
+        return count;
+    }
+
+    [Benchmark()]
+    public int GetLength_Avx2_4()
+    {
+        var count = 0;
+
+        ref var start = ref MemoryMarshal.GetArrayDataReference(_value);
+        ref var end = ref Unsafe.AddByteOffset(ref start, (nint)(uint)_value.Length);
+
+        if (_value.Length >= Vector256<byte>.Count)
+        {
+            end = ref Unsafe.SubtractByteOffset(ref end, Vector256<byte>.Count);
+
+            do
+            {
+                var sum = Vector256<byte>.Zero;
+                var end2 = Math.Min(255 * 32, Unsafe.ByteOffset(ref start, ref end));
+                var i = 0;
+
+                do
+                {
+                    var s = Vector256.LoadUnsafe(ref start, (nuint)i);
+                    sum = Avx2.Subtract(sum, Avx2.CompareGreaterThan(s.AsSByte(), Vector256.Create<sbyte>(-0x41)).AsByte());
+                    i += 32;
+                }
+                while (i < end2);
+
+                var sumHigh = Avx2.UnpackHigh(sum, Vector256<byte>.Zero);
+                var sumLow = Avx2.UnpackLow(sum, Vector256<byte>.Zero);
+                var sum16x16 = Avx2.Add(sumHigh.AsInt16(), sumLow.AsInt16());
+                var sum16x8 = Avx2.Add(sum16x16, Avx2.Permute2x128(sum16x16, sum16x16, 1));
+
+                const byte Control = (0 << 6) | (0 << 4) | (2 << 2) | 3;
+                var sum16x4 = Avx2.Add(sum16x8, Avx2.Shuffle(sum16x8.AsInt32(), Control).AsInt16());
+
+                var temp = sum16x4.AsInt64().GetElement(0);
+                count += (int)((temp >> 0) & 0xffff);
+                count += (int)((temp >> 16) & 0xffff);
+                count += (int)((temp >> 32) & 0xffff);
+                count += (int)((temp >> 48) & 0xffff);
+
+                start = ref Unsafe.AddByteOffset(ref start, (nint)(uint)i);
+            }
+            while (!Unsafe.IsAddressGreaterThan(ref start, ref end));
+
+
             end = ref Unsafe.AddByteOffset(ref end, Vector256<byte>.Count);
         }
 
