@@ -256,11 +256,13 @@ public class Utf8GetLengthBenchmark
                 var limit = Math.Min((nuint)(255 * Vector256<byte>.Count), length32 - i);
                 nuint j = 0;
 
-                for (; j < limit; j += (nuint)Vector256<byte>.Count)
+                do
                 {
                     var vector = Vector256.LoadUnsafe(ref start, j);
                     sum = Avx2.Subtract(sum, Avx2.CompareGreaterThan(vector.AsSByte(), Vector256.Create<sbyte>(-0x41)).AsByte());
+                    j += (nuint)Vector256<byte>.Count;
                 }
+                while (j < limit);
 
                 var sumHigh = Avx2.UnpackHigh(sum, Vector256<byte>.Zero);
                 var sumLow = Avx2.UnpackLow(sum, Vector256<byte>.Zero);
