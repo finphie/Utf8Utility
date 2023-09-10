@@ -33,7 +33,7 @@ public class Utf8GetLengthBenchmark
         _value = Encoding.UTF8.GetBytes(builder.ToString());
     }
 
-    [Benchmark]
+   // [Benchmark]
     public int GetLength_Table()
     {
         var count = 0;
@@ -52,7 +52,7 @@ public class Utf8GetLengthBenchmark
         return count;
     }
 
-    [Benchmark]
+   // [Benchmark]
     public int GetLength_Byte()
     {
         var count = 0;
@@ -73,7 +73,7 @@ public class Utf8GetLengthBenchmark
         return count;
     }
 
-    [Benchmark]
+    //[Benchmark]
     public int GetLength_PopCount()
     {
         var count = 0;
@@ -112,7 +112,7 @@ public class Utf8GetLengthBenchmark
         return count;
     }
 
-    [Benchmark]
+    //[Benchmark]
     public int GetLength_PopCount_SoftwareFallback()
     {
         var count = 0;
@@ -161,7 +161,7 @@ public class Utf8GetLengthBenchmark
         return count;
     }
 
-    [Benchmark(Baseline = true)]
+    //[Benchmark(Baseline = true)]
     public int GetLength_Avx2()
     {
         var count = 0;
@@ -261,6 +261,86 @@ public class Utf8GetLengthBenchmark
                     var vector = Vector256.LoadUnsafe(ref start, j);
                     sum = Avx2.Subtract(sum, Avx2.CompareGreaterThan(vector.AsSByte(), Vector256.Create<sbyte>(-0x41)).AsByte());
                 }
+
+                var sumHigh = Avx2.UnpackHigh(sum, Vector256<byte>.Zero);
+                var sumLow = Avx2.UnpackLow(sum, Vector256<byte>.Zero);
+                var sum16x16 = Avx2.Add(sumHigh.AsInt16(), sumLow.AsInt16());
+                var sum16x8 = Avx2.Add(sum16x16, Avx2.Permute2x128(sum16x16, sum16x16, 1));
+
+                const byte Control = (0 << 6) | (0 << 4) | (2 << 2) | 3;
+                var sum16x4 = Avx2.Add(sum16x8, Avx2.Shuffle(sum16x8.AsInt32(), Control).AsInt16());
+
+                var temp = sum16x4.AsInt64().GetElement(0);
+                count += (int)((temp >> 0) & 0xFFFF);
+                count += (int)((temp >> 16) & 0xFFFF);
+                count += (int)((temp >> 32) & 0xFFFF);
+                count += (int)((temp >> 48) & 0xFFFF);
+
+                i += j;
+            }
+            while (i < length32);
+
+            start = ref Unsafe.AddByteOffset(ref start, i);
+        }
+
+        if (Unsafe.ByteOffset(ref start, ref end) >= sizeof(ulong))
+        {
+            end = ref Unsafe.SubtractByteOffset(ref end, sizeof(ulong));
+
+            do
+            {
+                var number = Unsafe.ReadUnaligned<ulong>(ref start);
+
+                const ulong Mask = 0x8080808080808080 >> 7;
+                var x = ((number >> 6) | (~number >> 7)) & Mask;
+
+                count += BitOperations.PopCount(x);
+                start = ref Unsafe.AddByteOffset(ref start, sizeof(ulong));
+            }
+            while (!Unsafe.IsAddressGreaterThan(ref start, ref end));
+
+            end = ref Unsafe.AddByteOffset(ref end, sizeof(ulong));
+        }
+
+        while (Unsafe.IsAddressLessThan(ref start, ref end))
+        {
+            if ((start & 0xC0) != 0x80)
+            {
+                count++;
+            }
+
+            start = ref Unsafe.AddByteOffset(ref start, 1);
+        }
+
+        return count;
+    }
+
+    [Benchmark]
+    public int GetLength_Avx2_3()
+    {
+        var count = 0;
+
+        ref var start = ref MemoryMarshal.GetArrayDataReference(_value);
+        ref var end = ref Unsafe.AddByteOffset(ref start, (nint)(uint)_value.Length);
+
+        if (_value.Length >= Vector256<byte>.Count)
+        {
+            nuint i = 0;
+            var length32 = (nuint)(_value.Length & -Vector256<byte>.Count);
+
+            do
+            {
+                var sum = Vector256<byte>.Zero;
+                var limit = Math.Min((nuint)(255 * Vector256<byte>.Count), length32 - i);
+                nuint j = 0;
+
+                do
+                {
+                    var vector = Vector256.LoadUnsafe(ref start, j);
+                    sum = Avx2.Subtract(sum, Avx2.CompareGreaterThan(vector.AsSByte(), Vector256.Create<sbyte>(-0x41)).AsByte());
+                    j += (nuint)Vector256<byte>.Count;
+                }
+                while (j < limit);
 
                 var sumHigh = Avx2.UnpackHigh(sum, Vector256<byte>.Zero);
                 var sumLow = Avx2.UnpackLow(sum, Vector256<byte>.Zero);
