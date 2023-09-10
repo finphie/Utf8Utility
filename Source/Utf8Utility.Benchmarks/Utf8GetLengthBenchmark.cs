@@ -412,12 +412,13 @@ public class Utf8GetLengthBenchmark
 
         if (_value.Length >= Vector256<byte>.Count)
         {
+            ref var e = ref Unsafe.AddByteOffset(ref start, (nint)(uint)_value.Length);
             end = ref Unsafe.SubtractByteOffset(ref end, Vector256<byte>.Count);
 
             do
             {
                 var sum = Vector256<byte>.Zero;
-                var end2 = Math.Min(255 * 32, Unsafe.ByteOffset(ref start, ref end));
+                var end2 = Math.Min(255 * 32, Unsafe.ByteOffset(ref start, ref e) / 32 * 32);
                 var i = 0;
 
                 do
