@@ -169,11 +169,13 @@ public static partial class UnicodeUtility
         // https://github.com/dotnet/runtimelab/blob/84564a0e033114a1b2316c7bfb9953e4e3255cd3/src/libraries/System.Private.CoreLib/src/System/Text/Utf8Span.cs#L124
         // https://github.com/dotnet/runtimelab/blob/84564a0e033114a1b2316c7bfb9953e4e3255cd3/src/libraries/System.Private.CoreLib/src/System/Text/Unicode/Utf8Utility.WhiteSpace.CoreLib.cs#L11-L68
         nuint index = 0;
-        var length = value.Length;
+        var length = (nuint)value.Length;
 
-        while ((int)index < length)
+        ref var start = ref value.DangerousGetReference();
+
+        while (index < length)
         {
-            ref var valueStart = ref Unsafe.AddByteOffset(ref value.DangerousGetReference(), index);
+            ref var valueStart = ref Unsafe.AddByteOffset(ref start, index);
 
             // 文字コードが[0x21..0x7F]の範囲にあるか。
             if ((sbyte)valueStart > (sbyte)' ')
@@ -202,7 +204,7 @@ public static partial class UnicodeUtility
             }
             else
             {
-                var span = MemoryMarshal.CreateReadOnlySpan(ref valueStart, length - (int)index);
+                var span = MemoryMarshal.CreateReadOnlySpan(ref valueStart, (int)(length - index));
                 Rune.DecodeFromUtf8(span, out var rune, out var bytesConsumed);
 
                 if (Rune.IsWhiteSpace(rune))
@@ -216,7 +218,7 @@ public static partial class UnicodeUtility
             break;
         }
 
-        return (int)index == length;
+        return index == length;
     }
 
     /// <summary>

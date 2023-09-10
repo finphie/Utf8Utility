@@ -87,7 +87,7 @@ partial class UnicodeUtility
                 start = ref Unsafe.AddByteOffset(ref start, sizeof(ushort));
             }
 
-            if (Unsafe.ByteOffset(ref start, ref end) >= sizeof(byte))
+            if (Unsafe.IsAddressLessThan(ref start, ref end))
             {
                 mask3 |= start;
             }
@@ -142,7 +142,7 @@ partial class UnicodeUtility
                 start = ref Unsafe.AddByteOffset(ref start, sizeof(ushort));
             }
 
-            if (Unsafe.ByteOffset(ref start, ref end) >= sizeof(byte))
+            if (Unsafe.IsAddressLessThan(ref start, ref end))
             {
                 mask3 |= start;
             }
@@ -207,7 +207,7 @@ partial class UnicodeUtility
                 start = ref Unsafe.AddByteOffset(ref start, sizeof(ushort));
             }
 
-            if ((int)Unsafe.ByteOffset(ref start, ref end) >= sizeof(byte))
+            if (Unsafe.IsAddressLessThan(ref start, ref end))
             {
                 mask1 |= start;
             }
