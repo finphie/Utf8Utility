@@ -355,7 +355,7 @@ public readonly partial struct Utf8Array : IEquatable<Utf8Array>,
     internal static Utf8Array UnsafeCreate(byte[] bytes)
     {
         Utf8Array array = default;
-        Unsafe.AsRef(array._value) = bytes;
+        Unsafe.AsRef(in array._value) = bytes;
 
         return array;
     }
@@ -366,6 +366,6 @@ public readonly partial struct Utf8Array : IEquatable<Utf8Array>,
 
     static class EmptyArray
     {
-        public static readonly Utf8Array Value = UnsafeCreate(Array.Empty<byte>());
+        public static readonly Utf8Array Value = UnsafeCreate([]);
     }
 }
