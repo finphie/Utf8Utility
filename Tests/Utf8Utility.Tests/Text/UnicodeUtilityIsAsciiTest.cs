@@ -33,5 +33,5 @@ public sealed class UnicodeUtilityIsAsciiTest
 
     [Fact]
     public void 空文字_falseを返す()
-        => UnicodeUtility.IsAscii(ReadOnlySpan<byte>.Empty).Should().BeFalse();
+        => UnicodeUtility.IsAscii([]).Should().BeFalse();
 }
