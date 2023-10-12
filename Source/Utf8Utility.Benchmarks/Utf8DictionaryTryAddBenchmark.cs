@@ -1,5 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using BenchmarkDotNet.Attributes;
+﻿using BenchmarkDotNet.Attributes;
 using Utf8Utility.Benchmarks.Helpers;
 
 namespace Utf8Utility.Benchmarks;
@@ -9,20 +8,19 @@ public class Utf8DictionaryTryAddBenchmark
 {
     const int Length = 10;
 
+    Utf8Array[] _keys = null!;
+
     [Params(1, 10, 100, 1000)]
     public int Count { get; set; }
-
-    [NotNull]
-    public Utf8Array[]? Keys { get; set; }
 
     [GlobalSetup]
     public void Setup()
     {
-        Keys = new Utf8Array[Count];
+        _keys = new Utf8Array[Count];
 
-        for (var i = 0; i < Keys.Length; i++)
+        for (var i = 0; i < _keys.Length; i++)
         {
-            Keys[i] = new Utf8Array(StringHelper.GetAsciiRandomString(Length));
+            _keys[i] = new Utf8Array(StringHelper.GetAsciiRandomString(Length));
         }
     }
 
@@ -31,7 +29,7 @@ public class Utf8DictionaryTryAddBenchmark
     {
         var dict = new Dictionary<Utf8Array, int>();
 
-        foreach (var key in Keys)
+        foreach (var key in _keys)
         {
             dict.TryAdd(key, 1);
         }
@@ -44,7 +42,7 @@ public class Utf8DictionaryTryAddBenchmark
     {
         var utf8Dict = new Utf8ArrayDictionary<int>();
 
-        foreach (var key in Keys)
+        foreach (var key in _keys)
         {
             utf8Dict.TryAdd(key, 1);
         }
@@ -57,7 +55,7 @@ public class Utf8DictionaryTryAddBenchmark
     {
         var dict = new Dictionary<Utf8Array, int>(Count);
 
-        foreach (var key in Keys)
+        foreach (var key in _keys)
         {
             dict.TryAdd(key, 1);
         }
@@ -70,7 +68,7 @@ public class Utf8DictionaryTryAddBenchmark
     {
         var utf8Dict = new Utf8ArrayDictionary<int>(Count);
 
-        foreach (var key in Keys)
+        foreach (var key in _keys)
         {
             utf8Dict.TryAdd(key, 1);
         }

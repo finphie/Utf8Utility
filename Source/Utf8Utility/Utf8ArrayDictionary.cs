@@ -271,6 +271,7 @@ public sealed class Utf8ArrayDictionary<TValue> : IUtf8ArrayDictionary<TValue>, 
         return entries;
     }
 
+    [SuppressMessage("Performance", "CA1815:equals および operator equals を値型でオーバーライドします", Justification = "不要なため。")]
     [DebuggerDisplay("({Key}, {Value})->{Next}")]
     struct Entry
     {

@@ -9,12 +9,8 @@ namespace Utf8Utility.Tests.Helpers;
 /// <summary>
 /// <see cref="string"/>関連のヘルパークラス。
 /// </summary>
-sealed class StringHelper
+static class StringHelper
 {
-    const int Seed = 20221106;
-
-    static readonly Random Random = new(Seed);
-
     /// <summary>
     /// ランダムなAscii文字列を取得します。
     /// </summary>
@@ -38,7 +34,9 @@ sealed class StringHelper
 
         for (var i = 0; i < buffer.Length; i++)
         {
-            buffer[i] = (byte)Random.Next(0, 0x7F);
+#pragma warning disable CA5394 // 安全でないランダム度を使用しない
+            buffer[i] = (byte)Random.Shared.Next(0, 0x7F);
+#pragma warning restore CA5394 // 安全でないランダム度を使用しない
         }
 
         return Encoding.ASCII.GetString(buffer);
