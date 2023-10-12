@@ -25,7 +25,7 @@ public sealed class Utf8ArrayCompareTest
         var x1 = new Utf8Array(value);
         var x2 = new Utf8Array(value);
 
-        Utf8Array.Compare(x1, x2).Should().Be(0);
+        Utf8Array.Compare(x1, x2, StringComparison.CurrentCulture).Should().Be(0);
         Utf8Array.Compare(x1, x2, StringComparison.InvariantCulture).Should().Be(0);
         x1.CompareTo(x2).Should().Be(0);
     }
