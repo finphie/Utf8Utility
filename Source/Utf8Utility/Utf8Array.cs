@@ -128,12 +128,14 @@ public readonly partial struct Utf8Array : IEquatable<Utf8Array>,
     /// <see cref="Utf8Array"/>構造体の新しいインスタンスを取得します。
     /// </summary>
     /// <param name="bytes">UTF-8でエンコードされた<see cref="byte"/>配列</param>
+    [SuppressMessage("Usage", "CA2225:演算子オーバーロードには名前付けされた代替が存在します", Justification = "不要なため。")]
     public static explicit operator Utf8Array(byte[] bytes) => new(bytes);
 
     /// <summary>
     /// <see cref="Utf8Array"/>構造体の新しいインスタンスを取得します。
     /// </summary>
     /// <param name="s">文字列</param>
+    [SuppressMessage("Usage", "CA2225:演算子オーバーロードには名前付けされた代替が存在します", Justification = "不要なため。")]
     public static explicit operator Utf8Array(string s) => new(s);
 
     /// <summary>
@@ -199,7 +201,7 @@ public readonly partial struct Utf8Array : IEquatable<Utf8Array>,
 
     /// <inheritdoc/>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public int CompareTo(Utf8Array other) => Compare(this, other);
+    public int CompareTo(Utf8Array other) => Compare(this, other, StringComparison.CurrentCulture);
 #endif
 
     /// <summary>
