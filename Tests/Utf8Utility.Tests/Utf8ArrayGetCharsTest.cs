@@ -19,7 +19,7 @@ public sealed class Utf8ArrayGetCharsTest
     }
 
     [Fact]
-    public void 出力先のサイズが不足_falseを返す()
+    public void 出力先のサイズが不足_ArgumentException()
     {
         var array = new Utf8Array("abc");
         array.Invoking(static x =>
