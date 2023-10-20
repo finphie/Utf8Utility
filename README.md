@@ -140,3 +140,4 @@ MIT
 ### その他
 
 - [Microsoft.SourceLink.GitHub](https://github.com/dotnet/sourcelink)
+- [PolySharp](https://github.com/Sergio0694/PolySharp)
