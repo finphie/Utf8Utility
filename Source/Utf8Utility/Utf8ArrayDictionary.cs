@@ -17,7 +17,7 @@ namespace Utf8Utility;
 /// <see cref="Utf8Array"/>をキーにしたDictionaryです。
 /// </summary>
 /// <remarks>
-/// Microsoft.Collections.Extensions.DictionarySlimを参考に実装しました。
+/// <para>Microsoft.Collections.Extensions.DictionarySlimを参考に実装しました。</para>
 /// </remarks>
 /// <typeparam name="TValue">Dictionary内部の値の型</typeparam>
 [DebuggerDisplay($"Count = {{{nameof(Count)}}}")]
