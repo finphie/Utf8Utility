@@ -24,8 +24,8 @@ public static partial class UnicodeUtility
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int GetUtf8SequenceLength(byte value)
     {
-        ReadOnlySpan<byte> trailingBytesForUTF8 = new byte[]
-        {
+        ReadOnlySpan<byte> trailingBytesForUTF8 =
+        [
             1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
             1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
             1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
@@ -42,7 +42,7 @@ public static partial class UnicodeUtility
             2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
             3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
             4, 4, 4, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-        };
+        ];
 
         ref var table = ref MemoryMarshal.GetReference(trailingBytesForUTF8);
         return Unsafe.Add(ref table, (nint)value);

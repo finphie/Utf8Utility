@@ -9,9 +9,7 @@ public class Utf8DictionaryTryGetValueBenchmark
 {
     const int Length = 10;
 
-#pragma warning disable SA1010 // Opening square brackets should be spaced correctly
     readonly Dictionary<Utf8Array, int> _dict = [];
-#pragma warning restore SA1010 // Opening square brackets should be spaced correctly
     readonly Utf8ArrayDictionary<int> _utf8Dict = new();
 
     FrozenDictionary<Utf8Array, int> _frozenDictionary = null!;
