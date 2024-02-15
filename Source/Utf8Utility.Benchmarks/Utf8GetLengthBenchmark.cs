@@ -11,7 +11,7 @@ namespace Utf8Utility.Benchmarks;
 
 public class Utf8GetLengthBenchmark
 {
-    byte[] _value = null!;
+    byte[] _value;
 
     [Params("a")]
     public string? Value { get; set; }

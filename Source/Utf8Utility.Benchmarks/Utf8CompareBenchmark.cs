@@ -8,8 +8,8 @@ namespace Utf8Utility.Benchmarks;
 
 public class Utf8CompareBenchmark
 {
-    byte[] _value1 = null!;
-    byte[] _value2 = null!;
+    byte[] _value1;
+    byte[] _value2;
 
     [Params(1000)]
     public int Length { get; set; }
