@@ -10,7 +10,7 @@ namespace Utf8Utility.Benchmarks;
 
 public class Utf8IsAsciiBenchmark
 {
-    byte[] _value = null!;
+    byte[] _value;
 
     [Params(16, 319, 10000)]
     public int Length { get; set; }

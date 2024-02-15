@@ -7,7 +7,7 @@ public class Utf8DictionaryTryAddBenchmark
 {
     const int Length = 10;
 
-    Utf8Array[] _keys = null!;
+    Utf8Array[] _keys;
 
     [Params(1, 10, 100, 1000)]
     public int Count { get; set; }

@@ -11,7 +11,7 @@ public class Utf8DictionaryTryGetValueBenchmark
     readonly Dictionary<Utf8Array, int> _dict = [];
     readonly Utf8ArrayDictionary<int> _utf8Dict = new();
 
-    FrozenDictionary<Utf8Array, int> _frozenDictionary = null!;
+    FrozenDictionary<Utf8Array, int> _frozenDictionary;
 
     [Params(1, 10, 100, 1000)]
     public int Count { get; set; }
