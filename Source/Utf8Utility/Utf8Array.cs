@@ -31,7 +31,7 @@ public readonly partial struct Utf8Array : IEquatable<Utf8Array>,
     /// <summary>
     /// 引数なしコンストラクターは使用できません。引数ありのコンストラクターを使用してください。
     /// </summary>
-    /// <exception cref="NotSupportedException">引数なしコンストラクターは使用できません。</exception>
+    /// <exception cref="NotSupportedException">このコンストラクターは使用できません。</exception>
     [Obsolete("Do not use default constructor.", true)]
     [EditorBrowsable(EditorBrowsableState.Never)]
     public Utf8Array() => throw new NotSupportedException();
