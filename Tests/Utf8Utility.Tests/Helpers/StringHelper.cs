@@ -34,9 +34,7 @@ static class StringHelper
 
         for (var i = 0; i < buffer.Length; i++)
         {
-#pragma warning disable CA5394 // 安全でないランダム度を使用しない
             buffer[i] = (byte)Random.Shared.Next(0, 0x7F);
-#pragma warning restore CA5394 // 安全でないランダム度を使用しない
         }
 
         return Encoding.ASCII.GetString(buffer);
