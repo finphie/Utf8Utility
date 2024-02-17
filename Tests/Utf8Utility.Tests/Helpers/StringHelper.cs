@@ -16,7 +16,7 @@ static class StringHelper
     /// </summary>
     /// <param name="length">文字数</param>
     /// <returns>ランダムなAscii文字列を返します。</returns>
-    /// <exception cref="ArgumentOutOfRangeException">文字数に0未満が指定された場合、この例外をスローします。</exception>
+    /// <exception cref="ArgumentOutOfRangeException">文字数が0未満です。</exception>
     public static string GetAsciiRandomString(int length)
     {
 #if NET8_0_OR_GREATER
@@ -45,7 +45,7 @@ static class StringHelper
     /// </summary>
     /// <param name="length">文字数</param>
     /// <returns>ランダムなAsciiバイト列を返します。</returns>
-    /// <exception cref="ArgumentOutOfRangeException">バイト数に0未満が指定された場合、この例外をスローします。</exception>
+    /// <exception cref="ArgumentOutOfRangeException">バイト数が0未満です。</exception>
     public static byte[] GetAsciiRandomBytes(int length)
     {
 #if NET8_0_OR_GREATER

@@ -28,17 +28,19 @@ public readonly partial struct Utf8Array : IEquatable<Utf8Array>,
 {
     readonly byte[] _value;
 
+    /// <summary>
+    /// 引数なしコンストラクターは使用できません。引数ありのコンストラクターを使用してください。
+    /// </summary>
+    /// <exception cref="NotSupportedException">引数なしコンストラクターは使用できません。</exception>
     [Obsolete("Do not use default constructor.", true)]
     [EditorBrowsable(EditorBrowsableState.Never)]
-#pragma warning disable
     public Utf8Array() => throw new NotSupportedException();
-#pragma warning restore
 
     /// <summary>
     /// <see cref="Utf8Array"/>構造体の新しいインスタンスを取得します。
     /// </summary>
     /// <param name="bytes">UTF-8でエンコードされた<see cref="byte"/>配列</param>
-    /// <exception cref="ArgumentNullException">引数がnullの場合、この例外をスローします。</exception>
+    /// <exception cref="ArgumentNullException">引数がnullです。</exception>
     public Utf8Array(byte[] bytes)
     {
 #if NET7_0_OR_GREATER
@@ -54,7 +56,7 @@ public readonly partial struct Utf8Array : IEquatable<Utf8Array>,
     /// <see cref="Utf8Array"/>構造体の新しいインスタンスを取得します。
     /// </summary>
     /// <param name="s">文字列</param>
-    /// <exception cref="ArgumentNullException">引数がnullの場合、この例外をスローします。</exception>
+    /// <exception cref="ArgumentNullException">引数がnullです。</exception>
     public Utf8Array(string s)
     {
 #if NET7_0_OR_GREATER
@@ -223,7 +225,7 @@ public readonly partial struct Utf8Array : IEquatable<Utf8Array>,
     /// UTF-8配列を指定された出力先にコピーします。
     /// </summary>
     /// <param name="destination">出力先</param>
-    /// <exception cref="ArgumentException">コピー先のサイズが不足している場合、この例外をスローします。</exception>
+    /// <exception cref="ArgumentException">コピー先のサイズが不足しています。</exception>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void CopyTo(Span<byte> destination)
     {
@@ -313,7 +315,7 @@ public readonly partial struct Utf8Array : IEquatable<Utf8Array>,
     /// </summary>
     /// <param name="destination">出力先</param>
     /// <returns>UTF-16配列の長さを返します。</returns>
-    /// <exception cref="ArgumentException">コピー先のサイズが不足している場合、この例外をスローします。</exception>
+    /// <exception cref="ArgumentException">コピー先のサイズが不足しています。</exception>
     public int GetChars(Span<char> destination) => Encoding.UTF8.GetChars(AsSpan(), destination);
 
 #if NET7_0_OR_GREATER
