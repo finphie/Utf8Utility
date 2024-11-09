@@ -10,12 +10,9 @@ public static class AsciiUtility
 {
     const byte IsWhiteSpaceFlag = 0x80;
 
-    // Contains information about the ASCII character range [ U+0000..U+007F ], with:
-    // - 0x80 bit if set means 'is whitespace'
-    // - 0x40 bit if set means 'is letter or digit'
-    // - 0x20 bit is reserved for future use
-    // - bottom 5 bits are the UnicodeCategory of the character
-    // https://github.com/dotnet/runtime/blob/cebe877f6d1b3d668370f9c6ea068bd1534b8227/src/libraries/System.Private.CoreLib/src/System/Text/Rune.cs#L39-L54
+    /// <summary>
+    /// <see href=" https://github.com/dotnet/runtime/blob/cebe877f6d1b3d668370f9c6ea068bd1534b8227/src/libraries/System.Private.CoreLib/src/System/Text/Rune.cs#L39-L54"/>
+    /// </summary>
     static ReadOnlySpan<byte> AsciiCharInfo => [
         0x0E, 0x0E, 0x0E, 0x0E, 0x0E, 0x0E, 0x0E, 0x0E, 0x0E, 0x8E, 0x8E, 0x8E, 0x8E, 0x8E, 0x0E, 0x0E, // U+0000..U+000F
         0x0E, 0x0E, 0x0E, 0x0E, 0x0E, 0x0E, 0x0E, 0x0E, 0x0E, 0x0E, 0x0E, 0x0E, 0x0E, 0x0E, 0x0E, 0x0E, // U+0010..U+001F

@@ -1,4 +1,4 @@
-﻿#if NET7_0_OR_GREATER
+﻿#if NET8_0_OR_GREATER
 using FluentAssertions;
 using Xunit;
 
@@ -6,7 +6,6 @@ namespace Utf8Utility.Tests;
 
 public sealed class Utf8ArrayIsEmptyOrWhiteSpaceTest
 {
-    // https://github.com/dotnet/runtime/blob/82d667c6572e85945aa3a02d7f98802db587c0d2/src/libraries/Common/tests/Tests/System/StringTests.cs#L26
     [Theory]
     [InlineData("")]
     [InlineData(" ")]

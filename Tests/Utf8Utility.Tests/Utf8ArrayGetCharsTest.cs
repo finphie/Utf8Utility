@@ -27,7 +27,7 @@ public sealed class Utf8ArrayGetCharsTest
             var buffer = new char[2];
             x.GetChars(buffer);
         })
-        .Should()
-        .Throw<ArgumentException>();
+            .Should()
+            .Throw<ArgumentException>();
     }
 }

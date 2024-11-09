@@ -15,13 +15,17 @@ namespace Utf8Utility;
 /// </summary>
 #if NET7_0_OR_GREATER
 [SuppressMessage("Design", "CA1036:比較可能な型でメソッドをオーバーライドします", Justification = "配列")]
+public readonly partial struct Utf8Array :
+#else
+public readonly struct Utf8Array :
 #endif
-public readonly partial struct Utf8Array : IEquatable<Utf8Array>,
+    IEquatable<Utf8Array>,
 #if NET8_0_OR_GREATER
     IUtf8SpanFormattable,
 #endif
 #if NET7_0_OR_GREATER
-    ISpanFormattable, IComparable<Utf8Array>
+    ISpanFormattable,
+    IComparable<Utf8Array>
 #else
     IFormattable
 #endif

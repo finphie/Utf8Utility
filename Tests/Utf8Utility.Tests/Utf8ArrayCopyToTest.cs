@@ -26,7 +26,7 @@ public sealed class Utf8ArrayCopyToTest
             var buffer = new byte[2];
             x.CopyTo(buffer);
         })
-        .Should()
-        .Throw<ArgumentException>();
+            .Should()
+            .Throw<ArgumentException>();
     }
 }

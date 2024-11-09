@@ -76,22 +76,12 @@ _ = array.TryCopyTo(stackalloc byte[256]);
 
 var chars = array.GetChars(stackalloc char[256]);
 _ = array.TryGetChars(stackalloc char[256], out var charsWritten);
-
-// Utf8ArrayをキーとしたDictionaryです。
-var dict = new Utf8ArrayDictionary<int>();
-
-// キー指定にはUtf8Arrayの他にReadOnlySpan{char|byte}を指定できます。
-_ = dict.TryGetValue(array, out var result);
-ref var dictStart = ref dict.GetValueRefOrNullRef(array);
-
-_ = dict.TryAdd(array, 1);
-dict.Clear();
 ```
 
 ## サポートフレームワーク
 
+- .NET 9
 - .NET 8
-- .NET 7
 - .NET Standard 2.1
 
 ## 作者
@@ -126,6 +116,8 @@ MIT
 - [IDisposableAnalyzers](https://github.com/DotNetAnalyzers/IDisposableAnalyzers)
 - [Microsoft.CodeAnalysis.NetAnalyzers](https://github.com/dotnet/roslyn-analyzers)
 - [Microsoft.VisualStudio.Threading.Analyzers](https://github.com/Microsoft/vs-threading)
+- [Roslynator.Analyzers](https://github.com/dotnet/roslynator)
+- [Roslynator.Formatting.Analyzers](https://github.com/dotnet/roslynator)
 - [StyleCop.Analyzers](https://github.com/DotNetAnalyzers/StyleCopAnalyzers)
 
 ### ベンチマーク
@@ -141,5 +133,4 @@ MIT
 
 ### その他
 
-- [Microsoft.SourceLink.GitHub](https://github.com/dotnet/sourcelink)
 - [PolySharp](https://github.com/Sergio0694/PolySharp)
