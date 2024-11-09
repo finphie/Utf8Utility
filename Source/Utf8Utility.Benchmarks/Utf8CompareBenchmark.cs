@@ -24,8 +24,8 @@ public class Utf8CompareBenchmark
             builder.Append("あいうえおαβabcdefg𩸽😀🖳");
         }
 
-        _value1 = Encoding.UTF8.GetBytes(builder.ToString() + "a");
-        _value2 = Encoding.UTF8.GetBytes(builder.ToString() + "b");
+        _value1 = Encoding.UTF8.GetBytes(builder + "a");
+        _value2 = Encoding.UTF8.GetBytes(builder + "b");
     }
 
     [Benchmark]
