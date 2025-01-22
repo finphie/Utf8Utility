@@ -1,5 +1,5 @@
 ﻿using System.Text;
-using FluentAssertions;
+using Shouldly;
 using Xunit;
 
 namespace Utf8Utility.Tests;
@@ -13,7 +13,7 @@ public sealed class Utf8ArrayAsSpanTest
         var span = new Utf8Array(value).AsSpan();
         var array = Encoding.UTF8.GetBytes(value);
 
-        span.SequenceEqual(array).Should().BeTrue();
+        span.SequenceEqual(array).ShouldBeTrue();
     }
 
     [Theory]
@@ -27,7 +27,7 @@ public sealed class Utf8ArrayAsSpanTest
             var span = new Utf8Array(utf8Value).AsSpan(i);
             var array = utf8Value.AsSpan(i);
 
-            span.SequenceEqual(array).Should().BeTrue();
+            span.SequenceEqual(array).ShouldBeTrue();
         }
     }
 }

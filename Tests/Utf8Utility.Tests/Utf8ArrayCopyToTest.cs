@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+﻿using Shouldly;
 using Xunit;
 
 namespace Utf8Utility.Tests;
@@ -14,19 +14,17 @@ public sealed class Utf8ArrayCopyToTest
         var buffer = new byte[array.ByteCount];
 
         array.CopyTo(buffer);
-        array.DangerousAsByteArray().Should().Equal(buffer);
+        array.DangerousAsByteArray().ShouldBe(buffer);
     }
 
     [Fact]
     public void コピー先のサイズが不足_ArgumentException()
     {
-        var array = new Utf8Array("abc");
-        array.Invoking(static x =>
+        Should.Throw<ArgumentException>(() =>
         {
+            var array = new Utf8Array("abc");
             var buffer = new byte[2];
-            x.CopyTo(buffer);
-        })
-            .Should()
-            .Throw<ArgumentException>();
+            array.CopyTo(buffer);
+        });
     }
 }

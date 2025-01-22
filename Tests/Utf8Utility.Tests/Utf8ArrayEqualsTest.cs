@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+﻿using Shouldly;
 using Xunit;
 
 namespace Utf8Utility.Tests;
@@ -12,7 +12,7 @@ public sealed class Utf8ArrayEqualsTest
         var x1 = new Utf8Array(value);
         var x2 = new Utf8Array(value);
 
-        x1.Equals(x2).Should().BeTrue();
+        x1.Equals(x2).ShouldBeTrue();
     }
 
     [Theory]
@@ -23,7 +23,7 @@ public sealed class Utf8ArrayEqualsTest
         var x1 = new Utf8Array(value1);
         var x2 = new Utf8Array(value2);
 
-        x1.Equals(x2).Should().BeFalse();
+        x1.Equals(x2).ShouldBeFalse();
     }
 
     [Fact]
@@ -32,8 +32,8 @@ public sealed class Utf8ArrayEqualsTest
         var x1 = new Utf8Array(string.Empty);
         var x2 = Utf8Array.Empty;
 
-        x1.Equals(x2).Should().BeTrue();
-        x1.Equals(Utf8Array.Empty).Should().BeTrue();
+        x1.Equals(x2).ShouldBeTrue();
+        x1.Equals(Utf8Array.Empty).ShouldBeTrue();
     }
 
     [Theory]
@@ -43,7 +43,7 @@ public sealed class Utf8ArrayEqualsTest
         var x1 = new Utf8Array(value);
         var x2 = (object)new Utf8Array(value);
 
-        x1.Equals(x2).Should().BeTrue();
+        x1.Equals(x2).ShouldBeTrue();
     }
 
     [Theory]
@@ -60,7 +60,7 @@ public sealed class Utf8ArrayEqualsTest
             _ => value2
         };
 
-        x1.Equals(x2).Should().BeFalse();
+        x1.Equals(x2).ShouldBeFalse();
     }
 
     [Fact]
@@ -69,7 +69,7 @@ public sealed class Utf8ArrayEqualsTest
         var x1 = new Utf8Array(string.Empty);
         var x2 = (object)Utf8Array.Empty;
 
-        x1.Equals(x2).Should().BeTrue();
-        x1.Equals((object)Utf8Array.Empty).Should().BeTrue();
+        x1.Equals(x2).ShouldBeTrue();
+        x1.Equals((object)Utf8Array.Empty).ShouldBeTrue();
     }
 }

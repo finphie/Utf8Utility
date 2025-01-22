@@ -1,6 +1,6 @@
 ﻿#if NET7_0_OR_GREATER
 using System.Text;
-using FluentAssertions;
+using Shouldly;
 using Utf8Utility.Text;
 using Xunit;
 
@@ -27,8 +27,8 @@ public sealed class UnicodeUtilityCompareTest
         var x1 = Encoding.UTF8.GetBytes(value);
         var x2 = Encoding.UTF8.GetBytes(value);
 
-        UnicodeUtility.Compare(x1, x2).Should().Be(0);
-        UnicodeUtility.Compare(x1, x2, StringComparison.InvariantCulture).Should().Be(0);
+        UnicodeUtility.Compare(x1, x2).ShouldBe(0);
+        UnicodeUtility.Compare(x1, x2, StringComparison.InvariantCulture).ShouldBe(0);
     }
 
     [Theory]
@@ -59,7 +59,7 @@ public sealed class UnicodeUtilityCompareTest
         var x1 = Encoding.UTF8.GetBytes(value1);
         var x2 = Encoding.UTF8.GetBytes(value2);
 
-        UnicodeUtility.Compare(x1, x2, StringComparison.InvariantCulture).Should().BeNegative();
+        UnicodeUtility.Compare(x1, x2, StringComparison.InvariantCulture).ShouldBeNegative();
     }
 }
 #endif

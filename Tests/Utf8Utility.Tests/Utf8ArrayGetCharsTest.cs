@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+﻿using Shouldly;
 using Xunit;
 
 namespace Utf8Utility.Tests;
@@ -14,20 +14,18 @@ public sealed class Utf8ArrayGetCharsTest
         var buffer = new char[value.Length];
 
         var charsWritten = array.GetChars(buffer);
-        charsWritten.Should().Be(value.Length);
-        value.Should().Be(new(buffer, 0, charsWritten));
+        charsWritten.ShouldBe(value.Length);
+        value.ShouldBe(new(buffer, 0, charsWritten));
     }
 
     [Fact]
     public void 出力先のサイズが不足_ArgumentException()
     {
-        var array = new Utf8Array("abc");
-        array.Invoking(static x =>
+        Should.Throw<ArgumentException>(() =>
         {
+            var array = new Utf8Array("abc");
             var buffer = new char[2];
-            x.GetChars(buffer);
-        })
-            .Should()
-            .Throw<ArgumentException>();
+            array.GetChars(buffer);
+        });
     }
 }

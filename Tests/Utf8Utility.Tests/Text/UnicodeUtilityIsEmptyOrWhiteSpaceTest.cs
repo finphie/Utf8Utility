@@ -1,6 +1,6 @@
 ﻿#if NET7_0_OR_GREATER
 using System.Text;
-using FluentAssertions;
+using Shouldly;
 using Utf8Utility.Text;
 using Xunit;
 
@@ -24,7 +24,7 @@ public sealed class UnicodeUtilityIsEmptyOrWhiteSpaceTest
     [InlineData("　\n　")]
     [InlineData("\u1680\u1680")]
     public void 空またはスペース_trueを返す(string value)
-        => UnicodeUtility.IsEmptyOrWhiteSpace(Encoding.UTF8.GetBytes(value)).Should().BeTrue();
+        => UnicodeUtility.IsEmptyOrWhiteSpace(Encoding.UTF8.GetBytes(value)).ShouldBeTrue();
 
     [Theory]
     [InlineData("a")]
@@ -35,6 +35,6 @@ public sealed class UnicodeUtilityIsEmptyOrWhiteSpaceTest
     [InlineData("\u1680a ")]
     [InlineData(" 𩸽")]
     public void 空またはスペース_falseを返す(string value)
-        => UnicodeUtility.IsEmptyOrWhiteSpace(Encoding.UTF8.GetBytes(value)).Should().BeFalse();
+        => UnicodeUtility.IsEmptyOrWhiteSpace(Encoding.UTF8.GetBytes(value)).ShouldBeFalse();
 }
 #endif
