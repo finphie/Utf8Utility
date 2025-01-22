@@ -1,5 +1,5 @@
 ﻿using System.Globalization;
-using FluentAssertions;
+using Shouldly;
 using Xunit;
 
 namespace Utf8Utility.Tests;
@@ -31,7 +31,7 @@ public sealed class Utf8ArrayGetLengthTest
         var array = new Utf8Array(value);
         var info = new StringInfo(value);
 
-        array.GetLength().Should().Be(info.LengthInTextElements);
+        array.GetLength().ShouldBe(info.LengthInTextElements);
     }
 
     [Theory]
@@ -52,6 +52,6 @@ public sealed class Utf8ArrayGetLengthTest
         var array = new Utf8Array(value);
         var info = new StringInfo(value);
 
-        array.GetLength().Should().Be(info.LengthInTextElements);
+        array.GetLength().ShouldBe(info.LengthInTextElements);
     }
 }

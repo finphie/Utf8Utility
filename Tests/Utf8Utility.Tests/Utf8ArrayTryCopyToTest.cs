@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+﻿using Shouldly;
 using Xunit;
 
 namespace Utf8Utility.Tests;
@@ -13,8 +13,8 @@ public sealed class Utf8ArrayTryCopyToTest
         var array = new Utf8Array(value);
         var buffer = new byte[array.ByteCount];
 
-        array.TryCopyTo(buffer).Should().BeTrue();
-        array.DangerousAsByteArray().Should().Equal(buffer);
+        array.TryCopyTo(buffer).ShouldBeTrue();
+        array.DangerousAsByteArray().ShouldBe(buffer);
     }
 
     [Fact]
@@ -23,7 +23,7 @@ public sealed class Utf8ArrayTryCopyToTest
         var array = new Utf8Array("abc");
         var buffer = new byte[array.ByteCount - 1];
 
-        array.TryCopyTo(buffer).Should().BeFalse();
-        buffer.Should().OnlyContain(static x => x == 0);
+        array.TryCopyTo(buffer).ShouldBeFalse();
+        buffer.ShouldAllBe(static x => x == 0);
     }
 }

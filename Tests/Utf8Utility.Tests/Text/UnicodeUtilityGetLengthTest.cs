@@ -1,6 +1,6 @@
 ﻿using System.Globalization;
 using System.Text;
-using FluentAssertions;
+using Shouldly;
 using Utf8Utility.Text;
 using Xunit;
 
@@ -33,7 +33,7 @@ public sealed class UnicodeUtilityGetLengthTest
         var utf8 = Encoding.UTF8.GetBytes(value);
         var info = new StringInfo(value);
 
-        UnicodeUtility.GetLength(utf8).Should().Be(info.LengthInTextElements);
+        UnicodeUtility.GetLength(utf8).ShouldBe(info.LengthInTextElements);
     }
 
     [Theory]
@@ -54,6 +54,6 @@ public sealed class UnicodeUtilityGetLengthTest
         var utf8 = Encoding.UTF8.GetBytes(value);
         var info = new StringInfo(value);
 
-        UnicodeUtility.GetLength(utf8).Should().Be(info.LengthInTextElements);
+        UnicodeUtility.GetLength(utf8).ShouldBe(info.LengthInTextElements);
     }
 }

@@ -1,5 +1,5 @@
 ﻿#if NET8_0_OR_GREATER
-using FluentAssertions;
+using Shouldly;
 using Xunit;
 
 namespace Utf8Utility.Tests;
@@ -25,9 +25,9 @@ public sealed class Utf8ArrayCompareTest
         var x1 = new Utf8Array(value);
         var x2 = new Utf8Array(value);
 
-        Utf8Array.Compare(x1, x2, StringComparison.CurrentCulture).Should().Be(0);
-        Utf8Array.Compare(x1, x2, StringComparison.InvariantCulture).Should().Be(0);
-        x1.CompareTo(x2).Should().Be(0);
+        Utf8Array.Compare(x1, x2, StringComparison.CurrentCulture).ShouldBe(0);
+        Utf8Array.Compare(x1, x2, StringComparison.InvariantCulture).ShouldBe(0);
+        x1.CompareTo(x2).ShouldBe(0);
     }
 
     [Theory]
@@ -58,7 +58,7 @@ public sealed class Utf8ArrayCompareTest
         var x1 = new Utf8Array(value1);
         var x2 = new Utf8Array(value2);
 
-        Utf8Array.Compare(x1, x2, StringComparison.InvariantCulture).Should().BeNegative();
+        Utf8Array.Compare(x1, x2, StringComparison.InvariantCulture).ShouldBeNegative();
     }
 
     [Theory]
@@ -86,7 +86,7 @@ public sealed class Utf8ArrayCompareTest
         var x1 = new Utf8Array(value1);
         var x2 = new Utf8Array(value2);
 
-        Utf8Array.CompareOrdinal(x1, x2).Should().BeNegative();
+        Utf8Array.CompareOrdinal(x1, x2).ShouldBeNegative();
     }
 }
 #endif

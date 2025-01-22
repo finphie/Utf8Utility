@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+﻿using Shouldly;
 using Xunit;
 
 namespace Utf8Utility.Tests;
@@ -13,9 +13,9 @@ public sealed class Utf8ArrayTryGetCharsTest
         var array = new Utf8Array(value);
         var buffer = new char[value.Length];
 
-        array.TryGetChars(buffer, out var charsWritten).Should().BeTrue();
-        charsWritten.Should().Be(value.Length);
-        value.Should().Be(new(buffer, 0, charsWritten));
+        array.TryGetChars(buffer, out var charsWritten).ShouldBeTrue();
+        charsWritten.ShouldBe(value.Length);
+        value.ShouldBe(new(buffer, 0, charsWritten));
     }
 
     [Fact]
@@ -24,7 +24,7 @@ public sealed class Utf8ArrayTryGetCharsTest
         var array = new Utf8Array("abc");
         var buffer = new char[2];
 
-        array.TryGetChars(buffer, out var charsWritten).Should().BeFalse();
-        charsWritten.Should().Be(0);
+        array.TryGetChars(buffer, out var charsWritten).ShouldBeFalse();
+        charsWritten.ShouldBe(0);
     }
 }

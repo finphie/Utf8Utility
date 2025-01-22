@@ -1,5 +1,5 @@
 ﻿#if NET8_0_OR_GREATER
-using FluentAssertions;
+using Shouldly;
 using Xunit;
 
 namespace Utf8Utility.Tests;
@@ -22,7 +22,7 @@ public sealed class Utf8ArrayIsEmptyOrWhiteSpaceTest
     [InlineData("　\n　")]
     [InlineData("\u1680\u1680")]
     public void 空またはスペース_trueを返す(string value)
-        => new Utf8Array(value).IsEmptyOrWhiteSpace().Should().BeTrue();
+        => new Utf8Array(value).IsEmptyOrWhiteSpace().ShouldBeTrue();
 
     [Theory]
     [InlineData("a")]
@@ -33,6 +33,6 @@ public sealed class Utf8ArrayIsEmptyOrWhiteSpaceTest
     [InlineData("\u1680a ")]
     [InlineData(" 𩸽")]
     public void 空またはスペース_falseを返す(string value)
-        => new Utf8Array(value).IsEmptyOrWhiteSpace().Should().BeFalse();
+        => new Utf8Array(value).IsEmptyOrWhiteSpace().ShouldBeFalse();
 }
 #endif

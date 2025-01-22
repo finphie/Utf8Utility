@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+﻿using Shouldly;
 using Xunit;
 
 namespace Utf8Utility.Tests;
@@ -19,7 +19,7 @@ public sealed class Utf8ArrayIsEmptyTest
 
         foreach (var value in values)
         {
-            value.IsEmpty.Should().BeTrue();
+            value.IsEmpty.ShouldBeTrue();
         }
     }
 
@@ -27,5 +27,5 @@ public sealed class Utf8ArrayIsEmptyTest
     [InlineData("a")]
     [InlineData(" ")]
     public void 空文字列以外_falseを返す(string value)
-        => new Utf8Array(value).IsEmpty.Should().BeFalse();
+        => new Utf8Array(value).IsEmpty.ShouldBeFalse();
 }

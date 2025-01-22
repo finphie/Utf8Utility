@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+﻿using Shouldly;
 using Utf8Utility.Text;
 using Xunit;
 
@@ -10,7 +10,7 @@ public sealed class UnicodeUtilityIsAsciiCodePointTest
     [InlineData(0x00)]
     [InlineData(0x7F)]
     public void Ascii文字_trueを返す(byte value)
-        => UnicodeUtility.IsAsciiCodePoint(value).Should().BeTrue();
+        => UnicodeUtility.IsAsciiCodePoint(value).ShouldBeTrue();
 
     [Theory]
     [InlineData(0xC2)]
@@ -20,5 +20,5 @@ public sealed class UnicodeUtilityIsAsciiCodePointTest
     [InlineData(0xF0)]
     [InlineData(0xF4)]
     public void 非Ascii文字_falseを返す(byte value)
-        => UnicodeUtility.IsAsciiCodePoint(value).Should().BeFalse();
+        => UnicodeUtility.IsAsciiCodePoint(value).ShouldBeFalse();
 }

@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+﻿using Shouldly;
 using Utf8Utility.Text;
 using Xunit;
 
@@ -16,5 +16,5 @@ public sealed class UnicodeUtilityGetUtf8SequenceLengthTest
     [InlineData(0xF0, 4)]
     [InlineData(0xF4, 4)]
     public void Utf8文字の先頭バイト_文字のバイト数を返す(byte value, int length)
-        => UnicodeUtility.GetUtf8SequenceLength(value).Should().Be(length);
+        => UnicodeUtility.GetUtf8SequenceLength(value).ShouldBe(length);
 }

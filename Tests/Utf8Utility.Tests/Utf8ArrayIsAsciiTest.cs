@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+﻿using Shouldly;
 using Utf8Utility.Tests.Helpers;
 using Xunit;
 
@@ -16,7 +16,7 @@ public sealed class Utf8ArrayIsAsciiTest
             var ascii = StringHelper.GetAsciiRandomString(i);
             var value = new Utf8Array(ascii);
 
-            value.IsAscii().Should().BeTrue($"index: {i}");
+            value.IsAscii().ShouldBeTrue($"index: {i}");
         }
     }
 
@@ -29,7 +29,7 @@ public sealed class Utf8ArrayIsAsciiTest
             ascii.Add(0x80);
 
             var value = new Utf8Array(ascii.ToArray());
-            value.IsAscii().Should().BeFalse($"index: {i}");
+            value.IsAscii().ShouldBeFalse($"index: {i}");
         }
     }
 
@@ -37,6 +37,6 @@ public sealed class Utf8ArrayIsAsciiTest
     public void 空文字_falseを返す()
     {
         var value = new Utf8Array(string.Empty);
-        value.IsAscii().Should().BeFalse();
+        value.IsAscii().ShouldBeFalse();
     }
 }
