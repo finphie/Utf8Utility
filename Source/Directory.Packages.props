@@ -3,7 +3,7 @@
   <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Packages.props', '$(MSBuildThisFileDirectory)../'))" />
 
   <ItemGroup>
-    <PackageVersion Include="CommunityToolkit.Diagnostics" Version="8.4.0" />
+    <PackageVersion Include="CommunityToolkit.Diagnostics" Version="8.4.2" />
     <PackageVersion Include="CommunityToolkit.HighPerformance" Version="8.4.0" />
     <PackageVersion Include="System.Runtime.CompilerServices.Unsafe" Version="6.1.0" />
   </ItemGroup>
